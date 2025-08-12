@@ -9,6 +9,7 @@ use Packetery\Module\Blocks\BlockHooks;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Checkout\Checkout;
 use Packetery\Module\Checkout\CheckoutSettings;
+use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\CronService;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
@@ -242,6 +243,11 @@ class HookRegistrar {
 	private $shippingProvider;
 
 	/**
+	 * @var CheckoutStorage
+	 */
+	private $checkoutStorage;
+
+	/**
 	 * @var WizardAssetManager
 	 */
 	private $wizardAssetManager;
@@ -291,6 +297,7 @@ class HookRegistrar {
 		CheckoutSettings $checkoutSettings,
 		ModuleHelper $moduleHelper,
 		ShippingProvider $shippingProvider,
+		CheckoutStorage $checkoutStorage,
 		WizardAssetManager $wizardAssetManager,
 		DashboardPage $dashboardPage
 	) {
@@ -333,6 +340,7 @@ class HookRegistrar {
 		$this->checkoutSettings          = $checkoutSettings;
 		$this->moduleHelper              = $moduleHelper;
 		$this->shippingProvider          = $shippingProvider;
+		$this->checkoutStorage           = $checkoutStorage;
 		$this->wizardAssetManager        = $wizardAssetManager;
 		$this->dashboardPage             = $dashboardPage;
 	}
@@ -552,6 +560,14 @@ class HookRegistrar {
 			],
 			20
 		);
+		$this->wpAdapter->addAction(
+			'woocommerce_guest_session_to_user_id',
+			[
+				$this->checkoutStorage,
+				'migrateGuestSessionToUserSession',
+			]
+		);
+
 		if ( $this->wpAdapter->doingAjax() === false ) {
 			$this->wpAdapter->addAction( 'woocommerce_order_details_after_order_table', [ $this->viewFrontend, 'renderOrderDetail' ] );
 

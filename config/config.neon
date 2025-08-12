@@ -13,6 +13,7 @@ parameters:
 	trackingUrl: https://tracking.packeta.com/Z%s
 	supportEmailAddress: e-commerce.support@packeta.com
 	affiliateId: 51770072f717b057
+	widgetEnvironment: production
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -139,6 +140,7 @@ services:
 	- Packetery\Module\Views\AssetManager
 	- Packetery\Module\Shipping\ShippingProvider
 	- Packetery\Module\Shipping\ShippingMethodGenerator
+	- Packetery\Module\WidgetUrlResolver(widgetEnvironment: %widgetEnvironment%)
 	- Packetery\Module\Views\WizardAssetManager
 	- Packetery\Module\Dashboard\DashboardPage
 	- Packetery\Module\Dashboard\DashboardItemBuilder

@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
-Tested up to: 6.8.1
-Stable tag: 2.0.7
+Tested up to: 6.8.2
+Stable tag: 2.0.9
 Requires PHP: 7.2
 WC requires at least: 5.1
-WC tested up to: 9.9.3
+WC tested up to: 10.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
@@ -63,6 +63,12 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.0.9 =
+Fixed: Type error when migrating guest session to user session during order.
+
+= 2.0.8 =
+Fixed: Resolved data transfer from the checkout and pairing of the order with the plugin when registering a user in the checkout.
+
 = 2.0.7 =
 Updated: Enabled age verification for Home delivery Slovakia.
 
