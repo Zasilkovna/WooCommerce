@@ -20,8 +20,10 @@ if ( $currentTestsuite === null ) {
 	}
 }
 
-if ( $currentTestsuite === null ) {
-	die( 'Testsuite detection failed.' );
+$allowedTestsuites = [ 'unit', 'integration' ];
+
+if ( ! in_array( $currentTestsuite, $allowedTestsuites, true ) ) {
+	die( "Invalid testsuite provided or testsuite detection failed.\n" );
 }
 
 if ( $currentTestsuite === 'unit' ) {
