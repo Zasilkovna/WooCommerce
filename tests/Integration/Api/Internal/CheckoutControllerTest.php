@@ -172,4 +172,21 @@ class CheckoutControllerTest extends TestCase {
 		$this->assertSame( 200, $responseInvalid->get_status() );
 		$this->assertFalse( $storage->getFromTransient() );
 	}
+
+	public function testEndpointsReturn404WhenGetUsed(): void {
+		[ $router ] = $this->registerRoutes();
+
+		$paths = [
+			CheckoutRouter::PATH_SAVE_SELECTED_PICKUP_POINT,
+			CheckoutRouter::PATH_SAVE_VALIDATED_ADDRESS,
+			CheckoutRouter::PATH_SAVE_DELIVERY_ADDRESS,
+			CheckoutRouter::PATH_REMOVE_SAVED_DATA,
+		];
+
+		foreach ( $paths as $path ) {
+			$request  = new WP_REST_Request( 'GET', '/packeta/internal' . $router->getRoute( $path ) );
+			$response = rest_do_request( $request );
+			$this->assertSame( 404, $response->get_status(), 'Expected 404 for GET on ' . $path );
+		}
+	}
 }
