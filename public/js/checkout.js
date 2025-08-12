@@ -569,7 +569,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 	};
 
 	var dependencies = [];
-	dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
+	dependencies.push( $.getScript( settings.widgetUrl  ) );
 
 	dependencies.push(
 		$.Deferred( function( deferred ) {
