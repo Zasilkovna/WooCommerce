@@ -110,6 +110,20 @@ class Exporter {
 			return;
 		}
 
+		$txtContents = $this->getExportContent();
+		header( 'Content-Type: text/plain' );
+		header( 'Content-Transfer-Encoding: Binary' );
+		header( 'Content-Length: ' . strlen( $txtContents ) );
+		header( 'Content-Disposition: attachment; filename="packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt"' );
+		// @codingStandardsIgnoreStart
+		echo $txtContents;
+		// @codingStandardsIgnoreEnd
+		exit;
+	}
+
+	public function getExportContent(): string {
+		global $wpdb;
+
 		$globalSettings = $this->optionsProvider->getAllOptions();
 		if ( isset( $globalSettings[ OptionNames::PACKETERY ]['api_password'] ) ) {
 			$globalSettings[ OptionNames::PACKETERY ]['api_password'] = sprintf(
@@ -171,15 +185,7 @@ class Exporter {
 		];
 		update_option( OptionNames::LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
-		$txtContents = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/export.latte', $latteParams );
-		header( 'Content-Type: text/plain' );
-		header( 'Content-Transfer-Encoding: Binary' );
-		header( 'Content-Length: ' . strlen( $txtContents ) );
-		header( 'Content-Disposition: attachment; filename="packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt"' );
-		// @codingStandardsIgnoreStart
-		echo $txtContents;
-		// @codingStandardsIgnoreEnd
-		exit;
+		return $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/export.latte', $latteParams );
 	}
 
 	/**

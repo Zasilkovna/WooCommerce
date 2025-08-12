@@ -229,6 +229,20 @@ class AssetManager {
 					'packetery-select2',
 				]
 			);
+
+			$this->wpAdapter->enqueueEditor();
+			$this->wpAdapter->enqueueScript( 'editor' );
+			$this->enqueueScript(
+				'packetery-bug-report-editor',
+				'public/js/bug-report-editor.js',
+				true,
+				[
+					'jquery',
+					'editor',
+				]
+			);
+
+			$activeTab = $this->request->getQuery( Options\Page::PARAM_TAB ) ?? Options\Page::TAB_GENERAL;
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
