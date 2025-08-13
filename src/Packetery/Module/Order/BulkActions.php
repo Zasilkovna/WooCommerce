@@ -9,9 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Options;
-use Packetery\Module\WcLogger;
 use Packetery\Latte\Engine;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -80,6 +79,7 @@ class BulkActions {
 	public function addActions( $actions ) {
 		if ( ! is_array( $actions ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'actions', 'array', $actions );
+
 			return $actions;
 		}
 
@@ -103,16 +103,19 @@ class BulkActions {
 	public function handleActions( $redirectTo, $action, $postIds ) {
 		if ( ! is_string( $redirectTo ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'redirectTo', 'string', $redirectTo );
+
 			return $redirectTo;
 		}
 
 		if ( ! is_string( $action ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'action', 'string', $action );
+
 			return $redirectTo;
 		}
 
 		if ( ! is_array( $postIds ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'postIds', 'array', $postIds );
+
 			return $redirectTo;
 		}
 

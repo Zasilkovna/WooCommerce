@@ -23,9 +23,9 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
-use Packetery\Module\WcLogger;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\SubmitButton;
@@ -201,6 +201,7 @@ class Page {
 	public function customMenuOrder( $menuOrder ) {
 		if ( ! is_array( $menuOrder ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'menuOrder', 'array', $menuOrder );
+
 			return $menuOrder;
 		}
 

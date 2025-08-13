@@ -84,6 +84,7 @@ class PacketAutoSubmitter {
 					function ( $orderId ): void {
 						if ( ! is_int( $orderId ) ) {
 							Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+
 							return;
 						}
 
@@ -100,6 +101,7 @@ class PacketAutoSubmitter {
 					function ( $orderId ): void {
 						if ( ! is_int( $orderId ) ) {
 							Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+
 							return;
 						}
 
@@ -113,10 +115,8 @@ class PacketAutoSubmitter {
 	/**
 	 * Handle event.
 	 *
-	 * @param string|mixed    $event               Event.
-	 * @param int|mixed       $orderId             WC Order.
-	 * @param bool|null|mixed $triggeredByFrontend Tells if event is triggered by frontend logic. NULL is passed when data from previous versions are being processed.
-	 *
+	 * @param string|mixed $event   Event.
+	 * @param int|mixed    $orderId WC Order.
 	 * @return void
 	 */
 	public function handleEvent( string $event, int $orderId ): void {
@@ -124,15 +124,17 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-        if ( ! is_string( $event ) ) {
-            Module\WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
-            return;
-        }
+		if ( ! is_string( $event ) ) {
+			Module\WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
 
-        if ( ! is_int( $orderId ) ) {
-            Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
-            return;
-        }
+			return;
+		}
+
+		if ( ! is_int( $orderId ) ) {
+			Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+
+			return;
+		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		assert( $wcOrder !== null, 'WC order has to be present' );
