@@ -355,12 +355,6 @@ parameters:
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
 
 		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getTranslations\(\) should return array\<string, string\> but returns array\<string, string\|null\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
 			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) has parameter \$carrierOptions with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -440,12 +434,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$data of method Packetery\\Nette\\Forms\\Container\:\:setDefaults\(\) expects array\|object, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
@@ -569,12 +557,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Checkout/CartService.php
-
-		-
-			message: '#^Parameter \#1 \$name of method WC_Cart\:\:add_fee\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Packetery/Module/Checkout/Checkout.php
 
 		-
 			message: '#^Parameter \#2 \$taxClass of method Packetery\\Module\\Checkout\\Checkout\:\:calcTaxExclusiveFeeAmount\(\) expects string, string\|null given\.$#'
@@ -706,12 +688,6 @@ parameters:
 			message: '#^Parameter \#1 \$input of function array_filter expects array, array\<string, bool\|string\>\|false given\.$#'
 			identifier: argument.type
 			count: 1
-			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
-
-		-
-			message: '#^Parameter \#1 \$message of method Packetery\\Module\\Framework\\WcAdapter\:\:addNotice\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 7
 			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
 
 		-
@@ -907,34 +883,10 @@ parameters:
 			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
 
 		-
-			message: '#^Parameter \#1 \$caption of class Packetery\\Module\\Dashboard\\DashboardItem constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 8
-			path: ../src/Packetery/Module/Dashboard/DashboardItemBuilder.php
-
-		-
 			message: '#^Parameter \#1 \$post of method Packetery\\Module\\Framework\\WpAdapter\:\:getEditPostLink\(\) expects int\|WP_Post, int\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Dashboard/DashboardItemBuilder.php
-
-		-
-			message: '#^Parameter \#3 \$description of class Packetery\\Module\\Dashboard\\DashboardItem constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 7
-			path: ../src/Packetery/Module/Dashboard/DashboardItemBuilder.php
-
-		-
-			message: '#^Parameter \#2 \$pageTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Dashboard/DashboardPage.php
-
-		-
-			message: '#^Parameter \#3 \$menuTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Dashboard/DashboardPage.php
 
 		-
 			message: '#^Method Packetery\\Module\\DashboardWidget\:\:__construct\(\) has parameter \$surveyConfig with no value type specified in iterable type array\.$#'
@@ -1189,18 +1141,6 @@ parameters:
 			path: ../src/Packetery/Module/Hooks/PluginHooks.php
 
 		-
-			message: '#^Parameter \#1 \$inputText of method Packetery\\Module\\Framework\\WpAdapter\:\:escAttr\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Packetery/Module/Hooks/PluginHooks.php
-
-		-
-			message: '#^Parameter \#1 \$inputText of method Packetery\\Module\\Framework\\WpAdapter\:\:escHtml\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Packetery/Module/Hooks/PluginHooks.php
-
-		-
 			message: '#^Parameter \#1 \$url of method Packetery\\Module\\Framework\\WpAdapter\:\:escUrl\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1211,18 +1151,6 @@ parameters:
 			identifier: cast.int
 			count: 2
 			path: ../src/Packetery/Module/Hooks/UpdateOrderHook.php
-
-		-
-			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Packetery/Module/Labels/CarrierLabelService.php
-
-		-
-			message: '#^Parameter \#1 \$message of method Packetery\\Module\\MessageManager\:\:flash_message\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Labels/CarrierLabelService.php
 
 		-
 			message: '#^Cannot access offset ''offset'' on array\|object\.$#'
@@ -1251,12 +1179,6 @@ parameters:
 		-
 			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
 			identifier: if.condNotBoolean
-			count: 1
-			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
-
-		-
-			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
 
@@ -1794,12 +1716,6 @@ parameters:
 			path: ../src/Packetery/Module/Options/Page.php
 
 		-
-			message: '#^Parameter \#1 \$pageTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addMenuPage\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Options/Page.php
-
-		-
 			message: '#^Parameter \#1 \$senderLabel of method Packetery\\Module\\Options\\Page\:\:validateSender\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1827,24 +1743,6 @@ parameters:
 			message: '#^Parameter \#2 \$haystack of function in_array expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 2
-			path: ../src/Packetery/Module/Options/Page.php
-
-		-
-			message: '#^Parameter \#2 \$menuTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addMenuPage\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Options/Page.php
-
-		-
-			message: '#^Parameter \#2 \$pageTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Options/Page.php
-
-		-
-			message: '#^Parameter \#3 \$menuTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
 			path: ../src/Packetery/Module/Options/Page.php
 
 		-
@@ -2166,27 +2064,9 @@ parameters:
 			path: ../src/Packetery/Module/Order/DetailCommonLogic.php
 
 		-
-			message: '#^Parameter \#1 \$filterOrdersToSubmitTitle of class Packetery\\Module\\Order\\GridLinksConfig constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/GridExtender.php
-
-		-
 			message: '#^Parameter \#1 \$text of function esc_html expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 3
-			path: ../src/Packetery/Module/Order/GridExtender.php
-
-		-
-			message: '#^Parameter \#2 \$filterOrdersToPrintTitle of class Packetery\\Module\\Order\\GridLinksConfig constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/GridExtender.php
-
-		-
-			message: '#^Parameter \#3 \$orderGridRunWizardTitle of class Packetery\\Module\\Order\\GridLinksConfig constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
 			path: ../src/Packetery/Module/Order/GridExtender.php
 
 		-
@@ -2205,18 +2085,6 @@ parameters:
 			message: '#^Method Packetery\\Module\\Order\\LabelPrint\:\:requestCarrierLabels\(\) has parameter \$packetIdsWithCourierNumbers with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: ../src/Packetery/Module/Order/LabelPrint.php
-
-		-
-			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../src/Packetery/Module/Order/LabelPrint.php
-
-		-
-			message: '#^Parameter \#1 \$message of method Packetery\\Module\\MessageManager\:\:flash_message\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
 			path: ../src/Packetery/Module/Order/LabelPrint.php
 
 		-
@@ -2280,18 +2148,6 @@ parameters:
 			path: ../src/Packetery/Module/Order/Metabox.php
 
 		-
-			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 7
-			path: ../src/Packetery/Module/Order/Metabox.php
-
-		-
-			message: '#^Parameter \#1 \$message of method Packetery\\Module\\MessageManager\:\:flash_message\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../src/Packetery/Module/Order/Metabox.php
-
-		-
 			message: '#^Parameter \#1 \$name of method Packetery\\Nette\\Forms\\Container\:\:addHidden\(\) expects string, bool\|string given\.$#'
 			identifier: argument.type
 			count: 2
@@ -2329,12 +2185,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$propsToSave of method Packetery\\Module\\Order\\AttributeMapper\:\:toOrderSize\(\) expects array\<string, float\|int\|string\|true\|null\>, non\-empty\-array\<0\|1\|string, float\|int\|string\|true\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/Metabox.php
-
-		-
-			message: '#^Parameter \#2 \$title of function add_meta_box expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Order/Metabox.php
@@ -2469,12 +2319,6 @@ parameters:
 			message: '#^Parameter \#1 \$packetId of class Packetery\\Core\\Api\\Soap\\Request\\PacketStatus constructor expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
-			path: ../src/Packetery/Module/Order/PacketSynchronizer.php
-
-		-
-			message: '#^Parameter \#2 \$translatedName of class Packetery\\Core\\Entity\\PacketStatus constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 16
 			path: ../src/Packetery/Module/Order/PacketSynchronizer.php
 
 		-
@@ -2846,12 +2690,6 @@ parameters:
 		-
 			message: '#^Method Packetery\\Module\\Views\\WizardAssetManager\:\:createOrderGridTour\(\) has parameter \$basicTranslations with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Views/WizardAssetManager.php
-
-		-
-			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Views/WizardAssetManager.php
 
