@@ -205,4 +205,43 @@ class WpAdapter {
 			$iconUrl
 		);
 	}
+
+	public function sanitizeEmail( string $email ): string {
+		return sanitize_email( $email );
+	}
+
+	public function sanitizeTextareaField( string $text ): string {
+		return sanitize_textarea_field( $text );
+	}
+
+	public function wpKsesPost( string $content ): string {
+		return wp_kses_post( $content );
+	}
+
+	public function wpStripAllTags( string $content ): string {
+		return wp_strip_all_tags( $content );
+	}
+
+	public function enqueueEditor(): void {
+		wp_enqueue_editor();
+	}
+
+	public function getBlogInfo( string $show, string $filter ): string {
+		return get_bloginfo( $show, $filter );
+	}
+
+	/**
+	 * @param string                    $to          Email recipient.
+	 * @param string                    $subject     Email subject.
+	 * @param string                    $message     Email message.
+	 * @param array<int|string, string> $headers     Email headers.
+	 * @param array<int, string>        $attachments Email attachments.
+	 */
+	public function wpMail( string $to, string $subject, string $message, array $headers, array $attachments ): bool {
+		return wp_mail( $to, $subject, $message, $headers, $attachments );
+	}
+
+	public function currentTime( string $type, bool $gmt ): string {
+		return (string) current_time( $type, $gmt );
+	}
 }
