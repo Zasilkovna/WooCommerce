@@ -700,11 +700,13 @@ class Repository {
 	public function deletedPostHook( $postId, $post ): void {
 		if ( ! is_int( $postId ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'int', $postId );
+
 			return;
 		}
 
 		if ( ! $post instanceof WP_Post ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'post', WP_Post::class, $post );
+
 			return;
 		}
 

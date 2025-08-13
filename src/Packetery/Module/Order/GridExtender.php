@@ -18,9 +18,9 @@ use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
-use Packetery\Module\WcLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
@@ -157,11 +157,12 @@ class GridExtender {
 	 * @return string[]|mixed
 	 */
 	public function addFilterLinks( $htmlLinks ) {
-        if ( ! is_array( $htmlLinks ) ) {
-            WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
-            return $htmlLinks;
-        }
-        $linkConfig         = new GridLinksConfig(
+		if ( ! is_array( $htmlLinks ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
+
+			return $htmlLinks;
+		}
+		$linkConfig         = new GridLinksConfig(
 			$this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
 			$this->wpAdapter->__( 'Packeta orders to print', 'packeta' ),
 			$this->wpAdapter->__( 'Run Packeta wizard', 'packeta' )
@@ -485,6 +486,7 @@ class GridExtender {
 	public function addOrderListColumns( $columns ) {
 		if ( ! is_array( $columns ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'columns', 'array', $columns );
+
 			return $columns;
 		}
 

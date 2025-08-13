@@ -107,6 +107,7 @@ class DataTab {
 	public function registerTab( $tabs ) {
 		if ( ! is_array( $tabs ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'tabs', 'array', $tabs );
+
 			return $tabs;
 		}
 

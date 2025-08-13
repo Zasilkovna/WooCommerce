@@ -75,15 +75,17 @@ class QueryProcessor {
 			return $clauses;
 		}
 
-        if ( ! is_array( $clauses ) ) {
-            WcLogger::logArgumentTypeError( __METHOD__, 'clauses', 'array', $clauses );
-            return $clauses;
-        }
+		if ( ! is_array( $clauses ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'clauses', 'array', $clauses );
 
-        if ( ! $queryObject instanceof \WP_Query ) {
-            WcLogger::logArgumentTypeError( __METHOD__, 'queryObject', \WP_Query::class, $queryObject );
-            return $clauses;
-        }
+			return $clauses;
+		}
+
+		if ( ! $queryObject instanceof \WP_Query ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'queryObject', \WP_Query::class, $queryObject );
+
+			return $clauses;
+		}
 
 		$isOrderPostQueryCall =
 			isset( $queryObject->query['post_type'] ) &&
