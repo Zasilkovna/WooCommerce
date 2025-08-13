@@ -20,6 +20,11 @@ use Packetery\Module\EntityFactory;
 class EntityRepository {
 
 	/**
+	 * @var array<int, Entity\Carrier|null>
+	 */
+	private static $carrierDataCache = [];
+
+	/**
 	 * Carrier repository.
 	 *
 	 * @var Repository
@@ -82,7 +87,7 @@ class EntityRepository {
 	 *
 	 * @return Entity\Carrier|null
 	 */
-	public function getById( int $carrierId ): ?Entity\Carrier {
+	private function getById( int $carrierId ): ?Entity\Carrier {
 		$result = $this->repository->getById( $carrierId );
 		if ( $result === null ) {
 			return null;
@@ -91,14 +96,23 @@ class EntityRepository {
 		return $this->carrierEntityFactory->fromDbResult( $result );
 	}
 
+	private function getByIdCached( int $carrierId ): ?Entity\Carrier {
+		if ( ! isset( self::$carrierDataCache[ $carrierId ] ) ) {
+			self::$carrierDataCache[ $carrierId ] = $this->getById( $carrierId );
+		}
+
+		return self::$carrierDataCache[ $carrierId ];
+	}
+
 	/**
 	 * Gets feed carrier or Packeta carrier by id.
 	 *
 	 * @param string $carrierId Extended branch service id.
+	 * @param bool   $useCache
 	 *
 	 * @return Entity\Carrier|null
 	 */
-	public function getAnyById( string $carrierId ): ?Entity\Carrier {
+	public function getAnyById( string $carrierId, bool $useCache = false ): ?Entity\Carrier {
 		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
 
 		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
@@ -109,6 +123,10 @@ class EntityRepository {
 
 		if ( ! is_numeric( $carrierId ) ) {
 			return null;
+		}
+
+		if ( $useCache === true ) {
+			return $this->getByIdCached( (int) $carrierId );
 		}
 
 		return $this->getById( (int) $carrierId );
