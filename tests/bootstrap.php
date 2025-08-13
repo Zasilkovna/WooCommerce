@@ -62,12 +62,12 @@ if ( $currentTestsuite === 'integration' ) {
 		return $config;
 	}
 
-	$demoInstallDir  = __DIR__ . '/../cli/demo-install/';
-	$demoInstallConf = $demoInstallDir . 'install-wpwc.sh';
-	if ( is_file( $demoInstallDir . 'install-wpwc.config.local.sh' ) ) {
-		$demoInstallConf = $demoInstallDir . 'install-wpwc.config.local.sh';
+	$demoInstallDirectory     = __DIR__ . '/../cli/demo-install/';
+	$demoInstallConfiguration = $demoInstallDirectory . 'install-wpwc.sh';
+	if ( is_file( $demoInstallDirectory . 'install-wpwc.config.local.sh' ) ) {
+		$demoInstallConfiguration = $demoInstallDirectory . 'install-wpwc.config.local.sh';
 	}
-	$configuration = loadConfigFromInstallScript( $demoInstallConf );
+	$configuration = loadConfigFromInstallScript( $demoInstallConfiguration );
 
 	if ( ! is_file( $configuration['NEW_WP_ROOT'] . '/wp-config.php' ) ) {
 		throw new RuntimeException( 'WordPress installation not found in ' . $configuration['NEW_WP_ROOT'] );
