@@ -19,7 +19,8 @@
 		"\\.DS_Store$",
 		"\\.phar$",
 		"\\.phpunit.result.cache$",
-		"^soap-php-bugfix-dev.wsdl$"
+		"^soap-php-bugfix-dev.wsdl$",
+		"^cli\/graph-coverage\/"
 	],
 	"Disable": {
 		"MaxLineLength": true
