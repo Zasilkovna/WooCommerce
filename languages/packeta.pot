@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 2.0.9\n"
+"Project-Id-Version: Packeta 2.0.10\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-08T10:10:14+02:00\n"
+"POT-Creation-Date: 2025-08-14T14:49:12+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -24,7 +24,7 @@ msgstr ""
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:137
 #: src/Packetery/Module/Checkout/CheckoutRenderer.php:88
 #: src/Packetery/Module/Checkout/CheckoutRenderer.php:110
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:181
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:190
 #: src/Packetery/Module/DashboardWidget.php:116
 #: src/Packetery/Module/DashboardWidget.php:189
 #: src/Packetery/Module/Log/Page.php:133
@@ -582,38 +582,38 @@ msgstr ""
 msgid "COD surcharge"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:182
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:191
 #: src/Packetery/Module/Order/Metabox.php:647
 msgid "Choose pickup point"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:183
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:192
 #: src/Packetery/Module/Checkout/CheckoutValidator.php:157
 msgid "Pickup point is not chosen."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:184
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:193
 msgid "Loading Packeta widget button..."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:185
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:194
 msgid "Choose delivery address"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:186
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:195
 msgid "Address validation is out of order"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:187
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:196
 #: src/Packetery/Module/Order/Metabox.php:599
 msgid "The selected country does not correspond to the destination country."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:188
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:197
 msgid "The order will be delivered to the address:"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutSettings.php:189
+#: src/Packetery/Module/Checkout/CheckoutSettings.php:198
 msgid "Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier."
 msgstr ""
 
@@ -1473,7 +1473,7 @@ msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:399
 #: src/Packetery/Module/Order/Metabox.php:430
-#: src/Packetery/Module/Views/AssetManager.php:246
+#: src/Packetery/Module/Views/AssetManager.php:254
 msgid "It is not possible to submit the shipment because all the information required for this shipment is not filled."
 msgstr ""
 
@@ -2076,7 +2076,7 @@ msgstr ""
 msgid "Database %s table of Packeta plugin could not be created or altered, you can find more information in Packeta log."
 msgstr ""
 
-#: src/Packetery/Module/Views/AssetManager.php:245
+#: src/Packetery/Module/Views/AssetManager.php:253
 msgid "Customs declaration has to be filled in order detail."
 msgstr ""
 

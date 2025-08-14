@@ -16,6 +16,10 @@ use Packetery\Module\ShippingZoneRepository;
 use WC_Order;
 
 class ShippingProvider {
+	/**
+	 * @var array<int, array<string, string>>
+	 */
+	private static $sortedMethodsCache = [];
 
 	/**
 	 * @var FeatureFlagProvider
@@ -153,7 +157,7 @@ class ShippingProvider {
 	 *
 	 * @return array<string, string>
 	 */
-	public function addMethods( array $methods ): array {
+	private function addMethods( array $methods ): array {
 		$zoneId = $this->contextResolver->getShippingZoneId();
 		if ( $zoneId === null ) {
 			return $this->addAllMethods( $methods );
@@ -225,7 +229,7 @@ class ShippingProvider {
 	 *
 	 * @return array<string, string>
 	 */
-	public function sortMethods( array $methods ): array {
+	private function sortMethods( array $methods ): array {
 		uasort(
 			$methods,
 			function ( $classA, $classB ) {
@@ -238,5 +242,22 @@ class ShippingProvider {
 		);
 
 		return $methods;
+	}
+
+	/**
+	 * @param array<string, string> $originalMethods
+	 *
+	 * @return array<string, string>
+	 */
+	public function getSortedCachedMethods( array $originalMethods ): array {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		$cacheKey = crc32( serialize( $originalMethods ) );
+
+		if ( ! isset( self::$sortedMethodsCache[ $cacheKey ] ) ) {
+			$unsortedMethods                       = $this->addMethods( $originalMethods );
+			self::$sortedMethodsCache[ $cacheKey ] = $this->sortMethods( $unsortedMethods );
+		}
+
+		return self::$sortedMethodsCache[ $cacheKey ];
 	}
 }

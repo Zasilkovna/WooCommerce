@@ -71,7 +71,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 
-		$carrier = $this->carrierRepository->getAnyById( static::CARRIER_ID );
+		$carrier = $this->carrierRepository->getAnyById( static::CARRIER_ID, true );
 		if ( $carrier !== null ) {
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->method_title = $carrier->getName();
