@@ -1,0 +1,23 @@
+name: Composer Normalize
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  composer-normalize:
+    name: Check composer normalization
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer, composer-normalize
+
+      - name: Run composer-normalize (dry-run)
+        run: composer normalize --dry-run --no-update-lock
