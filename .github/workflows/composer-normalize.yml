@@ -8,7 +8,7 @@ on:
 jobs:
   composer-normalize:
     name: Check composer normalization
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,5 +19,8 @@ jobs:
           php-version: '8.1'
           tools: composer, composer-normalize
 
+      - name: Install Composer dependencies
+        run: composer install
+
       - name: Run composer-normalize (dry-run)
-        run: composer normalize --dry-run --no-update-lock
+        run: composer run-script composer:normalize:check
