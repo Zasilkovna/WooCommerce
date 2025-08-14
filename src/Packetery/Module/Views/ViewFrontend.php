@@ -8,6 +8,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order\DetailCommonLogic;
 use Packetery\Module\Order\Repository;
+use Packetery\Module\WcLogger;
 use WC_Order;
 
 class ViewFrontend {
@@ -47,9 +48,15 @@ class ViewFrontend {
 	/**
 	 * Renders delivery detail for packetery orders, on "thank you" page and in frontend detail.
 	 *
-	 * @param WC_Order $wcOrder WordPress order.
+	 * @param WC_Order|mixed $wcOrder WordPress order.
 	 */
-	public function renderOrderDetail( WC_Order $wcOrder ): void {
+	public function renderOrderDetail( $wcOrder ): void {
+		if ( ! $wcOrder instanceof WC_Order ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
+
+			return;
+		}
+
 		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		if ( $order === null ) {
 			return;
