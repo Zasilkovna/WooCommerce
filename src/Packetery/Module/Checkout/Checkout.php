@@ -13,6 +13,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
+use Packetery\Module\WcLogger;
 use WC_Cart;
 use WC_Payment_Gateway;
 
@@ -304,7 +305,14 @@ class Checkout {
 	 *
 	 * @return WC_Payment_Gateway[]
 	 */
-	public function filterPaymentGateways( array $availableGateways ): array {
+	public function filterPaymentGateways( $availableGateways ): array {
+
+		if ( ! is_array( $availableGateways ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
+
+			return $availableGateways;
+		}
+
 		$order      = null;
 		$wpOrderPay = $this->checkoutService->getOrderPayParameter();
 		if ( is_numeric( $wpOrderPay ) ) {
