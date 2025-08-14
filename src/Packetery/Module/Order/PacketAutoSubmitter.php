@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\WcLogger;
 use WC_Payment_Gateway;
 
 /**
@@ -83,7 +84,7 @@ class PacketAutoSubmitter {
 					'woocommerce_order_status_completed',
 					function ( $orderId ): void {
 						if ( ! is_int( $orderId ) ) {
-							Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+							WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
 
 							return;
 						}
@@ -100,7 +101,7 @@ class PacketAutoSubmitter {
 					'woocommerce_order_status_processing',
 					function ( $orderId ): void {
 						if ( ! is_int( $orderId ) ) {
-							Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+							WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
 
 							return;
 						}
@@ -119,19 +120,19 @@ class PacketAutoSubmitter {
 	 * @param int|mixed    $orderId WC Order.
 	 * @return void
 	 */
-	public function handleEvent( string $event, int $orderId ): void {
+	public function handleEvent( $event, $orderId ): void {
 		if ( $this->optionsProvider->isPacketAutoSubmissionEnabled() === false ) {
 			return;
 		}
 
 		if ( ! is_string( $event ) ) {
-			Module\WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
+			WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
 
 			return;
 		}
 
 		if ( ! is_int( $orderId ) ) {
-			Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+			WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
 
 			return;
 		}

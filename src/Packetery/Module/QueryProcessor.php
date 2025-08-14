@@ -70,12 +70,20 @@ class QueryProcessor {
 	 *
 	 * @return array<string, string>|mixed
 	 */
-	public function processClauses( array $clauses, \WP_Query $queryObject ): array {
+	public function processClauses( $clauses, $queryObject ) {
 		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return $clauses;
 		}
 
-		if ( ! is_array( $clauses ) ) {
+		if ( ! is_array( $clauses )
+			|| array_filter(
+				$clauses,
+				static function ( $value, $key ) {
+						return is_string( $key ) && is_string( $value );
+				},
+				ARRAY_FILTER_USE_BOTH
+			) !== $clauses
+		) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'clauses', 'array', $clauses );
 
 			return $clauses;

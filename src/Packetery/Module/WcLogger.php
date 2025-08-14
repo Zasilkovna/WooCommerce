@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Packetery\Module;
 
-use PacketeryTracy\Logger;
+use Packetery\Tracy\Logger;
 
 /**
  * Class WcLogger.
@@ -33,7 +33,7 @@ class WcLogger {
 			);
 		};
 
-		if ( did_action( 'woocommerce_init' ) ) {
+		if ( did_action( 'woocommerce_init' ) > 0 ) {
 			$logCallback();
 		} else {
 			add_action( 'woocommerce_init', $logCallback );
