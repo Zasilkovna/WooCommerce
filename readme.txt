@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.8.2
-Stable tag: 2.0.9
+Stable tag: 2.0.10
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 10.0.4
@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.0.10 =
+Fixed: Introduced carrier and shipping method caching to prevent excessive memory usage and performance problems.
+
 = 2.0.9 =
 Fixed: Type error when migrating guest session to user session during order.
 
