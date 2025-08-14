@@ -5,7 +5,7 @@
     "require-dev": {
         "composer/composer": "^2.6",
         "editorconfig-checker/editorconfig-checker": "^10.6",
-        "ergebnis/composer-normalize": "^2.42",
+        "ergebnis/composer-normalize": "^2.47",
         "php-stubs/woocommerce-stubs": "^9.5",
         "php-stubs/wordpress-stubs": "^6.7",
         "phpstan/extension-installer": "^1.4",
@@ -30,6 +30,27 @@
             "Tests\\": "tests/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
+            "wpify/scoper": true
+        },
+        "platform": {
+            "php": "8.1"
+        }
+    },
+    "extra": {
+        "wpify-scoper": {
+            "autorun": false,
+            "composerjson": "deps-composer/composer.json",
+            "composerlock": "deps-composer/composer.lock",
+            "folder": "deps",
+            "prefix": "Packetery",
+            "temp": "temp/scoper-works"
+        }
+    },
     "scripts": {
         "build:carriers": [
             "rm -rf temp/cache",
@@ -45,39 +66,18 @@
         ],
         "check:ec": "vendor/bin/ec .",
         "check:phpcs": "vendor/bin/phpcs",
-        "composer:normalize": "composer normalize --no-update-lock",
-        "composer:normalize:check": "composer normalize --dry-run --no-update-lock",
+        "composer:normalize": "composer normalize",
+        "composer:normalize:check": "composer normalize --dry-run",
         "fix:phpcbf": "vendor/bin/phpcbf",
+        "phpstan-generate-baseline:module": "phpstan analyse -c phpstan/module.neon --memory-limit 2G --generate-baseline phpstan/phpstan-baseline-module.neon",
         "phpstan:all": [
             "@phpstan:core",
             "@phpstan:module"
         ],
         "phpstan:core": "phpstan analyse -c phpstan/core.neon",
-        "phpstan-generate-baseline:module": "phpstan analyse -c phpstan/module.neon --memory-limit 2G --generate-baseline phpstan/phpstan-baseline-module.neon",
         "phpstan:module": "phpstan analyse -c phpstan/module.neon --memory-limit 2G",
         "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests -c phpunit.xml.dist --log-junit ./tests-coverage/log/junit.xml --testsuite mandatory --coverage-clover tests-coverage/clover.xml --coverage-html ./tests-coverage --coverage-cobertura tests-coverage/cobertura.xml --coverage-text=./tests-coverage/coverage.txt",
         "tests-unit": "vendor/bin/phpunit tests",
         "wpify-scoper": "wpify-scoper"
-    },
-    "config": {
-        "platform": {
-            "php": "8.1"
-        },
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "ergebnis/composer-normalize": true,
-            "phpstan/extension-installer": true,
-            "wpify/scoper": true
-        }
-    },
-    "extra": {
-        "wpify-scoper": {
-            "prefix": "Packetery",
-            "folder": "deps",
-            "temp": "temp/scoper-works",
-            "composerjson": "deps-composer/composer.json",
-            "composerlock": "deps-composer/composer.lock",
-            "autorun": false
-        }
     }
 }
