@@ -301,11 +301,11 @@ class Checkout {
 	/**
 	 * Filters out payment methods, that can not be used.
 	 *
-	 * @param WC_Payment_Gateway[] $availableGateways Available gateways.
+	 * @param WC_Payment_Gateway[]|mixed $availableGateways Available gateways.
 	 *
-	 * @return WC_Payment_Gateway[]
+	 * @return WC_Payment_Gateway[]|mixed
 	 */
-	public function filterPaymentGateways( $availableGateways ): array {
+	public function filterPaymentGateways( $availableGateways ) {
 
 		if ( ! is_array( $availableGateways ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
