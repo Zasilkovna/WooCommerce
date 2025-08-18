@@ -146,8 +146,8 @@ class BulkActions {
 		if ( $action === self::ACTION_SUBMIT_TO_API ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
-				if ( is_int( $postId ) ) {
-					$wcOrder = $this->orderRepository->getWcOrderById( $postId );
+				if ( is_numeric( $postId ) ) {
+					$wcOrder = $this->orderRepository->getWcOrderById( (int) $postId );
 					if ( $wcOrder !== null ) {
 						$submissionResult = $this->packetSubmitter->submitPacket(
 							$wcOrder,
@@ -155,6 +155,8 @@ class BulkActions {
 							true
 						);
 						$finalSubmissionResult->merge( $submissionResult );
+					} else {
+						WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'is_numeric', $postId );
 					}
 				}
 			}
