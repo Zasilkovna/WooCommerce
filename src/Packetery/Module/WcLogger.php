@@ -1,19 +1,10 @@
 <?php
-/**
- * Class Upgrade.
- *
- * @package Packetery
- */
-
 declare(strict_types=1);
 
 namespace Packetery\Module;
 
 use Packetery\Tracy\Logger;
 
-/**
- * Class WcLogger.
- */
 class WcLogger {
 
 	private const LEVEL_ERROR = 'error';
