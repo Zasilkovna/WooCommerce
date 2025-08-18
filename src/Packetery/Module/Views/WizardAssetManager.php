@@ -308,35 +308,35 @@ class WizardAssetManager {
 		$translations = [
 			'modalWeight'       => [
 				'title'       => $this->wpAdapter->__( 'Weight', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you see the shipment weight, calculated from the products in the order. If products don’t have a weight, the default value set in the plugin settings will be used. You can also adjust it manually.', 'packeta' ),
 			],
 			'modalLength'       => [
 				'title'       => $this->wpAdapter->__( 'Length', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Enter the shipment length in mm or cm, depending on plugin settings. The length of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
 			'modalWidth'        => [
 				'title'       => $this->wpAdapter->__( 'Width', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Enter the shipment width in mm or cm, depending on plugin settings. The width of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
 			'modalHeight'       => [
 				'title'       => $this->wpAdapter->__( 'Height', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Enter the shipment height in mm or cm, depending on plugin settings. The height of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
 			'modalAdultContent' => [
 				'title'       => $this->wpAdapter->__( 'Adult content', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Automatically checked for orders with adult products.', 'packeta' ),
 			],
 			'modalCod'          => [
 				'title'       => $this->wpAdapter->__( 'COD', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can edit the cash on delivery manually, otherwise the total order value is used.', 'packeta' ),
 			],
 			'modalValue'        => [
 				'title'       => $this->wpAdapter->__( 'Value', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can edit the packet value manually, otherwise the total order price is used.', 'packeta' ),
 			],
 			'modalDeliverOn'    => [
 				'title'       => $this->wpAdapter->__( 'Deliver on', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Deferred delivery date – if set, the packet will be ready for pickup from this date onward.', 'packeta' ),
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-create-packet-modal.js', array_merge( $translations, $basicTranslations ) );
@@ -346,91 +346,91 @@ class WizardAssetManager {
 		$translations = [
 			'weight'             => [
 				'title'       => $this->wpAdapter->__( 'Weight', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you see the shipment weight, calculated from the products in the order. If products don’t have a weight, the default value set in the plugin settings will be used. You can also adjust it manually.', 'packeta' ),
 			],
 			'length'             => [
 				'title'       => $this->wpAdapter->__( 'Length', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Enter the shipment length in mm or cm, depending on plugin settings. The length of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
 			'width'              => [
 				'title'       => $this->wpAdapter->__( 'Width', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Enter the shipment width in mm or cm, depending on plugin settings. The width of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
 			'height'             => [
 				'title'       => $this->wpAdapter->__( 'Height', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Enter the shipment height in mm or cm, depending on plugin settings. The height of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
 			'adultContent'       => [
 				'title'       => $this->wpAdapter->__( 'Adult content', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Automatically checked for orders with adult products.', 'packeta' ),
 			],
 			'cod'                => [
 				'title'       => $this->wpAdapter->__( 'COD', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can edit the cash on delivery manually, otherwise the total order value is used.', 'packeta' ),
 			],
 			'value'              => [
 				'title'       => $this->wpAdapter->__( 'Value', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can edit the packet value manually, otherwise the total order price is used.', 'packeta' ),
 			],
 			'deliverOn'          => [
 				'title'       => $this->wpAdapter->__( 'Deliver on', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Deferred delivery date – if set, the packet will be ready for pickup from this date onward.', 'packeta' ),
 			],
 			'pickupPoint'        => [
 				'title'       => $this->wpAdapter->__( 'Pickup point', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can change the pickup point where the packet will be delivered.', 'packeta' ),
 			],
 			'pickupAddress'      => [
 				'title'       => $this->wpAdapter->__( 'Pickup address', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can change the delivery address of the packet via the widget.', 'packeta' ),
 			],
 			'trackingUrl'        => [
 				'title'       => $this->wpAdapter->__( 'Tracking url', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the packet, you can click through to online tracking.', 'packeta' ),
 			],
 			'claimTrackingUrl'   => [
 				'title'       => $this->wpAdapter->__( 'Claim tracking url', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the claim packet (Claim Assistant), you can click through to online tracking.', 'packeta' ),
 			],
 			'claimPassword'      => [
 				'title'       => $this->wpAdapter->__( 'Claim password', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Password required to submit the packet via Claim Assistant.', 'packeta' ),
 			],
 			'buttonSubmitPacket' => [
 				'title'       => $this->wpAdapter->__( 'Submit', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Use this button to submit the packet. Clicking it will send the packet to the Packeta system', 'packeta' ),
 			],
 			'buttonCancel'       => [
 				'title'       => $this->wpAdapter->__( 'Cancel', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Button to cancel the packet. Clicking it will cancel the packet in the Packeta system, allowing you to submit it again.', 'packeta' ),
 			],
 			'print'              => [
 				'title'       => $this->wpAdapter->__( 'Print', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Clicking this button opens a PDF of the label ready for printing.', 'packeta' ),
 			],
 			'storedUnitl'        => [
 				'title'       => $this->wpAdapter->__( 'Stored until', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can see the date until which the packet can be picked up (shown if shipment tracking is enabled and the packet is ready for pickup).', 'packeta' ),
 			],
 			'claimUrl'           => [
 				'title'       => $this->wpAdapter->__( 'Claim url', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the packet, you can click through to online tracking.', 'packeta' ),
 			],
 			'claimLabel'         => [
 				'title'       => $this->wpAdapter->__( 'Claim label', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the claim packet (claim assistant), you can click through to online tracking.', 'packeta' ),
 			],
 			'cancelClaim'        => [
 				'title'       => $this->wpAdapter->__( 'Cancel claim', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Button to cancel a claim assistant packet. Clicking it will cancel the packet in the Packeta system, and you’ll be able to submit it again.', 'packeta' ),
 			],
 			'packetStatus'       => [
 				'title'       => $this->wpAdapter->__( 'Packet status', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can see the current stage of the packet (shown only if this option is enabled in the plugin settings).', 'packeta' ),
 			],
 			'logsLink'           => [
 				'title'       => $this->wpAdapter->__( 'Logs', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Button that, when clicked, shows the logs for this order. This lets you easily check what actions have been taken on the order in the system.', 'packeta' ),
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-create-packet-metabox.js', array_merge( $translations, $basicTranslations ) );
@@ -440,43 +440,43 @@ class WizardAssetManager {
 		$translations = [
 			'bulkActions'     => [
 				'title'       => $this->wpAdapter->__( 'Bulk actions', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can use Packeta bulk actions – submit packets, print labels, or print a packet list.', 'packeta' ),
 			],
 			'orderType'       => [
 				'title'       => $this->wpAdapter->__( 'Packeta shipping method', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Filter to show Packeta orders sent either to pickup points or to a carrier.', 'packeta' ),
 			],
 			'filterToSubmit'  => [
 				'title'       => $this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Shows Packeta orders that haven’t been submitted yet.', 'packeta' ),
 			],
 			'filterToPrint'   => [
 				'title'       => $this->wpAdapter->__( 'Packeta orders to print', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Shows Packeta orders where the label hasn’t been printed yet', 'packeta' ),
 			],
 			'weight'          => [
 				'title'       => $this->wpAdapter->__( 'Weight', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Total packet weight from the order, you can adjust it', 'packeta' ),
 			],
 			'packeta'         => [
 				'title'       => $this->wpAdapter->__( 'Packeta', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can find Packeta actions – submit packet, add details, or print labels (shown only when available).', 'packeta' ),
 			],
 			'trackingNumber'  => [
 				'title'       => $this->wpAdapter->__( 'Tracking no.', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can find the packet number assigned by Packeta, clickable for online tracking..', 'packeta' ),
 			],
 			'status'          => [
 				'title'       => $this->wpAdapter->__( 'Packeta packet status', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can see the current stage of the packet (shown only if this option is enabled in the plugin settings).', 'packeta' ),
 			],
 			'storedUntil'     => [
 				'title'       => $this->wpAdapter->__( 'Stored until', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can see the date until which the packet can be picked up (shown if shipment tracking is enabled and the packet is ready for pickup).', 'packeta' ),
 			],
 			'pickupOrCarrier' => [
 				'title'       => $this->wpAdapter->__( 'Pickup point or carrier', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Here you can see the name of the pickup point or the carrier.', 'packeta' ),
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-order-grid.js', array_merge( $translations, $basicTranslations ) );
@@ -486,71 +486,71 @@ class WizardAssetManager {
 		$translations = [
 			'ead'              => [
 				'title'       => $this->wpAdapter->__( 'EAD', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'European Administrative Document (EAD) for shipments outside the EU.', 'packeta' ),
 			],
 			'cost'             => [
 				'title'       => $this->wpAdapter->__( 'Delivery cost', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Delivery cost included on the invoice', 'packeta' ),
 			],
 			'number'           => [
 				'title'       => $this->wpAdapter->__( 'Invoice number', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Invoice number for the shipment.', 'packeta' ),
 			],
 			'invoiceIssueDate' => [
 				'title'       => $this->wpAdapter->__( 'Invoice issue date', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'The date the invoice was issued.', 'packeta' ),
 			],
 			'invoiceFile'      => [
 				'title'       => $this->wpAdapter->__( 'Invoice PDF file', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'The date the invoice was issued.', 'packeta' ),
 			],
 			'mrn'              => [
 				'title'       => $this->wpAdapter->__( 'MRN', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'MRN – a unique reference code for customs shipments.', 'packeta' ),
 			],
 			'eadFile'          => [
 				'title'       => $this->wpAdapter->__( 'EAD PDF file', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'PDF file of the EAD document to attach to the shipment.', 'packeta' ),
 			],
 			'customsCode'      => [
 				'title'       => $this->wpAdapter->__( 'Customs code', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Customs code of the product for the declaration.', 'packeta' ),
 			],
 			'value'            => [
 				'title'       => $this->wpAdapter->__( 'Value', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Value of the product', 'packeta' ),
 			],
 			'productNameEn'    => [
 				'title'       => $this->wpAdapter->__( 'Product name (EN)', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Product name in English.', 'packeta' ),
 			],
 			'productName'      => [
 				'title'       => $this->wpAdapter->__( 'Product name', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Product name in your local language.', 'packeta' ),
 			],
 			'unitsCount'       => [
 				'title'       => $this->wpAdapter->__( 'Units count', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Number of product units in the shipment.', 'packeta' ),
 			],
 			'countryOfOrigin'  => [
 				'title'       => $this->wpAdapter->__( 'Country of origin code', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Country of origin code of the product.', 'packeta' ),
 			],
 			'weight'           => [
 				'title'       => $this->wpAdapter->__( 'Weight (kg)', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Weight of the product in kilograms.', 'packeta' ),
 			],
 			'isFoodOrBook'     => [
 				'title'       => $this->wpAdapter->__( 'Food or book?', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Check if the product is food or a book.', 'packeta' ),
 			],
 			'isVOC'            => [
 				'title'       => $this->wpAdapter->__( 'Is VOC?', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Check if the product contains VOC (volatile organic compounds).', 'packeta' ),
 			],
 			'addDeclaration'   => [
 				'title'       => $this->wpAdapter->__( 'Add item', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Add another item to the customs declaration.', 'packeta' ),
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-custom-declaration-metabox.js', array_merge( $translations, $basicTranslations ) );
