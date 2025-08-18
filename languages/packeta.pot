@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-18T09:24:19+02:00\n"
+"POT-Creation-Date: 2025-08-18T09:55:34+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -32,7 +32,7 @@ msgstr ""
 #: src/Packetery/Module/Options/Page.php:169
 #: src/Packetery/Module/Options/Page.php:170
 #: src/Packetery/Module/Options/Page.php:960
-#: src/Packetery/Module/Order/GridExtender.php:486
+#: src/Packetery/Module/Order/GridExtender.php:488
 #: src/Packetery/Module/Order/LabelPrint.php:162
 #: src/Packetery/Module/Order/Metabox.php:169
 #: src/Packetery/Module/Product/DataTab.php:108
@@ -1436,7 +1436,7 @@ msgid "C.O.D."
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:197
-#: src/Packetery/Module/Order/GridExtender.php:490
+#: src/Packetery/Module/Order/GridExtender.php:492
 #: src/Packetery/Module/Views/WizardAssetManager.php:478
 msgid "Pickup point or carrier"
 msgstr ""
@@ -1640,32 +1640,32 @@ msgstr ""
 msgid "Packet claim tracking"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:437
+#: src/Packetery/Module/Order/GridExtender.php:439
 msgid "Print label"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:438
+#: src/Packetery/Module/Order/GridExtender.php:440
 msgid "Set additional packet information"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:439
+#: src/Packetery/Module/Order/GridExtender.php:441
 #: src/Packetery/Module/Order/Metabox.php:333
 msgid "Set the pickup date extension"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:440
+#: src/Packetery/Module/Order/GridExtender.php:442
 #: src/Packetery/Module/Order/Metabox.php:447
 #: src/Packetery/Module/Views/AssetManager.php:265
 msgid "It is not possible to submit the shipment because all the information required for this shipment is not filled."
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:441
+#: src/Packetery/Module/Order/GridExtender.php:443
 #: src/Packetery/Module/Order/Metabox.php:452
 msgid "Submit to Packeta"
 msgstr ""
 
 #. translators: %s: Order number.
-#: src/Packetery/Module/Order/GridExtender.php:443
+#: src/Packetery/Module/Order/GridExtender.php:445
 #: src/Packetery/Module/Order/Metabox.php:320
 #: src/Packetery/Module/Order/Metabox.php:460
 #: src/Packetery/Module/Order/Modal.php:71
@@ -1674,37 +1674,37 @@ msgid "Order #%s"
 msgstr ""
 
 #. translators: %s: Packet number.
-#: src/Packetery/Module/Order/GridExtender.php:445
+#: src/Packetery/Module/Order/GridExtender.php:447
 #: src/Packetery/Module/Order/Metabox.php:322
 msgid "Do you really wish to cancel parcel number %s?"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:447
+#: src/Packetery/Module/Order/GridExtender.php:449
 #: src/Packetery/Module/Order/Metabox.php:326
 msgid "Cancel packet"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:448
+#: src/Packetery/Module/Order/GridExtender.php:450
 msgid "Last error from Packeta API"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:485
+#: src/Packetery/Module/Order/GridExtender.php:487
 #: src/Packetery/Module/Views/WizardAssetManager.php:310
 #: src/Packetery/Module/Views/WizardAssetManager.php:348
 #: src/Packetery/Module/Views/WizardAssetManager.php:458
 msgid "Weight"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:487
+#: src/Packetery/Module/Order/GridExtender.php:489
 msgid "Tracking No."
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:488
+#: src/Packetery/Module/Order/GridExtender.php:490
 #: src/Packetery/Module/Views/WizardAssetManager.php:470
 msgid "Packeta packet status"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:489
+#: src/Packetery/Module/Order/GridExtender.php:491
 #: src/Packetery/Module/Views/WizardAssetManager.php:412
 #: src/Packetery/Module/Views/WizardAssetManager.php:474
 msgid "Stored until"
