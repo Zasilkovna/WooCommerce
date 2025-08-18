@@ -1,10 +1,4 @@
 <?php
-/**
- * Class Upgrade.
- *
- * @package Packetery
- */
-
 declare(strict_types=1);
 
 namespace Packetery\Module;
