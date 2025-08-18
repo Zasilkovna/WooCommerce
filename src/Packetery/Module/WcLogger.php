@@ -16,14 +16,14 @@ use Packetery\Tracy\Logger;
  */
 class WcLogger {
 
-	public const LEVEL_ERROR = 'error';
+	private const LEVEL_ERROR = 'error';
 
 	/**
 	 * @param string|\Throwable|mixed $message
 	 * @param string                  $level
 	 * @return void
 	 */
-	public static function log( $message, string $level ): void {
+	private static function log( $message, string $level ): void {
 		$logCallback = static function () use ( $level, $message ): void {
 			/** WC_Logger is always returned. @noinspection NullPointerExceptionInspection */
 			wc_get_logger()->log(
