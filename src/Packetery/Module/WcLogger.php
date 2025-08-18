@@ -5,9 +5,6 @@ namespace Packetery\Module;
 
 use Packetery\Tracy\Logger;
 
-/**
- * Class WcLogger.
- */
 class WcLogger {
 
 	private const LEVEL_ERROR = 'error';
