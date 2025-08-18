@@ -383,7 +383,9 @@ class GridExtender {
 
 				break;
 			case 'packetery':
-				$encodedOrderGridParams = rawurlencode( $this->httpRequest->getUrl()->getQuery() );
+				$orderGridParams = $this->httpRequest->getUrl()->getQueryParameters();
+				unset( $orderGridParams['wizard-enabled'], $orderGridParams['wizard-order-grid-enabled'] );
+				$encodedOrderGridParams = rawurlencode( http_build_query( $orderGridParams ) );
 				$packetSubmitUrl        = add_query_arg(
 					[
 						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
