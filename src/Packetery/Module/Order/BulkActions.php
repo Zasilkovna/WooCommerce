@@ -1,9 +1,4 @@
 <?php
-/**
- * Class BulkActions
- *
- * @package Packetery\Order
- */
 
 declare( strict_types=1 );
 
@@ -13,11 +8,6 @@ use Packetery\Latte\Engine;
 use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
 
-/**
- * Class BulkActions
- *
- * @package Packetery\Order
- */
 class BulkActions {
 	const ACTION_SUBMIT_TO_API = 'submit_to_api';
 
