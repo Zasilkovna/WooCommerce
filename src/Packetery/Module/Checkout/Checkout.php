@@ -337,6 +337,12 @@ class Checkout {
 
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		foreach ( $availableGateways as $key => $availableGateway ) {
+			if ( ! $availableGateway instanceof WC_Payment_Gateway ) {
+				WcLogger::logArgumentTypeError( __METHOD__, 'availableGateway', 'WC_Payment_Gateway', $availableGateway );
+
+				continue;
+			}
+
 			if (
 				$this->paymentHelper->isCodPaymentMethod( $availableGateway->id ) &&
 				! $carrier->supportsCod()

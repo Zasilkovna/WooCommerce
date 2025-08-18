@@ -151,9 +151,21 @@ class CheckoutTest extends TestCase {
 	}
 
 	public static function filterPaymentGatewaysProvider(): array {
-		$gateway1   = (object) [ 'id' => 'gateway1' ];
-		$gateway2   = (object) [ 'id' => 'gateway2' ];
-		$codGateway = (object) [ 'id' => 'cod_gateway' ];
+		$gateway1   = new class() extends \WC_Payment_Gateway {
+			public function __construct() {
+				$this->id = 'gateway1';
+			}
+		};
+		$gateway2   = new class() extends \WC_Payment_Gateway {
+			public function __construct() {
+				$this->id = 'gateway2';
+			}
+		};
+		$codGateway = new class() extends \WC_Payment_Gateway {
+			public function __construct() {
+				$this->id = 'cod_gateway';
+			}
+		};
 
 		$carrierSupportingCod = DummyFactory::createCarrierCzechPp();
 		$carrierWithoutCod    = DummyFactory::createCarDeliveryCarrier();
