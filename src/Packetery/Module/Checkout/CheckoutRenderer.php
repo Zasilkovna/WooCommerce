@@ -85,7 +85,7 @@ class CheckoutRenderer {
 		}
 
 		if ( ! $shippingRate instanceof WC_Shipping_Rate ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'shippingRate', \WC_Shipping_Rate::class, $shippingRate );
+			WcLogger::logArgumentTypeError( __METHOD__, 'shippingRate', WC_Shipping_Rate::class, $shippingRate );
 
 			return;
 		}
