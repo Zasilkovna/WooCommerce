@@ -32,7 +32,6 @@ class CarrierUpdater {
 		Downloader $downloader,
 		WpAdapter $wpAdapter
 	) {
-
 		$this->httpRequest = $httpRequest;
 		$this->downloader  = $downloader;
 		$this->wpAdapter   = $wpAdapter;

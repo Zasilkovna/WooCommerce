@@ -55,7 +55,6 @@ class ViewAdmin {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper
 	) {
-
 		$this->contextResolver       = $contextResolver;
 		$this->latteEngine           = $latteEngine;
 		$this->wpAdapter             = $wpAdapter;

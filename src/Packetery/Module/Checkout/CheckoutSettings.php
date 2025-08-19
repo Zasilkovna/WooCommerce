@@ -108,7 +108,6 @@ class CheckoutSettings {
 		WcAdapter $wcAdapter,
 		WidgetUrlResolver $widgetUrlResolver
 	) {
-
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->widgetOptionsBuilder    = $widgetOptionsBuilder;
 		$this->urlBuilder              = $urlBuilder;
