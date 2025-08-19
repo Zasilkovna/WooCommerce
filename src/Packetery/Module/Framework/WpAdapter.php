@@ -210,10 +210,6 @@ class WpAdapter {
 		return sanitize_email( $email );
 	}
 
-	public function sanitizeTextareaField( string $text ): string {
-		return sanitize_textarea_field( $text );
-	}
-
 	public function wpKsesPost( string $content ): string {
 		return wp_kses_post( $content );
 	}

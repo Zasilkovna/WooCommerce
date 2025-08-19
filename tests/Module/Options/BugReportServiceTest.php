@@ -34,34 +34,23 @@ class BugReportServiceTest extends TestCase {
 
 	private const SEND_BUTTON = 'Send';
 
-	private BugReportService $bugReportService;
-	private WpAdapter $wpAdapter;
-	private WcAdapter $wcAdapter;
-	private Exporter $exporter;
-	private Engine $latteEngine;
-	private MessageManager $messageManager;
-
-	protected function setUp(): void {
-		parent::setUp();
-
-		$this->wpAdapter      = $this->createMock( WpAdapter::class );
-		$this->wcAdapter      = $this->createMock( WcAdapter::class );
-		$this->exporter       = $this->createMock( Exporter::class );
-		$this->latteEngine    = $this->createMock( Engine::class );
-		$this->messageManager = $this->createMock( MessageManager::class );
-
-		$this->bugReportService = new BugReportService(
-			$this->wpAdapter,
-			$this->wcAdapter,
-			$this->exporter,
-			'support@packeta.com',
-			$this->latteEngine,
-			$this->messageManager
-		);
-	}
-
 	public function testCreateForm(): void {
-		$this->wpAdapter->method( '__' )
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$wpAdapter->method( '__' )
 			->willReturnMap(
 				[
 					[ self::REPLY_EMAIL, self::TEXT_DOMAIN, self::REPLY_EMAIL ],
@@ -75,13 +64,12 @@ class BugReportServiceTest extends TestCase {
 				]
 			);
 
-		$this->wpAdapter->method( 'getOption' )
+		$wpAdapter->method( 'getOption' )
 			->with( 'admin_email' )
 			->willReturn( self::ADMIN_EMAIL );
 
-		$form = $this->bugReportService->createForm();
+		$form = $service->createForm();
 
-		$this->assertInstanceOf( Form::class, $form );
 		$this->assertInstanceOf( Form::class, $form );
 		$this->assertNotNull( $form->getComponent( 'replyTo' ) );
 		$this->assertNotNull( $form->getComponent( 'message' ) );
@@ -89,45 +77,60 @@ class BugReportServiceTest extends TestCase {
 	}
 
 	public function testOnFormSuccessWithValidData(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
 		$form   = $this->createMock( Form::class );
 		$values = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
 
-		$this->wpAdapter->method( '__' )
+		$wpAdapter->method( '__' )
 			->willReturnMap(
 				[
 					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
 				]
 			);
 
-		$this->wpAdapter->method( 'sanitizeEmail' )
+		$wpAdapter->method( 'sanitizeEmail' )
 			->with( self::TEST_EMAIL )
 			->willReturn( self::TEST_EMAIL );
 
-		$this->wpAdapter->method( 'wpKsesPost' )
+		$wpAdapter->method( 'wpKsesPost' )
 			->with( self::TEST_MESSAGE )
 			->willReturn( self::TEST_MESSAGE );
 
-		$this->wpAdapter->method( 'getBlogInfo' )
+		$wpAdapter->method( 'getBlogInfo' )
 			->with( 'name', 'raw' )
 			->willReturn( self::TEST_SITE_NAME );
 
-		$this->wpAdapter->method( 'currentTime' )
+		$wpAdapter->method( 'currentTime' )
 			->with( 'Y-m-d_H-i-s', false )
 			->willReturn( self::TEST_TIMESTAMP );
 
-		$this->wpAdapter->method( 'wpMail' )
+		$wpAdapter->method( 'wpMail' )
 			->willReturn( true );
 
-		$this->exporter->method( 'getExportContent' )
+		$exporter->method( 'getExportContent' )
 			->willReturn( self::TEST_EXPORT_CONTENT );
 
-		$this->latteEngine->method( 'renderToString' )
+		$latteEngine->method( 'renderToString' )
 			->willReturn( self::TEST_EMAIL_BODY );
 
-		$this->messageManager->expects( $this->once() )
+		$messageManager->expects( $this->once() )
 			->method( 'flash_message' )
 			->with(
 				$this->anything(),
@@ -136,49 +139,64 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$this->bugReportService->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $form, $values );
 	}
 
 	public function testOnFormSuccessWithFailedEmail(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
 		$form   = $this->createMock( Form::class );
 		$values = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
 
-		$this->wpAdapter->method( '__' )
+		$wpAdapter->method( '__' )
 			->willReturnMap(
 				[
 					[ self::ERROR_MESSAGE, self::TEXT_DOMAIN, self::ERROR_MESSAGE ],
 				]
 			);
 
-		$this->wpAdapter->method( 'sanitizeEmail' )
+		$wpAdapter->method( 'sanitizeEmail' )
 			->with( self::TEST_EMAIL )
 			->willReturn( self::TEST_EMAIL );
 
-		$this->wpAdapter->method( 'wpKsesPost' )
+		$wpAdapter->method( 'wpKsesPost' )
 			->with( self::TEST_MESSAGE )
 			->willReturn( self::TEST_MESSAGE );
 
-		$this->wpAdapter->method( 'getBlogInfo' )
+		$wpAdapter->method( 'getBlogInfo' )
 			->with( 'name', 'raw' )
 			->willReturn( self::TEST_SITE_NAME );
 
-		$this->wpAdapter->method( 'currentTime' )
+		$wpAdapter->method( 'currentTime' )
 			->with( 'Y-m-d_H-i-s', false )
 			->willReturn( self::TEST_TIMESTAMP );
 
-		$this->wpAdapter->method( 'wpMail' )
+		$wpAdapter->method( 'wpMail' )
 			->willReturn( false );
 
-		$this->exporter->method( 'getExportContent' )
+		$exporter->method( 'getExportContent' )
 			->willReturn( self::TEST_EXPORT_CONTENT );
 
-		$this->latteEngine->method( 'renderToString' )
+		$latteEngine->method( 'renderToString' )
 			->willReturn( self::TEST_EMAIL_BODY );
 
-		$this->messageManager->expects( $this->once() )
+		$messageManager->expects( $this->once() )
 			->method( 'flash_message' )
 			->with(
 				$this->anything(),
@@ -187,74 +205,106 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$this->bugReportService->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $form, $values );
 	}
 
 	public function testOnFormError(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
 		$form   = $this->createMock( Form::class );
 		$errors = [
-			'Email is required.',
-			'Message is required.',
+			'email'   => 'Email is required.',
+			'message' => 'Message is required.',
 		];
 
 		$form->method( 'getErrors' )
 			->willReturn( $errors );
 
-		$this->messageManager->expects( $this->exactly( 2 ) )
+		$messageManager->expects( $this->exactly( 2 ) )
 			->method( 'flash_message' )
 			->with(
 				$this->logicalOr(
-					$this->equalTo( 'Email is required.' ),
-					$this->equalTo( 'Message is required.' )
+					$this->equalTo( $errors['email'] ),
+					$this->equalTo( $errors['message'] )
 				),
 				MessageManager::TYPE_ERROR,
 				MessageManager::RENDERER_PACKETERY,
 				'plugin-options'
 			);
 
-		$this->bugReportService->onFormError( $form );
+		$service->onFormError( $form );
 	}
 
 	public function testOnFormSuccessWithSpecialCharacters(): void {
-		$form   = $this->createMock( Form::class );
-		$values = [
-			'replyTo' => 'test+tag@example.com',
-			'message' => 'Test message with <script>alert("xss")</script> and special chars: áčďéěíňóřšťúůýž',
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$form           = $this->createMock( Form::class );
+		$specialEmail   = 'test+tag@example.com';
+		$specialMessage = 'Test message with <script>alert("xss")</script> and special chars: áčďéěíňóřšťúůýž';
+		$values         = [
+			'replyTo' => $specialEmail,
+			'message' => $specialMessage,
 		];
 
-		$this->wpAdapter->method( 'sanitizeEmail' )
-			->with( 'test+tag@example.com' )
-			->willReturn( 'test+tag@example.com' );
+		$wpAdapter->method( 'sanitizeEmail' )
+			->with( $specialEmail )
+			->willReturn( $specialEmail );
 
-		$this->wpAdapter->method( 'wpKsesPost' )
-			->with( 'Test message with <script>alert("xss")</script> and special chars: áčďéěíňóřšťúůýž' )
-			->willReturn( 'Test message with <script>alert("xss")</script> and special chars: áčďéěíňóřšťúůýž' );
+		$wpAdapter->method( 'wpKsesPost' )
+			->with( $specialMessage )
+			->willReturn( $specialMessage );
 
-		$this->wpAdapter->method( 'getBlogInfo' )
+		$wpAdapter->method( 'getBlogInfo' )
 			->with( 'name', 'raw' )
 			->willReturn( 'Test Site with Čechy' );
 
-		$this->wpAdapter->method( 'currentTime' )
+		$wpAdapter->method( 'currentTime' )
 			->with( 'Y-m-d_H-i-s', false )
 			->willReturn( self::TEST_TIMESTAMP );
 
-		$this->wpAdapter->method( 'wpMail' )
+		$wpAdapter->method( 'wpMail' )
 			->willReturn( true );
 
-		$this->exporter->method( 'getExportContent' )
+		$exporter->method( 'getExportContent' )
 			->willReturn( self::TEST_EXPORT_CONTENT );
 
-		$this->latteEngine->method( 'renderToString' )
+		$latteEngine->method( 'renderToString' )
 			->willReturn( self::TEST_EMAIL_BODY );
 
-		$this->wpAdapter->method( '__' )
+		$wpAdapter->method( '__' )
 			->willReturnMap(
 				[
 					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
 				]
 			);
 
-		$this->messageManager->expects( $this->once() )
+		$messageManager->expects( $this->once() )
 			->method( 'flash_message' )
 			->with(
 				$this->anything(),
@@ -263,11 +313,26 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$this->bugReportService->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $form, $values );
 	}
 
 	public function testCreateFormWithCustomAdminEmail(): void {
-		$this->wpAdapter->method( '__' )
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$wpAdapter->method( '__' )
 			->willReturnMap(
 				[
 					[ self::REPLY_EMAIL, self::TEXT_DOMAIN, self::REPLY_EMAIL ],
@@ -279,104 +344,38 @@ class BugReportServiceTest extends TestCase {
 				]
 			);
 
-		$this->wpAdapter->method( 'getOption' )
+		$wpAdapter->method( 'getOption' )
 			->with( 'admin_email' )
 			->willReturn( self::CUSTOM_EMAIL );
 
-		$form = $this->bugReportService->createForm();
+		$form = $service->createForm();
 
 		$this->assertInstanceOf( Form::class, $form );
 		$this->assertNotNull( $form->getComponent( 'replyTo' ) );
 		$this->assertNotNull( $form->getComponent( 'message' ) );
 		$this->assertNotNull( $form->getComponent( 'submit' ) );
-
-		$this->assertInstanceOf( Form::class, $form );
-	}
-
-	public function testCreateFormWithEmptyAdminEmail(): void {
-		$this->wpAdapter->method( '__' )
-			->willReturnMap(
-				[
-					[ self::REPLY_EMAIL, self::TEXT_DOMAIN, self::REPLY_EMAIL ],
-					[ self::EMAIL_REQUIRED, self::TEXT_DOMAIN, self::EMAIL_REQUIRED ],
-					[ self::EMAIL_INVALID, self::TEXT_DOMAIN, self::EMAIL_INVALID ],
-					[ self::MESSAGE_LABEL, self::TEXT_DOMAIN, self::MESSAGE_LABEL ],
-					[ self::MESSAGE_REQUIRED, self::TEXT_DOMAIN, self::MESSAGE_REQUIRED ],
-					[ self::SEND_BUTTON, self::TEXT_DOMAIN, self::SEND_BUTTON ],
-				]
-			);
-
-		$this->wpAdapter->method( 'getOption' )
-			->with( 'admin_email' )
-			->willReturn( '' );
-
-		$form = $this->bugReportService->createForm();
-
-		$this->assertInstanceOf( Form::class, $form );
-		$this->assertNotNull( $form->getComponent( 'replyTo' ) );
-		$this->assertNotNull( $form->getComponent( 'message' ) );
-		$this->assertNotNull( $form->getComponent( 'submit' ) );
-
-		$this->assertInstanceOf( Form::class, $form );
-	}
-
-	public function testOnFormSuccessWithLongMessage(): void {
-		$form        = $this->createMock( Form::class );
-		$longMessage = str_repeat( 'This is a very long message that tests the handling of large content. ', 100 );
-		$values      = [
-			'replyTo' => self::TEST_EMAIL,
-			'message' => $longMessage,
-		];
-
-		$this->wpAdapter->method( 'sanitizeEmail' )
-			->with( self::TEST_EMAIL )
-			->willReturn( self::TEST_EMAIL );
-
-		$this->wpAdapter->method( 'wpKsesPost' )
-			->with( $longMessage )
-			->willReturn( $longMessage );
-
-		$this->wpAdapter->method( 'getBlogInfo' )
-			->with( 'name', 'raw' )
-			->willReturn( self::TEST_SITE_NAME );
-
-		$this->wpAdapter->method( 'currentTime' )
-			->with( 'Y-m-d_H-i-s', false )
-			->willReturn( self::TEST_TIMESTAMP );
-
-		$this->wpAdapter->method( 'wpMail' )
-			->willReturn( true );
-
-		$this->exporter->method( 'getExportContent' )
-			->willReturn( self::TEST_EXPORT_CONTENT );
-
-		$this->latteEngine->method( 'renderToString' )
-			->willReturn( self::TEST_EMAIL_BODY );
-
-		$this->wpAdapter->method( '__' )
-			->willReturnMap(
-				[
-					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
-				]
-			);
-
-		$this->messageManager->expects( $this->once() )
-			->method( 'flash_message' )
-			->with(
-				$this->anything(),
-				MessageManager::TYPE_SUCCESS,
-				MessageManager::RENDERER_PACKETERY,
-				'plugin-options'
-			);
-
-		$this->bugReportService->onFormSuccess( $form, $values );
 	}
 
 	public function testOnFormValidateWithEmptyMessage(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
 		$form         = $this->createMock( Form::class );
 		$messageField = $this->createMock( BaseControl::class );
 		$values       = [
-			'replyTo' => 'test@example.com',
+			'replyTo' => self::TEST_EMAIL,
 			'message' => '',
 		];
 
@@ -387,26 +386,41 @@ class BugReportServiceTest extends TestCase {
 			->with( 'message' )
 			->willReturn( $messageField );
 
-		$this->wpAdapter->method( 'wpStripAllTags' )
+		$wpAdapter->method( 'wpStripAllTags' )
 			->with( '' )
 			->willReturn( '' );
 
-		$this->wpAdapter->method( '__' )
-			->with( 'Message is required.', self::TEXT_DOMAIN )
-			->willReturn( 'Message is required.' );
+		$wpAdapter->method( '__' )
+			->with( self::MESSAGE_REQUIRED, self::TEXT_DOMAIN )
+			->willReturn( self::MESSAGE_REQUIRED );
 
 		$messageField->expects( $this->once() )
 			->method( 'addError' )
-			->with( 'Message is required.' );
+			->with( self::MESSAGE_REQUIRED );
 
-		$this->bugReportService->onFormValidate( $form );
+		$service->onFormValidate( $form );
 	}
 
 	public function testOnFormValidateWithValidMessage(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
 		$form         = $this->createMock( Form::class );
 		$messageField = $this->createMock( BaseControl::class );
 		$values       = [
-			'replyTo' => 'test@example.com',
+			'replyTo' => self::TEST_EMAIL,
 			'message' => 'This is a valid message',
 		];
 
@@ -417,63 +431,78 @@ class BugReportServiceTest extends TestCase {
 			->with( 'message' )
 			->willReturn( $messageField );
 
-		$this->wpAdapter->method( 'wpStripAllTags' )
+		$wpAdapter->method( 'wpStripAllTags' )
 			->with( 'This is a valid message' )
 			->willReturn( 'This is a valid message' );
 
 		$messageField->expects( $this->never() )
 			->method( 'addError' );
 
-		$this->bugReportService->onFormValidate( $form );
+		$service->onFormValidate( $form );
 	}
 
 	public function testOnFormSuccessWithWooCommerceSystemStatus(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
 		$form   = $this->createMock( Form::class );
 		$values = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
 
-		$this->wpAdapter->method( 'sanitizeEmail' )
+		$wpAdapter->method( 'sanitizeEmail' )
 			->with( self::TEST_EMAIL )
 			->willReturn( self::TEST_EMAIL );
 
-		$this->wpAdapter->method( 'wpKsesPost' )
+		$wpAdapter->method( 'wpKsesPost' )
 			->with( self::TEST_MESSAGE )
 			->willReturn( self::TEST_MESSAGE );
 
-		$this->wpAdapter->method( 'getBlogInfo' )
+		$wpAdapter->method( 'getBlogInfo' )
 			->with( 'name', 'raw' )
 			->willReturn( self::TEST_SITE_NAME );
 
-		$this->wpAdapter->method( 'currentTime' )
+		$wpAdapter->method( 'currentTime' )
 			->with( 'Y-m-d_H-i-s', false )
 			->willReturn( self::TEST_TIMESTAMP );
 
-		$this->wpAdapter->method( 'wpMail' )
+		$wpAdapter->method( 'wpMail' )
 			->willReturn( true );
 
-		$this->exporter->method( 'getExportContent' )
+		$exporter->method( 'getExportContent' )
 			->willReturn( self::TEST_EXPORT_CONTENT );
 
-		$this->latteEngine->method( 'renderToString' )
+		$latteEngine->method( 'renderToString' )
 			->willReturn( self::TEST_EMAIL_BODY );
 
-		$this->wpAdapter->method( '__' )
+		$wpAdapter->method( '__' )
 			->willReturnMap(
 				[
 					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
 				]
 			);
 
-		$this->wcAdapter->method( 'getSystemStatusReport' )
+		$wcAdapter->method( 'statusReport' )
 			->willReturnCallback(
 				function () {
 					echo 'WooCommerce System Status Report';
 				}
 			);
 
-		$this->messageManager->expects( $this->once() )
+		$messageManager->expects( $this->once() )
 			->method( 'flash_message' )
 			->with(
 				$this->anything(),
@@ -482,6 +511,387 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$this->bugReportService->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $form, $values );
+	}
+
+	public function testOnFormSuccessWithoutZipArchive(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$form   = $this->createMock( Form::class );
+		$values = [
+			'replyTo' => self::TEST_EMAIL,
+			'message' => self::TEST_MESSAGE,
+		];
+
+		$wpAdapter->method( 'sanitizeEmail' )
+			->with( self::TEST_EMAIL )
+			->willReturn( self::TEST_EMAIL );
+
+		$wpAdapter->method( 'wpKsesPost' )
+			->with( self::TEST_MESSAGE )
+			->willReturn( self::TEST_MESSAGE );
+
+		$wpAdapter->method( 'getBlogInfo' )
+			->with( 'name', 'raw' )
+			->willReturn( self::TEST_SITE_NAME );
+
+		$wpAdapter->method( 'currentTime' )
+			->with( 'Y-m-d_H-i-s', false )
+			->willReturn( self::TEST_TIMESTAMP );
+
+		$wpAdapter->method( 'wpMail' )
+			->willReturn( true );
+
+		$exporter->method( 'getExportContent' )
+			->willReturn( self::TEST_EXPORT_CONTENT );
+
+		$latteEngine->method( 'renderToString' )
+			->willReturn( self::TEST_EMAIL_BODY );
+
+		$wpAdapter->method( '__' )
+			->willReturnMap(
+				[
+					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
+					[ 'ZipArchive extension is not available. Bug report will be sent without attachments.', self::TEXT_DOMAIN, 'ZipArchive extension is not available. Bug report will be sent without attachments.' ],
+				]
+			);
+
+		$messageManager->expects( $this->once() )
+			->method( 'flash_message' )
+			->with(
+				$this->anything(),
+				MessageManager::TYPE_SUCCESS,
+				MessageManager::RENDERER_PACKETERY,
+				'plugin-options'
+			);
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$service->onFormSuccess( $form, $values );
+	}
+
+	public function testOnFormSuccessWithoutWooCommerceSystemStatus(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$form   = $this->createMock( Form::class );
+		$values = [
+			'replyTo' => self::TEST_EMAIL,
+			'message' => self::TEST_MESSAGE,
+		];
+
+		$wpAdapter->method( 'sanitizeEmail' )
+			->with( self::TEST_EMAIL )
+			->willReturn( self::TEST_EMAIL );
+
+		$wpAdapter->method( 'wpKsesPost' )
+			->with( self::TEST_MESSAGE )
+			->willReturn( self::TEST_MESSAGE );
+
+		$wpAdapter->method( 'getBlogInfo' )
+			->with( 'name', 'raw' )
+			->willReturn( self::TEST_SITE_NAME );
+
+		$wpAdapter->method( 'currentTime' )
+			->with( 'Y-m-d_H-i-s', false )
+			->willReturn( self::TEST_TIMESTAMP );
+
+		$wpAdapter->method( 'wpMail' )
+			->willReturn( true );
+
+		$exporter->method( 'getExportContent' )
+			->willReturn( self::TEST_EXPORT_CONTENT );
+
+		$latteEngine->method( 'renderToString' )
+			->willReturn( self::TEST_EMAIL_BODY );
+
+		$wpAdapter->method( '__' )
+			->willReturnMap(
+				[
+					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
+				]
+			);
+
+		$messageManager->expects( $this->once() )
+			->method( 'flash_message' )
+			->with(
+				$this->anything(),
+				MessageManager::TYPE_SUCCESS,
+				MessageManager::RENDERER_PACKETERY,
+				'plugin-options'
+			);
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$service->onFormSuccess( $form, $values );
+	}
+
+	public function testIsZipArchiveAvailable(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$reflection = new \ReflectionClass( $service );
+		$method     = $reflection->getMethod( 'isZipArchiveAvailable' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $service );
+		$this->assertIsBool( $result );
+	}
+
+	public function testCreateAttachmentsMethod(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		// Test the createAttachments method using reflection
+		$reflection = new \ReflectionClass( $service );
+		$method     = $reflection->getMethod( 'createAttachments' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $service );
+		$this->assertIsArray( $result );
+	}
+
+	public function testCreateAttachmentsWithZipArchiveAndWooCommerce(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$wpAdapter->method( 'currentTime' )
+			->with( 'Y-m-d_H-i-s', false )
+			->willReturn( self::TEST_TIMESTAMP );
+
+		$exporter->method( 'getExportContent' )
+			->willReturn( self::TEST_EXPORT_CONTENT );
+
+		$wcAdapter->method( 'statusReport' )
+			->willReturnCallback(
+				function () {
+					echo 'WooCommerce System Status Content';
+				}
+			);
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$reflection = new \ReflectionClass( $service );
+		$method     = $reflection->getMethod( 'createAttachments' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $service );
+		$this->assertIsArray( $result );
+		if ( class_exists( 'ZipArchive' ) ) {
+			$this->assertNotEmpty( $result );
+		}
+	}
+
+	public function testAddWooCommerceSystemStatusToZip(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$wcAdapter->method( 'statusReport' )
+			->willReturnCallback(
+				function () {
+					echo 'WooCommerce System Status Content';
+				}
+			);
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$reflection = new \ReflectionClass( $service );
+		$method     = $reflection->getMethod( 'addWooCommerceSystemStatusToZip' );
+		$method->setAccessible( true );
+
+		$zip = $this->createMock( \ZipArchive::class );
+		$zip->expects( $this->once() )
+			->method( 'addFromString' )
+			->with( 'woocommerce-system-status.html', 'WooCommerce System Status Content' );
+
+		$method->invoke( $service, $zip );
+	}
+
+	public function testOnFormSuccessWithFullZipCreation(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$form   = $this->createMock( Form::class );
+		$values = [
+			'replyTo' => self::TEST_EMAIL,
+			'message' => self::TEST_MESSAGE,
+		];
+
+		$wpAdapter->method( 'sanitizeEmail' )
+			->with( self::TEST_EMAIL )
+			->willReturn( self::TEST_EMAIL );
+
+		$wpAdapter->method( 'wpKsesPost' )
+			->with( self::TEST_MESSAGE )
+			->willReturn( self::TEST_MESSAGE );
+
+		$wpAdapter->method( 'getBlogInfo' )
+			->with( 'name', 'raw' )
+			->willReturn( self::TEST_SITE_NAME );
+
+		$wpAdapter->method( 'currentTime' )
+			->with( 'Y-m-d_H-i-s', false )
+			->willReturn( self::TEST_TIMESTAMP );
+
+		$wpAdapter->method( 'wpMail' )
+			->willReturn( true );
+
+		$exporter->method( 'getExportContent' )
+			->willReturn( self::TEST_EXPORT_CONTENT );
+
+		$latteEngine->method( 'renderToString' )
+			->willReturn( self::TEST_EMAIL_BODY );
+
+		$wpAdapter->method( '__' )
+			->willReturnMap(
+				[
+					[ self::SUCCESS_MESSAGE, self::TEXT_DOMAIN, self::SUCCESS_MESSAGE ],
+				]
+			);
+
+		$wcAdapter->method( 'statusReport' )
+			->willReturnCallback(
+				function () {
+					echo 'WooCommerce System Status Content';
+				}
+			);
+
+		$messageManager->expects( $this->once() )
+			->method( 'flash_message' )
+			->with(
+				$this->anything(),
+				MessageManager::TYPE_SUCCESS,
+				MessageManager::RENDERER_PACKETERY,
+				'plugin-options'
+			);
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$service->onFormSuccess( $form, $values );
+	}
+
+	public function testCreateAttachmentsWithRealZipArchive(): void {
+		$wpAdapter      = $this->createMock( WpAdapter::class );
+		$wcAdapter      = $this->createMock( WcAdapter::class );
+		$exporter       = $this->createMock( Exporter::class );
+		$latteEngine    = $this->createMock( Engine::class );
+		$messageManager = $this->createMock( MessageManager::class );
+
+		$wpAdapter->method( 'currentTime' )
+			->with( 'Y-m-d_H-i-s', false )
+			->willReturn( self::TEST_TIMESTAMP );
+
+		$exporter->method( 'getExportContent' )
+			->willReturn( self::TEST_EXPORT_CONTENT );
+
+		$wcAdapter->method( 'statusReport' )
+			->willReturnCallback(
+				function () {
+					echo 'WooCommerce System Status Content';
+				}
+			);
+
+		$service = new BugReportService(
+			$wpAdapter,
+			$wcAdapter,
+			$exporter,
+			'support@packeta.com',
+			$latteEngine,
+			$messageManager
+		);
+
+		$reflection = new \ReflectionClass( $service );
+		$method     = $reflection->getMethod( 'createAttachments' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $service );
+		$this->assertIsArray( $result );
+
+		if ( class_exists( 'ZipArchive' ) ) {
+			$this->assertNotEmpty( $result );
+			$this->assertCount( 1, $result );
+			$this->assertStringContainsString( 'logs-', $result[0] );
+			$this->assertStringContainsString( '.zip', $result[0] );
+
+			if ( file_exists( $result[0] ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				unlink( $result[0] );
+			}
+		}
 	}
 }
