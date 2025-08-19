@@ -452,7 +452,6 @@ class Page {
 	 * @return void
 	 */
 	public function onPacketStatusSyncFormSuccess( Form $form, array $values ): void {
-
 		$values['status_syncing_order_statuses']       = $this->getChosenKeys(
 			self::getOrderStatusesChoiceData(),
 			$values['status_syncing_order_statuses']

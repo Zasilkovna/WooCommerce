@@ -306,7 +306,6 @@ class Checkout {
 	 * @return WC_Payment_Gateway[]|mixed
 	 */
 	public function filterPaymentGateways( $availableGateways ) {
-
 		if ( ! is_array( $availableGateways ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
 
