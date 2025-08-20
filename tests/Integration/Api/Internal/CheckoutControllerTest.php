@@ -8,19 +8,17 @@ use Packetery\Module\Api\Internal\CheckoutRouter;
 use Packetery\Module\Api\Registrar;
 use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Order\Attribute;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Tests\Integration\IntegrationTestsHelper;
+use Tests\Integration\AbstractIntegrationTestCase;
 use WP_REST_Request;
 
-class CheckoutControllerTest extends TestCase {
+class CheckoutControllerTest extends AbstractIntegrationTestCase {
 	/**
 	 * @return array{CheckoutRouter, CheckoutStorage}
 	 */
 	private function registerRoutes(): array {
-		$container = IntegrationTestsHelper::getContainer();
 		/** @var Registrar $registrar */
-		$registrar = $container->getByType( Registrar::class );
+		$registrar = $this->container->getByType( Registrar::class );
 		add_action( 'rest_api_init', [ $registrar, 'registerRoutes' ] );
 		/**
 		 * Register routes on the required WordPress hook to avoid notices and trigger the hook so routes are actually registered for this test run.
@@ -30,9 +28,9 @@ class CheckoutControllerTest extends TestCase {
 		do_action( 'rest_api_init' );
 
 		/** @var CheckoutRouter $router */
-		$router = $container->getByType( CheckoutRouter::class );
+		$router = $this->container->getByType( CheckoutRouter::class );
 		/** @var CheckoutStorage $storage */
-		$storage = $container->getByType( CheckoutStorage::class );
+		$storage = $this->container->getByType( CheckoutStorage::class );
 
 		$storage->deleteTransient();
 
