@@ -7,6 +7,7 @@ namespace Packetery\Module\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
+use WC_Order;
 
 class BulkActions {
 	const ACTION_SUBMIT_TO_API = 'submit_to_api';
@@ -136,19 +137,26 @@ class BulkActions {
 		if ( $action === self::ACTION_SUBMIT_TO_API ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
-				if ( is_numeric( $postId ) ) {
-					$wcOrder = $this->orderRepository->getWcOrderById( (int) $postId );
-					if ( $wcOrder !== null ) {
-						$submissionResult = $this->packetSubmitter->submitPacket(
-							$wcOrder,
-							null,
-							true
-						);
-						$finalSubmissionResult->merge( $submissionResult );
-					} else {
-						WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'is_numeric', $postId );
-					}
+				if ( ! is_numeric( $postId ) ) {
+					WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'is_numeric', $postId );
+
+					continue;
 				}
+
+				$wcOrder = $this->orderRepository->getWcOrderById( (int) $postId );
+
+				if ( ! $wcOrder instanceof WC_Order ) {
+					WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', 'WC_Order', $wcOrder );
+
+					continue;
+				}
+
+				$submissionResult = $this->packetSubmitter->submitPacket(
+					$wcOrder,
+					null,
+					true
+				);
+				$finalSubmissionResult->merge( $submissionResult );
 			}
 
 			$queryArgs                               = $finalSubmissionResult->getCounter();
