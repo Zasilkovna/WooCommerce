@@ -6,9 +6,14 @@ trait TranslationTrait {
 	/**
 	 * It is not possible to use esc_html__ or esc_attr__ this way.
 	 */
-	public function __( string $text, string $domain = 'default' ): ?string {
+	public function __( string $text, string $domain = 'default' ): string {
 		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText, WordPress.WP.I18n.NonSingularStringLiteralDomain
-		return __( $text, $domain );
+		$translation = __( $text, $domain );
+		if ( is_string( $translation ) ) {
+			return $translation;
+		}
+
+		return '';
 	}
 
 	public function getLocale(): string {
