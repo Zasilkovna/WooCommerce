@@ -121,7 +121,6 @@ class Exporter {
 		header( 'Content-Transfer-Encoding: Binary' );
 		header( 'Content-Length: ' . strlen( $txtContents ) );
 		header( 'Content-Disposition: attachment; filename="packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt"' );
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		ModuleHelper::renderString( $txtContents );
 		exit;
 	}

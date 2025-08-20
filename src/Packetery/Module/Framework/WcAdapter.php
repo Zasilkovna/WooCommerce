@@ -145,7 +145,7 @@ class WcAdapter {
 		return WC_Data_Store::load( $objectType );
 	}
 
-	public function statusReport(): void {
+	public function adminStatusStatusReport(): void {
 		WC_Admin_Status::status_report();
 	}
 }

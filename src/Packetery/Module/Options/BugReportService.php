@@ -128,7 +128,7 @@ class BugReportService {
 
 	private function sendBugReport( string $replyEmail, string $message ): bool {
 		$siteName = $this->wpAdapter->getBlogInfo( 'name', 'raw' );
-		$subject  = sprintf( 'Packeta: Plugin WP - %s - %s', $this->wpAdapter->__( 'Bug Report', 'packeta' ), $siteName );
+		$subject  = sprintf( (string) $this->wpAdapter->__( 'Packeta: Plugin WP - Bug Report - %s', 'packeta' ), $siteName );
 
 		/**
 		 * @var array{0:string,1:string,2:string} $headers
@@ -153,7 +153,7 @@ class BugReportService {
 				'replyEmail'          => $replyEmail,
 				'message'             => $message,
 				'siteName'            => $siteName,
-				'zipArchiveAvailable' => $this->isZipArchiveAvailable(),
+				'zipArchiveAvailable' => class_exists( 'ZipArchive' ),
 				'translations'        => [
 					'bugReportTitle'          => $this->wpAdapter->__( 'Bug Report from Packeta Plugin', 'packeta' ),
 					'website'                 => $this->wpAdapter->__( 'Website:', 'packeta' ),
@@ -166,16 +166,12 @@ class BugReportService {
 		);
 	}
 
-	private function isZipArchiveAvailable(): bool {
-		return class_exists( 'ZipArchive' );
-	}
-
 	/**
 	 * @return array<int, string>
 	 */
 	private function createAttachments(): array {
 		$attachments = [];
-		if ( ! $this->isZipArchiveAvailable() ) {
+		if ( ! class_exists( 'ZipArchive' ) ) {
 			return $attachments;
 		}
 
@@ -205,7 +201,7 @@ class BugReportService {
 		}
 
 		ob_start();
-		$this->wcAdapter->statusReport();
+		$this->wcAdapter->adminStatusStatusReport();
 		$systemStatus = ob_get_clean();
 
 		if ( $systemStatus !== false && $systemStatus !== '' ) {

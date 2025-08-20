@@ -949,4 +949,8 @@ body .packeta-widget div.packeta-widget-button.packetery-widget-button-row a.but
   margin-bottom: 0;
 }
 
+.packetery-section-divider {
+  margin: 30px 0;
+}
+
 /*# sourceMappingURL=admin.css.map */
