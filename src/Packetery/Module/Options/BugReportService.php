@@ -113,6 +113,8 @@ class BugReportService {
 	}
 
 	/**
+	 * Normalizes form values to array format. Handles both arrays and objects (including ArrayHash from Nette forms).
+	 *
 	 * @param array<string, mixed>|object $values Form values.
 	 * @return array<string, mixed>
 	 */

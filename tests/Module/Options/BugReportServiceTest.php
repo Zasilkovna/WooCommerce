@@ -12,14 +12,15 @@ use Packetery\Module\Options\BugReportService;
 use Packetery\Module\Options\Exporter;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Form;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class BugReportServiceTest extends TestCase {
-	private WpAdapter $wpAdapter;
-	private WcAdapter $wcAdapter;
-	private Exporter $exporter;
-	private Engine $latteEngine;
-	private MessageManager $messageManager;
+	private WpAdapter&MockObject $wpAdapter;
+	private WcAdapter&MockObject $wcAdapter;
+	private Exporter&MockObject $exporter;
+	private Engine&MockObject $latteEngine;
+	private MessageManager&MockObject $messageManager;
 
 	private const TEST_EMAIL          = 'test@example.com';
 	private const TEST_SITE_NAME      = 'Test Site';
@@ -296,7 +297,6 @@ class BugReportServiceTest extends TestCase {
 
 		$form = $service->createForm();
 
-		$this->assertInstanceOf( Form::class, $form );
 		$this->assertNotNull( $form->getComponent( 'replyTo' ) );
 		$this->assertNotNull( $form->getComponent( 'message' ) );
 		$this->assertNotNull( $form->getComponent( 'submit' ) );
