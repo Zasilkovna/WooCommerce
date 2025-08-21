@@ -146,7 +146,6 @@ class Updater {
 		foreach ( $mappedData as $carrierId => $carrier ) {
 			if ( isset( $carriersInDb[ $carrierId ] ) ) {
 				$this->carrierRepository->update( $carrier, $carrierId );
-				// todo 1128 ignore?
 				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
 				if ( isset( $differences['available'] ) ) {
 					$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( (string) $carrierId );

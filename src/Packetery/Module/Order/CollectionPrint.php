@@ -267,7 +267,6 @@ class CollectionPrint {
 			if ( in_array( $order->getPacketId(), $invalidPacketIds, true ) ) {
 				$order->updateApiErrorMessage( $createShipmentResponse->getFaultString() );
 				$this->orderRepository->save( $order );
-				// todo 1128 ignore?
 			}
 		}
 	}

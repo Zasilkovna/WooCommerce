@@ -200,7 +200,6 @@ class PacketSynchronizer {
 		}
 
 		$this->orderRepository->save( $order );
-		// todo 1128 ignore?
 	}
 
 	/**

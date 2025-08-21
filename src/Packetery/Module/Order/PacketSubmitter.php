@@ -245,14 +245,12 @@ class PacketSubmitter {
 					$submissionResult->increaseErrorsCount();
 					$order->updateApiErrorMessage( $invoiceFileResponse->getFaultString() );
 					$this->orderRepository->save( $order );
-					// todo 1128 ignore?
 
 					return $submissionResult;
 				}
 
 				$customsDeclaration->setInvoiceFileId( $invoiceFileResponse->getId() );
 				$this->customsDeclarationRepository->save( $customsDeclaration );
-				// todo 1128 ignore?
 			}
 
 			if (
@@ -283,14 +281,12 @@ class PacketSubmitter {
 					$submissionResult->increaseErrorsCount();
 					$order->updateApiErrorMessage( $eadFileResponse->getFaultString() );
 					$this->orderRepository->save( $order );
-					// todo 1128 ignore?
 
 					return $submissionResult;
 				}
 
 				$customsDeclaration->setEadFileId( $eadFileResponse->getId() );
 				$this->customsDeclarationRepository->save( $customsDeclaration );
-				// todo 1128 ignore?
 			}
 
 			try {
@@ -365,7 +361,6 @@ class PacketSubmitter {
 			$this->logger->add( $record );
 			$order->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $order );
-			// todo 1128 ignore?
 		} else {
 			$submissionResult->increaseIgnoredCount();
 		}

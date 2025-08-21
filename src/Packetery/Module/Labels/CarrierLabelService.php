@@ -124,7 +124,6 @@ class CarrierLabelService {
 		if ( $order !== null ) {
 			$order->updateApiErrorMessage( $response->getFaultString() );
 			$this->orderRepository->save( $order );
-			// todo 1128 ignore?
 		}
 		if ( $wcOrder !== null ) {
 			$wcOrder->add_order_note(
@@ -166,7 +165,6 @@ class CarrierLabelService {
 		if ( $order !== null ) {
 			$order->setCarrierNumber( $response->getNumber() );
 			$this->orderRepository->save( $order );
-			// todo 1128 ignore?
 		}
 		if ( $wcOrder !== null ) {
 			$wcOrder->add_order_note(

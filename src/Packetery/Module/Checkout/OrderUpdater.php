@@ -159,7 +159,6 @@ class OrderUpdater {
 
 		$this->storage->deleteTransient();
 		$this->orderRepository->save( $order );
-		// todo 1128 ignore?
 		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
 	}
 
