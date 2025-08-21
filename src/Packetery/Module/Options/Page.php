@@ -1000,7 +1000,6 @@ class Page {
 			'bugReportTitle'                         => __( 'Report a Bug', 'packeta' ),
 			'bugReportDescription'                   => __( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
 			'exportSettingsTitle'                    => __( 'Export Settings', 'packeta' ),
-			'formNotAvailable'                       => __( 'Bug report form is not available.', 'packeta' ),
 			'senderDescription'                      => sprintf(
 				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),

@@ -80,7 +80,6 @@ class BugReportServiceTest extends TestCase {
 
 		$form = $service->createForm();
 
-		$this->assertInstanceOf( Form::class, $form );
 		$this->assertNotNull( $form->getComponent( 'replyTo' ) );
 		$this->assertNotNull( $form->getComponent( 'message' ) );
 		$this->assertNotNull( $form->getComponent( 'submit' ) );

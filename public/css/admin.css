@@ -769,6 +769,10 @@ tbody .packetery-log-column-note {
   color: #ba1b02;
 }
 
+.packetery-section-divider {
+  margin: 30px 0;
+}
+
 .packetery-flex-container {
   display: flex;
   flex-flow: row wrap;
@@ -947,10 +951,6 @@ body .packeta-widget div.packeta-widget-button.packetery-widget-button-row a.but
 .packeta-dashboard ul li div:last-child p {
   margin-top: 0.3em;
   margin-bottom: 0;
-}
-
-.packetery-section-divider {
-  margin: 30px 0;
 }
 
 /*# sourceMappingURL=admin.css.map */

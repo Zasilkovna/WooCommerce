@@ -72,12 +72,12 @@ class BugReportService {
 
 	/**
 	 * @param Form                        $form Form instance.
-	 * @param array<string, mixed>|object $values Form values.
+	 * @param array<string, mixed>|object $values Form values (can be ArrayHash from Nette forms).
 	 */
 	public function onFormSuccess( Form $form, $values ): void {
-		$data    = is_array( $values ) ? $values : ( is_object( $values ) ? (array) $values : [] );
-		$email   = $this->wpAdapter->sanitizeEmail( isset( $data['replyTo'] ) ? (string) $data['replyTo'] : '' );
-		$message = $this->wpAdapter->wpKsesPost( isset( $data['message'] ) ? (string) $data['message'] : '' );
+		$data    = $this->normalizeFormValues( $values );
+		$email   = $this->wpAdapter->sanitizeEmail( isset( $data['replyTo'] ) && is_string( $data['replyTo'] ) ? $data['replyTo'] : '' );
+		$message = $this->wpAdapter->wpKsesPost( isset( $data['message'] ) && is_string( $data['message'] ) ? $data['message'] : '' );
 
 		$result = $this->sendBugReport( $email, $message );
 
@@ -113,11 +113,26 @@ class BugReportService {
 	}
 
 	/**
+	 * @param array<string, mixed>|object $values Form values.
+	 * @return array<string, mixed>
+	 */
+	private function normalizeFormValues( $values ): array {
+		if ( is_array( $values ) ) {
+			return $values;
+		}
+		if ( is_object( $values ) ) {
+			return (array) $values;
+		}
+
+		return [];
+	}
+
+	/**
 	 * @param Container $form
 	 */
 	public function onFormValidate( Container $form ): void {
-		$valuesArray = is_array( $form->getValues() ) ? $form->getValues() : ( is_object( $form->getValues() ) ? (array) $form->getValues() : [] );
-		$message     = isset( $valuesArray['message'] ) ? (string) $valuesArray['message'] : '';
+		$valuesArray = $this->normalizeFormValues( $form->getValues() );
+		$message     = isset( $valuesArray['message'] ) && is_string( $valuesArray['message'] ) ? $valuesArray['message'] : '';
 
 		if ( $message === '' || trim( $this->wpAdapter->wpStripAllTags( $message ) ) === '' ) {
 			/** @var TextArea $messageControl */
