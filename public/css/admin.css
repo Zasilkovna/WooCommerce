@@ -104,13 +104,12 @@
   display: table-row;
 }
 
-.packetery-table-cell {
-  display: table-cell;
+.packetery-order-detail-meta-box {
   box-sizing: border-box;
   text-align: left;
   overflow: hidden;
 }
-.packetery-table-cell .date-picker {
+.packetery-order-detail-meta-box .date-picker {
   display: block;
   width: calc(100% - 1px);
 }
