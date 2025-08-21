@@ -171,7 +171,7 @@ class Updater {
 				$updatedRowCount = $this->carrierRepository->insert( $carrier );
 				if ( $updatedRowCount === false ) {
 					// translators: %s is a carrier name.
-					$message = sprintf( $this->wpAdapter->__( 'An error occurred while saving carrier "%s". More details in WC log.', 'packeta' ), $carrier['name'] );
+					$message = sprintf( (string) $this->wpAdapter->__( 'An error occurred while saving carrier "%s". More details in WC log.', 'packeta' ), $carrier['name'] );
 
 					$this->logMessages[] = $message;
 
@@ -184,7 +184,7 @@ class Updater {
 				} else {
 					$this->addLogEntry(
 					// translators: %s is a carrier name.
-						sprintf( $this->wpAdapter->__( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
+						sprintf( (string) $this->wpAdapter->__( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
 					);
 				}
 			}

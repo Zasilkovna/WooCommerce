@@ -244,7 +244,7 @@ final class OrderController extends WP_REST_Controller {
 
 		$updatedRowCount = $this->orderRepository->save( $order );
 		if ( $updatedRowCount === false ) {
-			return new WP_Error( 'order_not_updated', $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ), 400 );
+			return new WP_Error( 'order_not_updated', (string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ), 400 );
 		}
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -315,7 +315,7 @@ final class OrderController extends WP_REST_Controller {
 
 		$updatedRowCount = $this->orderRepository->save( $order );
 		if ( $updatedRowCount === false ) {
-			return new WP_Error( 'order_not_updated', $this->wpAdapter->__( 'Date set in the Packeta system, but an error occurred while saving the order. More details in WC log.', 'packeta' ), 400 );
+			return new WP_Error( 'order_not_updated', (string) $this->wpAdapter->__( 'Date set in the Packeta system, but an error occurred while saving the order. More details in WC log.', 'packeta' ), 400 );
 		}
 
 		$data['message'] = __( 'Success', 'packeta' );

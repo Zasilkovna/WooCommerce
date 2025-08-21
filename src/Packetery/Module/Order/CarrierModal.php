@@ -177,7 +177,7 @@ class CarrierModal {
 			$deletionSuccess = $this->orderRepository->delete( (int) $order->getNumber() );
 			if ( $deletionSuccess === false ) {
 				$this->messageManager->flash_message(
-					$this->wpAdapter->__( 'An error occurred while deleting the order. More details in WC log.', 'packeta' ),
+					(string) $this->wpAdapter->__( 'An error occurred while deleting the order. More details in WC log.', 'packeta' ),
 					MessageManager::TYPE_ERROR
 				);
 			}
@@ -215,7 +215,7 @@ class CarrierModal {
 		);
 		if ( $updatedRowCount === false ) {
 			$this->messageManager->flash_message(
-				$this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+				(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
 				MessageManager::TYPE_ERROR
 			);
 		}

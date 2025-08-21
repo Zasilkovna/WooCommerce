@@ -126,7 +126,11 @@ class PacketCanceller {
 	public function processAction(): void {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
-		$packetId   = $this->request->getQuery( PacketActionsCommonLogic::PARAM_PACKET_ID );
+		/** @var scalar $packetId */
+		$packetId = $this->request->getQuery( PacketActionsCommonLogic::PARAM_PACKET_ID );
+		if ( $packetId !== null ) {
+			$packetId = (string) $packetId;
+		}
 
 		if ( $order === null ) {
 			$record          = new Log\Record();
@@ -150,11 +154,11 @@ class PacketCanceller {
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
 
 		$canBeCancelled = $this->checkCancellability( $order, $packetId );
-		if ( $canBeCancelled ) {
+		if ( $canBeCancelled && $packetId !== null ) {
 			$updatedRowCount = $this->cancelPacket( $order, $packetId );
 			if ( $updatedRowCount === false ) {
 				$this->messageManager->flash_message(
-					$this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+					(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
 					MessageManager::TYPE_ERROR
 				);
 			}

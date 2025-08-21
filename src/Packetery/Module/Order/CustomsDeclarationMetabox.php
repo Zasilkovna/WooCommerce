@@ -445,7 +445,7 @@ class CustomsDeclarationMetabox {
 		$updatedRowCount = $this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
 		if ( $updatedRowCount === false ) {
 			$this->messageManager->flash_message(
-				$this->wpAdapter->__( 'An error occurred while saving the customs declaration. More details in WC log.', 'packeta' ),
+				(string) $this->wpAdapter->__( 'An error occurred while saving the customs declaration. More details in WC log.', 'packeta' ),
 				MessageManager::TYPE_ERROR
 			);
 		}
@@ -479,7 +479,7 @@ class CustomsDeclarationMetabox {
 
 		if ( $itemSavingError === true ) {
 			$this->messageManager->flash_message(
-				$this->wpAdapter->__( 'An error occurred while saving the customs declaration items. More details in WC log.', 'packeta' ),
+				(string) $this->wpAdapter->__( 'An error occurred while saving the customs declaration items. More details in WC log.', 'packeta' ),
 				MessageManager::TYPE_ERROR
 			);
 		}
