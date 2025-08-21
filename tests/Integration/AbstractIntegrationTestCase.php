@@ -7,7 +7,7 @@ namespace Tests\Integration;
 use Packetery\Nette\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-class AbstractIntegrationTestCase extends TestCase {
+abstract class AbstractIntegrationTestCase extends TestCase {
 
 	protected Container $container;
 
