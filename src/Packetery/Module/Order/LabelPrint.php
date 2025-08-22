@@ -178,11 +178,11 @@ class LabelPrint {
 
 		$fallbackToPacketaLabel = false;
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam                = $this->httpRequest->getQuery( 'id' ) !== null ? (int) $this->httpRequest->getQuery( 'id' ) : null;
+		$orderIdParam           = $this->httpRequest->getQuery( 'id' ) !== null ? (int) $this->httpRequest->getQuery( 'id' ) : null;
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
-		if ( $idParam !== null && $packetIdParam !== null ) {
+		if ( $orderIdParam !== null && $packetIdParam !== null ) {
 			$fallbackToPacketaLabel = true;
-			$packetIds              = [ $idParam => $packetIdParam ];
+			$packetIds              = [ $orderIdParam => $packetIdParam ];
 		} else {
 			$orderIdsTransient = $this->getOrderIdsTransient();
 			if ( $orderIdsTransient === null ) {
@@ -216,23 +216,9 @@ class LabelPrint {
 			return;
 		}
 
-		if ( $isCarrierLabels === true ) {
-			$packetIdsWithCourierNumbers = $this->carrierLabelService->getPacketIdsWithCourierNumbers( $packetIds );
-			if ( $packetIdsWithCourierNumbers === [] ) {
-				$this->flashMessageAndRedirect(
-					$this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log.', 'packeta' ),
-					$idParam
-				);
-
-				return;
-			}
-
-			$response = $this->requestCarrierLabels( $offset, $packetIdsWithCourierNumbers );
-			if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
-				$response = $this->requestPacketaLabels( $offset, $packetIds );
-			}
-		} else {
-			$response = $this->requestPacketaLabels( $offset, $packetIds );
+		$response = $this->getResponse( $isCarrierLabels, $packetIds, $fallbackToPacketaLabel, $orderIdParam, $offset );
+		if ( $response === null ) {
+			return;
 		}
 
 		if ( $response->hasFault() ) {
@@ -256,7 +242,7 @@ class LabelPrint {
 				);
 			}
 
-			$this->flashMessageAndRedirect( $message, $idParam );
+			$this->flashMessageAndRedirect( $message, $orderIdParam );
 
 			return;
 		}
@@ -472,13 +458,51 @@ class LabelPrint {
 		$wcOrder->save();
 	}
 
-	public function flashMessageAndRedirect( string $message, ?int $idParam ): void {
+	public function flashMessageAndRedirect( string $message, ?int $orderId ): void {
 		$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 		$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
-		if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $idParam !== null ) {
-			$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
+		if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $orderId !== null ) {
+			$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $orderId ) );
 		}
 		$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+	}
+
+	/**
+	 * @param bool                  $isCarrierLabels
+	 * @param array<string, string> $packetIds
+	 * @param bool                  $fallbackToPacketaLabel
+	 * @param int|null              $orderId
+	 * @param int                   $offset
+	 *
+	 * @return Response\PacketsCourierLabelsPdf|Response\PacketsLabelsPdf|null
+	 */
+	private function getResponse(
+		bool $isCarrierLabels,
+		array $packetIds,
+		bool $fallbackToPacketaLabel,
+		?int $orderId,
+		int $offset
+	) {
+		if ( $isCarrierLabels === false ) {
+			return $this->requestPacketaLabels( $offset, $packetIds );
+		}
+
+		$packetIdsWithCourierNumbers = $this->carrierLabelService->getPacketIdsWithCourierNumbers( $packetIds );
+		if ( $fallbackToPacketaLabel === false && $packetIdsWithCourierNumbers === [] ) {
+			$this->flashMessageAndRedirect(
+				(string) $this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log.', 'packeta' ),
+				$orderId
+			);
+
+			return null;
+		}
+
+		$response = $this->requestCarrierLabels( $offset, $packetIdsWithCourierNumbers );
+		if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
+			return $this->requestPacketaLabels( $offset, $packetIds );
+		}
+
+		return $response;
 	}
 }

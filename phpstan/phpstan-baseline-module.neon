@@ -2233,12 +2233,6 @@ parameters:
 			path: ../src/Packetery/Module/Order/LabelPrint.php
 
 		-
-			message: '#^Parameter \#1 \$message of method Packetery\\Module\\Order\\LabelPrint\:\:flashMessageAndRedirect\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/LabelPrint.php
-
-		-
 			message: '#^Parameter \#1 \$trackingUrl of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
