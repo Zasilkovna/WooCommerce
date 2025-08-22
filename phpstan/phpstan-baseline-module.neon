@@ -1703,19 +1703,6 @@ parameters:
 			identifier: cast.int
 			count: 2
 			path: ../src/Packetery/Module/Options/Page.php
-
-		-
-			message: '#^Method Packetery\\Module\\Options\\Page\:\:customMenuOrder\(\) has parameter \$menuOrder with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Options/Page.php
-
-		-
-			message: '#^Method Packetery\\Module\\Options\\Page\:\:customMenuOrder\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Options/Page.php
-
 		-
 			message: '#^Method Packetery\\Module\\Options\\Page\:\:getChosenKeys\(\) has parameter \$choiceData with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue

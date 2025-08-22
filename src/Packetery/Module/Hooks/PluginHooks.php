@@ -65,7 +65,6 @@ class PluginHooks {
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter
 	) {
-
 		$this->request              = $request;
 		$this->featureFlagProvider  = $featureFlagProvider;
 		$this->packetSubmitter      = $packetSubmitter;

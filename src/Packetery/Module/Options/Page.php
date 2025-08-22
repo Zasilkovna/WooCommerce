@@ -25,6 +25,7 @@ use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\SubmitButton;
@@ -193,11 +194,17 @@ class Page {
 	/**
 	 * Returns menu_order with Packeta item in last position.
 	 *
-	 * @param array $menuOrder WP $menu_order.
+	 * @param array|mixed $menuOrder WP $menu_order.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function customMenuOrder( array $menuOrder ): array {
+	public function customMenuOrder( $menuOrder ) {
+		if ( ! is_array( $menuOrder ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'menuOrder', 'array', $menuOrder );
+
+			return $menuOrder;
+		}
+
 		$currentPosition = array_search( self::SLUG, $menuOrder, true );
 
 		if ( $currentPosition !== false ) {
@@ -445,7 +452,6 @@ class Page {
 	 * @return void
 	 */
 	public function onPacketStatusSyncFormSuccess( Form $form, array $values ): void {
-
 		$values['status_syncing_order_statuses']       = $this->getChosenKeys(
 			self::getOrderStatusesChoiceData(),
 			$values['status_syncing_order_statuses']

@@ -21,6 +21,7 @@ use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
+use Packetery\Module\WcLogger;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
 use WP_Post;
@@ -691,12 +692,24 @@ class Repository {
 	/**
 	 * Fires after post deletion.
 	 *
-	 * @param int     $postId Post id.
-	 * @param WP_Post $post Post object.
+	 * @param int|mixed     $postId Post id.
+	 * @param WP_Post|mixed $post Post object.
 	 *
 	 * @return void
 	 */
-	public function deletedPostHook( int $postId, WP_Post $post ): void {
+	public function deletedPostHook( $postId, $post ): void {
+		if ( ! is_int( $postId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'int', $postId );
+
+			return;
+		}
+
+		if ( ! $post instanceof WP_Post ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'post', WP_Post::class, $post );
+
+			return;
+		}
+
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		if ( $post->post_type === 'shop_order' ) {
 			$this->delete( $postId );

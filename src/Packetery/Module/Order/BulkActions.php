@@ -1,22 +1,14 @@
 <?php
-/**
- * Class BulkActions
- *
- * @package Packetery\Order
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
+use WC_Order;
 
-/**
- * Class BulkActions
- *
- * @package Packetery\Order
- */
 class BulkActions {
 	const ACTION_SUBMIT_TO_API = 'submit_to_api';
 
@@ -71,11 +63,17 @@ class BulkActions {
 	/**
 	 * Adds custom actions to dropdown in admin order list.
 	 *
-	 * @param array<string, string> $actions Array of action.
+	 * @param array<string, string>|mixed $actions Array of action.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string>|mixed
 	 */
-	public function addActions( array $actions ): array {
+	public function addActions( $actions ) {
+		if ( ! is_array( $actions ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'actions', 'array', $actions );
+
+			return $actions;
+		}
+
 		$actions[ self::ACTION_SUBMIT_TO_API ]                     = __( 'Packeta export', 'packeta' );
 		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Packeta download labels', 'packeta' );
 		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Packeta download carrier labels', 'packeta' );
@@ -87,13 +85,31 @@ class BulkActions {
 	/**
 	 * Executes the action for selected orders and returns url to redirect to.
 	 *
-	 * @param string $redirectTo Url.
-	 * @param string $action Action id.
-	 * @param int[]  $postIds Order ids.
+	 * @param string|mixed $redirectTo Url.
+	 * @param string|mixed $action Action id.
+	 * @param int[]|mixed  $postIds Order ids.
 	 *
-	 * @return string
+	 * @return string|mixed
 	 */
-	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
+	public function handleActions( $redirectTo, $action, $postIds ) {
+		if ( ! is_string( $redirectTo ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'redirectTo', 'string', $redirectTo );
+
+			return $redirectTo;
+		}
+
+		if ( ! is_string( $action ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'action', 'string', $action );
+
+			return $redirectTo;
+		}
+
+		if ( ! is_array( $postIds ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'postIds', 'array', $postIds );
+
+			return $redirectTo;
+		}
+
 		if ( $action === CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ) {
 			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 
@@ -121,15 +137,26 @@ class BulkActions {
 		if ( $action === self::ACTION_SUBMIT_TO_API ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
-				$wcOrder = $this->orderRepository->getWcOrderById( $postId );
-				if ( $wcOrder !== null ) {
-					$submissionResult = $this->packetSubmitter->submitPacket(
-						$wcOrder,
-						null,
-						true
-					);
-					$finalSubmissionResult->merge( $submissionResult );
+				if ( ! is_numeric( $postId ) ) {
+					WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'is_numeric', $postId );
+
+					continue;
 				}
+
+				$wcOrder = $this->orderRepository->getWcOrderById( (int) $postId );
+
+				if ( ! $wcOrder instanceof WC_Order ) {
+					WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', 'WC_Order', $wcOrder );
+
+					continue;
+				}
+
+				$submissionResult = $this->packetSubmitter->submitPacket(
+					$wcOrder,
+					null,
+					true
+				);
+				$finalSubmissionResult->merge( $submissionResult );
 			}
 
 			$queryArgs                               = $finalSubmissionResult->getCounter();

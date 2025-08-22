@@ -21,7 +21,6 @@ class DetailCommonLogicTest extends TestCase {
 	private OptionsProvider|MockObject $optionsProvider;
 
 	public function createDetailCommonLogic(): DetailCommonLogic {
-
 		$this->wcAdapter       = $this->createMock( WcAdapter::class );
 		$this->optionsProvider = $this->createMock( OptionsProvider::class );
 

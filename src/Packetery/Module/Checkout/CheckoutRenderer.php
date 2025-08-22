@@ -9,6 +9,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Views\UrlBuilder;
+use Packetery\Module\WcLogger;
 use WC_Shipping_Rate;
 
 class CheckoutRenderer {
@@ -76,10 +77,16 @@ class CheckoutRenderer {
 	/**
 	 * Renders widget button and information about chosen pickup point
 	 *
-	 * @param WC_Shipping_Rate $shippingRate Shipping rate.
+	 * @param WC_Shipping_Rate|mixed $shippingRate Shipping rate.
 	 */
-	public function actionRenderWidgetButtonAfterShippingRate( WC_Shipping_Rate $shippingRate ): void {
+	public function actionRenderWidgetButtonAfterShippingRate( $shippingRate ): void {
 		if ( ! is_checkout() ) {
+			return;
+		}
+
+		if ( ! $shippingRate instanceof WC_Shipping_Rate ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'shippingRate', WC_Shipping_Rate::class, $shippingRate );
+
 			return;
 		}
 
