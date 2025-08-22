@@ -7,6 +7,7 @@ namespace Tests\Module;
 use DateTimeImmutable;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
+use Packetery\Nette\IOException;
 use PHPUnit\Framework\TestCase;
 
 class ModuleHelperTest extends TestCase {
@@ -112,5 +113,62 @@ class ModuleHelperTest extends TestCase {
 		);
 
 		$this->assertNull( $moduleHelper->getTranslatedStringFromDateTime( null ) );
+	}
+
+	public function testInstantDeleteRemovesDirectorySafely(): void {
+		$tempDir  = sys_get_temp_dir() . '/packeta-test-' . uniqid();
+		$testFile = $tempDir . '/test-file.txt';
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+		mkdir( $tempDir, 0755, true );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents( $testFile, 'test content' );
+
+		$this->assertDirectoryExists( $tempDir );
+		$this->assertFileExists( $testFile );
+
+		ModuleHelper::instantDelete( $tempDir );
+
+		$this->assertDirectoryDoesNotExist( $tempDir );
+		$this->assertDirectoryDoesNotExist( $tempDir . '-old' );
+	}
+
+	public function testInstantDeleteHandlesNonExistentDirectory(): void {
+		$nonExistentDir = sys_get_temp_dir() . '/packeta-test-nonexistent-' . uniqid();
+
+		$this->expectException( IOException::class );
+		ModuleHelper::instantDelete( $nonExistentDir );
+	}
+
+	public function testInstantDeleteWithComplexDirectoryStructure(): void {
+		$tempDir = sys_get_temp_dir() . '/packeta-test-complex-' . uniqid();
+		$subDir1 = $tempDir . '/subdir1';
+		$subDir2 = $tempDir . '/subdir2';
+		$file1   = $tempDir . '/file1.txt';
+		$file2   = $subDir1 . '/file2.txt';
+		$file3   = $subDir2 . '/file3.txt';
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+		mkdir( $subDir1, 0755, true );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+		mkdir( $subDir2, 0755, true );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents( $file1, 'content1' );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents( $file2, 'content2' );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents( $file3, 'content3' );
+
+		$this->assertDirectoryExists( $tempDir );
+		$this->assertDirectoryExists( $subDir1 );
+		$this->assertDirectoryExists( $subDir2 );
+		$this->assertFileExists( $file1 );
+		$this->assertFileExists( $file2 );
+		$this->assertFileExists( $file3 );
+
+		ModuleHelper::instantDelete( $tempDir );
+
+		$this->assertDirectoryDoesNotExist( $tempDir );
+		$this->assertDirectoryDoesNotExist( $tempDir . '-old' );
 	}
 }

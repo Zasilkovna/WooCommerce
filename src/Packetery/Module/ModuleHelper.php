@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use DateTimeImmutable;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Nette\Utils\FileSystem;
 use Packetery\Nette\Utils\Html;
 use WC_DateTime;
 
@@ -303,5 +304,11 @@ class ModuleHelper {
 
 	public function isCzechLocale(): bool {
 		return $this->getLocale() === 'cs_CZ';
+	}
+
+	public static function instantDelete( string $path ): void {
+		$tempOldPath = $path . '-old';
+		FileSystem::rename( $path, $tempOldPath );
+		FileSystem::delete( $tempOldPath );
 	}
 }
