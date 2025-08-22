@@ -250,6 +250,11 @@ class ShippingProvider {
 	 * @return array<string, string>
 	 */
 	public function getSortedCachedMethods( array $originalMethods ): array {
+		$areClassesLoaded = in_array( BaseShippingMethod::class, get_declared_classes(), true );
+		if ( $areClassesLoaded === false ) {
+			return $originalMethods;
+		}
+
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$cacheKey = crc32( serialize( $originalMethods ) );
 
