@@ -442,7 +442,13 @@ class CustomsDeclarationMetabox {
 		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $containerValues, $order->getNumber() );
 		$customsDeclaration->setInvoiceFile( $containerValues['invoice_file'], (bool) $containerValues['invoice_file'] );
 		$customsDeclaration->setEadFile( $containerValues['ead_file'], (bool) $containerValues['ead_file'] );
-		$this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
+		$updatedRowCount = $this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
+		if ( $updatedRowCount === false ) {
+			$this->messageManager->flash_message(
+				(string) $this->wpAdapter->__( 'An error occurred while saving the customs declaration. More details in WC log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
+			);
+		}
 
 		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclarationId( $customsDeclaration->getId() );
 		$customsDeclaration->setItems( $customsDeclarationItems );
@@ -453,6 +459,7 @@ class CustomsDeclarationMetabox {
 			}
 		}
 
+		$itemSavingError = false;
 		foreach ( $items as $itemId => $item ) {
 			if ( strpos( (string) $itemId, 'new_' ) === 0 ) {
 				$itemId = null;
@@ -462,8 +469,18 @@ class CustomsDeclarationMetabox {
 
 			$item['id']                     = $itemId;
 			$item['customs_declaration_id'] = $customsDeclaration->getId();
-			$this->customsDeclarationRepository->saveItem(
+			$updatedRowCount                = $this->customsDeclarationRepository->saveItem(
 				$this->customsDeclarationEntityFactory->createItemFromStandardizedStructure( $item )
+			);
+			if ( $updatedRowCount === false ) {
+				$itemSavingError = true;
+			}
+		}
+
+		if ( $itemSavingError === true ) {
+			$this->messageManager->flash_message(
+				(string) $this->wpAdapter->__( 'An error occurred while saving the customs declaration items. More details in WC log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
 			);
 		}
 	}

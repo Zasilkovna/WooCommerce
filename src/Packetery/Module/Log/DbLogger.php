@@ -36,12 +36,15 @@ class DbLogger implements ILogger {
 		$this->logRepository = $logRepository;
 	}
 
-	public function add( Record $record ): void {
+	/**
+	 * @return int|false The number of rows inserted, or false on error.
+	 */
+	public function add( Record $record ) {
 		if ( $record->date === null ) {
 			$record->date = CoreHelper::now();
 		}
 
-		$this->logRepository->save( $record );
+		return $this->logRepository->save( $record );
 	}
 
 	/**

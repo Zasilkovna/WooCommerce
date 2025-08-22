@@ -12,6 +12,8 @@ namespace Packetery\Module\Order;
 use Packetery\Latte;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
@@ -75,6 +77,16 @@ class CarrierModal {
 	 */
 	private $carrierOptionsFactory;
 
+	/**
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Latte\Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
@@ -82,7 +94,9 @@ class CarrierModal {
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
 		OptionsProvider $optionsProvider,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		MessageManager $messageManager,
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
@@ -91,6 +105,8 @@ class CarrierModal {
 		$this->carrierRepository       = $carrierRepository;
 		$this->optionsProvider         = $optionsProvider;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->messageManager          = $messageManager;
+		$this->wpAdapter               = $wpAdapter;
 	}
 
 	/**
@@ -158,7 +174,13 @@ class CarrierModal {
 
 		$order = $this->detailCommonLogic->getOrder();
 		if ( $order !== null && $order->getCarrier()->getId() !== $newCarrierId ) {
-			$this->orderRepository->delete( (int) $order->getNumber() );
+			$deletionSuccess = $this->orderRepository->delete( (int) $order->getNumber() );
+			if ( $deletionSuccess === false ) {
+				$this->messageManager->flash_message(
+					(string) $this->wpAdapter->__( 'An error occurred while deleting the order. More details in WC log.', 'packeta' ),
+					MessageManager::TYPE_ERROR
+				);
+			}
 		}
 
 		$carrierTitle = $this->createNewCarrierOrder( $orderId, $newCarrierId );
@@ -185,12 +207,18 @@ class CarrierModal {
 		if ( $newCarrier === null ) {
 			throw new RuntimeException( 'Packeta: Failed to get instance of carrier with id ' . $newCarrierId );
 		}
-		$this->orderRepository->saveData(
+		$updatedRowCount = $this->orderRepository->saveData(
 			[
 				'id'         => $orderId,
 				'carrier_id' => $newCarrierId,
 			]
 		);
+		if ( $updatedRowCount === false ) {
+			$this->messageManager->flash_message(
+				(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
+			);
+		}
 
 		$options = $this->carrierOptionsFactory->createByCarrierId( $newCarrier->getId() );
 		if ( ! $options->hasOptions() ) {
