@@ -197,44 +197,52 @@ class Repository {
 			);
 		}
 
-		$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
-		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `invoice_file` = %s WHERE `id` = %d',
-					$customsDeclaration->getInvoiceFile(),
-					$customsDeclaration->getId()
-				)
-			);
-		}
+		if ( $customsDeclaration->getId() !== null ) {
+			$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
+			if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'invoice_file' => $customsDeclaration->getInvoiceFile() ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
 
-		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() === false ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
-					$customsDeclaration->getId()
-				)
-			);
-		}
+			if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() === false ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'invoice_file' => null ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
 
-		$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
-		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `ead_file` = %s WHERE `id` = %d',
-					$customsDeclaration->getEadFile(),
-					$customsDeclaration->getId()
-				)
-			);
-		}
+			$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
+			if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'ead_file' => $customsDeclaration->getEadFile() ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
 
-		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() === false ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `ead_file` = NULL WHERE `id` = %d',
-					$customsDeclaration->getId()
-				)
-			);
+			if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() === false ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'ead_file' => null ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
 		}
 
 		return $updatedRowCount;

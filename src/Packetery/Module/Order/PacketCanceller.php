@@ -153,7 +153,7 @@ class PacketCanceller {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
 
-		$canBeCancelled = $this->checkCancellability( $order, $packetId );
+		$canBeCancelled = $this->isCancellable( $order, $packetId );
 		if ( $canBeCancelled && $packetId !== null ) {
 			$updatedRowCount = $this->cancelPacket( $order, $packetId );
 			if ( $updatedRowCount === false ) {
@@ -166,7 +166,7 @@ class PacketCanceller {
 		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 
-	private function checkCancellability( Entity\Order $order, ?string $packetId ): bool {
+	private function isCancellable( Entity\Order $order, ?string $packetId ): bool {
 		if ( $packetId !== null ) {
 			return true;
 		}
