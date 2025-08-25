@@ -15,13 +15,6 @@ use ReflectionClass;
 use Tests\Integration\IntegrationTestsHelper;
 
 class CheckoutStorageTest extends TestCase {
-	private static function setRequestPostData( Request $request, array $post ): void {
-		$reflection = new ReflectionClass( $request );
-		$property   = $reflection->getProperty( 'post' );
-		$property->setAccessible( true );
-		$property->setValue( $request, $post );
-	}
-
 	/**
 	 * Allows setting raw POST payload (including non-array) to exercise branches when POST is not an array.
 	 *
@@ -36,10 +29,7 @@ class CheckoutStorageTest extends TestCase {
 	}
 
 	private static function buildRequest( array $post = [] ): Request {
-		$request = new Request( new UrlScript( '/', '/' ) );
-		self::setRequestPostData( $request, $post );
-
-		return $request;
+		return new Request( new UrlScript( '/', '/' ), $post );
 	}
 
 	/**
