@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.0.11 =
+Fixed: Correct loading of shipping methods in case of premature payment plugin queries.
+
 = 2.0.10 =
 Fixed: Introduced carrier and shipping method caching to prevent excessive memory usage and performance problems.
 
