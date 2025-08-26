@@ -75,6 +75,10 @@ class WpAdapter {
 		return wp_date( $format, $timestamp, $timezone );
 	}
 
+	public function timezone(): DateTimeZone {
+		return wp_timezone();
+	}
+
 	public function adminUrl( string $path = '', string $scheme = 'admin' ): ?string {
 		return admin_url( $path, $scheme );
 	}
@@ -127,6 +131,14 @@ class WpAdapter {
 		return is_multisite();
 	}
 
+	public function switchToBlog( int $site ): bool {
+		return switch_to_blog( $site );
+	}
+
+	public function restoreCurrentBlog(): bool {
+		return restore_current_blog();
+	}
+
 	/**
 	 * @return array<string, array<string, string|bool>>
 	 */
@@ -154,5 +166,43 @@ class WpAdapter {
 
 	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
 		return get_admin_url( $blogId, $path, $scheme );
+	}
+
+	public function addSubmenuPage(
+		string $parentSlug,
+		string $pageTitle,
+		string $menuTitle,
+		string $capability,
+		string $menuSlug,
+		callable $callback,
+		?int $position = null
+	): void {
+		add_submenu_page(
+			$parentSlug,
+			$pageTitle,
+			$menuTitle,
+			$capability,
+			$menuSlug,
+			$callback,
+			$position
+		);
+	}
+
+	public function addMenuPage(
+		string $pageTitle,
+		string $menuTitle,
+		string $capability,
+		string $menuSlug,
+		callable $callback,
+		string $iconUrl
+	): void {
+		add_menu_page(
+			$pageTitle,
+			$menuTitle,
+			$capability,
+			$menuSlug,
+			$callback,
+			$iconUrl
+		);
 	}
 }

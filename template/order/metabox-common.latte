@@ -1,26 +1,26 @@
 {varType Packetery\Core\Entity\Order $order}
 
 <ul class="packetery-metabox-overview-info">
-	<li n:if="$packetTrackingUrl">
+	<li n:if="$packetTrackingUrl" class="packetery-js-wizard-metabox-tracking-url">
 		{$translations['packetTrackingOnline']}:
 		<a href="{$packetTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
 	</li>
-	<li n:if="$packetStatusTranslatedName">
+	<li n:if="$packetStatusTranslatedName" class="packetery-js-wizard-metabox-packet-status">
 		<p class="packetery-order-status {$statusClass}">{$packetStatusTranslatedName}</p>
 	</li>
-	<li n:if="$packetClaimTrackingUrl">
+	<li n:if="$packetClaimTrackingUrl" class="packetery-js-wizard-metabox-claim-tracking-url">
 		{$translations['packetClaimTrackingOnline']}:
 		<a href="{$packetClaimTrackingUrl}" target="_blank">Z{$order->getPacketClaimId()}</a>
 		<span class="packetery-claim-password-short" n:if="$order->getPacketClaimId() && $order->getPacketClaimPassword()"> ({$translations['submissionPassword']}: {$order->getPacketClaimPassword()})</span>
 	</li>
-	<li class="packetery-claim-password-container" n:if="$packetClaimTrackingUrl">
+	<li class="packetery-claim-password-container" n:if="$packetClaimTrackingUrl" class="packetery-js-wizard-metabox-claim-password">
 		<span n:if="$order->getPacketClaimId() && $order->getPacketClaimPassword()"> {$translations['packetClaimPassword']}: {$order->getPacketClaimPassword()}</span>
 	</li>
 </ul>
 
 <div class="packetery-metabox-overview-buttons">
-	<a n:if="$showLogsLink" class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
-	<div n:if="isset($packetSubmitUrl)" class="packetery-metabox-button-wrapper">
+	<a n:if="$showLogsLink" class="button packetery-js-wizard-metabox-logs-link" href="{$showLogsLink}">{$translations['showLogs']}</a>
+	<div n:if="isset($packetSubmitUrl)" class="packetery-metabox-button-wrapper packetery-js-wizard-metabox-button-submit-packet">
 		<a
 				{if !$isPacketSubmissionPossible}disabled{/if}
 				class="button dashicons {if !$isPacketSubmissionPossible}dashicons-warning{else}dashicons-upload{/if} packetery-dashicons-button-fix"
@@ -32,14 +32,14 @@
 	</div>
 	<a
 			n:if="$order->getPacketId()"
-			class="button dashicons dashicons-media-default packetery-dashicons-button-fix"
+			class="button dashicons dashicons-media-default packetery-dashicons-button-fix packetery-js-wizard-metabox-print"
 			data-packetery-open-modal="{Packetery\Module\Order\LabelPrintModal::MODAL_ID_PACKET}"
 	>
 		<span class="packetery-dashicons-button-fix-text">{$translations['printPacketLabel']}</span>
 	</a>
 	<a data-packetery-stored-until-edit
 		n:if="$order->isPossibleExtendPacketPickUpDate()"
-		class="button dashicons  dashicons-calendar-alt packetery-dashicons-button-fix"
+		class="button dashicons  dashicons-calendar-alt packetery-dashicons-button-fix packetery-js-wizard-metabox-stored-until"
 		data-order-data="{= json_encode(
 		[
 		'id' => $order->getNumber(),
@@ -52,7 +52,7 @@
 	</a>
 	<a
 			n:if="$packetCancelLink"
-			class="button dashicons dashicons-trash packetery-dashicons-button-fix"
+			class="button dashicons dashicons-trash packetery-dashicons-button-fix packetery-js-wizard-metabox-button-cancel"
 			data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
 			data-packetery-confirm="{$translations['reallyCancelPacket']}"
 			href="{$packetCancelLink}"
@@ -61,25 +61,33 @@
 	</a>
 	<a
 			n:if="$packetClaimUrl"
-			class="button dashicons dashicons-undo packetery-dashicons-button-fix"
+			class="button dashicons dashicons-undo packetery-dashicons-button-fix packetery-js-wizard-metabox-claim-url"
 			href="{$packetClaimUrl}"
 	>
 		<span class="packetery-dashicons-button-fix-text">{$translations['createPacketClaim']}</span>
 	</a>
 	<a
 			n:if="$order->getPacketClaimId()"
-			class="button dashicons dashicons-media-default packetery-dashicons-button-fix"
+			class="button dashicons dashicons-media-default packetery-dashicons-button-fix packetery-js-wizard-metabox-print-claim-label"
 			data-packetery-open-modal="{Packetery\Module\Order\LabelPrintModal::MODAL_ID_PACKET_CLAIM}"
 	>
 		<span class="packetery-dashicons-button-fix-text">{$translations['printPacketClaimLabel']}</span>
 	</a>
 	<a
 			n:if="$packetClaimCancelUrl"
-			class="button dashicons dashicons-trash packetery-dashicons-button-fix"
+			class="button dashicons dashicons-trash packetery-dashicons-button-fix packetery-js-wizard-metabox-button-cancel-claim"
 			data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
 			data-packetery-confirm="{$translations['reallyCancelPacketClaim']}"
 			href="{$packetClaimCancelUrl}"
 	>
 		<span class="packetery-dashicons-button-fix-text">{$translations['cancelPacketClaim']}</span>
+	</a>
+
+	<a
+			n:if="$showRunWizardButton"
+			class="button dashicons dashicons-controls-play packetery-dashicons-button-fix"
+			href="{$runWizardUrl}"
+	>
+		<span class="packetery-dashicons-button-fix-text">{$translations['runWizard']}</span>
 	</a>
 </div>

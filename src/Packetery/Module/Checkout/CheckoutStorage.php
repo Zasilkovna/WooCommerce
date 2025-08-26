@@ -7,6 +7,7 @@ namespace Packetery\Module\Checkout;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
+use Packetery\Module\Transients;
 use Packetery\Nette\Http\Request;
 
 use function is_array;
@@ -15,8 +16,6 @@ use function is_array;
  * @phpstan-type CheckoutData array<string, array<string, mixed>>
  */
 class CheckoutStorage {
-
-	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
 
 	/**
 	 * @var Request
@@ -137,7 +136,7 @@ class CheckoutStorage {
 			$token = $this->wcAdapter->sessionGetCustomerId();
 		}
 
-		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
+		return Transients::CHECKOUT_DATA_PREFIX . $token;
 	}
 
 	/**
@@ -173,7 +172,7 @@ class CheckoutStorage {
 	}
 
 	public function migrateGuestSessionToUserSession( string $guestSessionId ): void {
-		$oldTransientId   = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
+		$oldTransientId   = Transients::CHECKOUT_DATA_PREFIX . $guestSessionId;
 		$oldTransientData = $this->wpAdapter->getTransient( $oldTransientId );
 		if ( $this->validateDataStructure( $oldTransientData ) ) {
 			/** @var CheckoutData|array{} $oldTransientData */

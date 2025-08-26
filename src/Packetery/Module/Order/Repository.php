@@ -227,13 +227,6 @@ class Repository {
 	}
 
 	/**
-	 * Drop table used to store orders.
-	 */
-	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryOrder . '`' );
-	}
-
-	/**
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getById( int $id ): ?Order {

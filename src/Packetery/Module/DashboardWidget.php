@@ -8,12 +8,9 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierActivityBridge;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Dashboard\DashboardHelper;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\Views\UrlBuilder;
-use WC_Data_Store;
-use WC_Shipping_Zone;
-use WC_Shipping_Zone_Data_Store;
 
 class DashboardWidget {
 
@@ -72,6 +69,11 @@ class DashboardWidget {
 	 */
 	private $carrierActivityBridge;
 
+	/**
+	 * @var DashboardHelper
+	 */
+	private $dashboardHelper;
+
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
@@ -83,7 +85,8 @@ class DashboardWidget {
 		ModuleHelper $moduleHelper,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		UrlBuilder $urlBuilder,
-		CarrierActivityBridge $carrierActivityBridge
+		CarrierActivityBridge $carrierActivityBridge,
+		DashboardHelper $dashboardHelper
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -96,6 +99,7 @@ class DashboardWidget {
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->urlBuilder              = $urlBuilder;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
+		$this->dashboardHelper         = $dashboardHelper;
 	}
 
 	/**
@@ -117,31 +121,6 @@ class DashboardWidget {
 	}
 
 	/**
-	 * Tells if there is Packeta shipping method configured and active.
-	 *
-	 * @return bool
-	 */
-	private function isPacketaShippingMethodActive(): bool {
-		/** @var WC_Shipping_Zone_Data_Store $shippingDataStore */
-		/** @phpstan-ignore varTag.type */
-		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
-
-		$shippingZones = $shippingDataStore->get_zones();
-
-		foreach ( $shippingZones as $shippingZoneId ) {
-			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
-			$shippingZoneMethods = $shippingZone->get_shipping_methods( true );
-			foreach ( $shippingZoneMethods as $method ) {
-				if ( ShippingProvider::isPacketaMethod( $method->id ) ) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * Renders widget.
 	 *
 	 * @return void
@@ -155,7 +134,7 @@ class DashboardWidget {
 			$country        = $carrier->getCountry();
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) === false ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ) === false ) {
 				continue;
 			}
 
@@ -179,7 +158,7 @@ class DashboardWidget {
 				'isCodSettingNeeded' => $isCodSettingNeeded,
 				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
 				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
-				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
+				'hasPacketaShipping' => $this->dashboardHelper->isPacketaShippingMethodActive(),
 				'survey'             => new SurveyConfig(
 					( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] ),
 					$this->surveyConfig['url'],

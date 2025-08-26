@@ -7,6 +7,7 @@ namespace Tests\Module\Checkout;
 use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Transients;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -99,7 +100,7 @@ class CheckoutStorageTest extends TestCase {
 
 	public function testMigrateGuestSessionToUserSession(): void {
 		$dummyGuestSessionId = 'dummy_guest_session_123';
-		$oldTransientId      = CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
+		$oldTransientId      = Transients::CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
 		$dummyTransientData  = [
 			'shipping_method_1' => [
 				'point_id'   => '123',
@@ -126,7 +127,7 @@ class CheckoutStorageTest extends TestCase {
 
 	public function testMigrateGuestSessionToUserSessionNoDataSaved(): void {
 		$dummyGuestSessionId = 'dummy_guest_session_123';
-		$oldTransientId      = CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
+		$oldTransientId      = Transients::CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
 		$checkoutStorage     = $this->createCheckoutStorage();
 
 		$this->wpAdapterMock->expects( $this->once() )
@@ -177,7 +178,7 @@ class CheckoutStorageTest extends TestCase {
 	 */
 	public function testMigrateGuestSessionToUserSessionEmptyOrWrongTypeDataSaved( $transientData ): void {
 		$dummyGuestSessionId = 'dummy_guest_session_123';
-		$oldTransientId      = CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
+		$oldTransientId      = Transients::CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
 		$checkoutStorage     = $this->createCheckoutStorage();
 
 		$this->wpAdapterMock->expects( $this->once() )

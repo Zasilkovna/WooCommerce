@@ -17,6 +17,7 @@ use Packetery\Module\Log;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingMethodGenerator;
+use Packetery\Module\Transients;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
@@ -28,9 +29,8 @@ use Packetery\Nette\Http\Request;
  */
 class CountryListingPage {
 
-	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
-	public const DATA_KEY_COUNTRY_CODE     = 'countryCode';
-	public const PARAM_CARRIER_FILTER      = 'carrier_query_filter';
+	public const DATA_KEY_COUNTRY_CODE = 'countryCode';
+	public const PARAM_CARRIER_FILTER  = 'carrier_query_filter';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -49,9 +49,9 @@ class CountryListingPage {
 	/**
 	 * Carrier downloader.
 	 *
-	 * @var Downloader
+	 * @var CarrierUpdater
 	 */
-	private $downloader;
+	private $carrierUpdater;
 
 	/**
 	 * Http request.
@@ -125,7 +125,7 @@ class CountryListingPage {
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
-		Downloader $downloader,
+		CarrierUpdater $carrierUpdater,
 		Request $httpRequest,
 		OptionsProvider $optionsProvider,
 		Log\Page $logPage,
@@ -140,7 +140,7 @@ class CountryListingPage {
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
-		$this->downloader              = $downloader;
+		$this->carrierUpdater          = $carrierUpdater;
 		$this->httpRequest             = $httpRequest;
 		$this->optionsProvider         = $optionsProvider;
 		$this->logPage                 = $logPage;
@@ -158,21 +158,9 @@ class CountryListingPage {
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$carriersUpdateParams = [];
-		if ( $this->httpRequest->getQuery( 'update_carriers' ) !== null ) {
-			set_transient( 'packetery_run_update_carriers', true );
-			if ( wp_safe_redirect( add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) ) ) ) {
-				exit;
-			}
-		}
-		if ( get_transient( 'packetery_run_update_carriers' ) !== false ) {
-			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
-			$carriersUpdateParams                           = [
-				'result'      => $carrierUpdaterResult,
-				'resultClass' => $carrierUpdaterClass,
-			];
-			delete_transient( 'packetery_run_update_carriers' );
-		}
+		$redirectUrl = add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) );
+		$this->carrierUpdater->startUpdate( $redirectUrl );
+		$carriersUpdateParams = $this->carrierUpdater->runUpdate();
 
 		$carriersUpdateParams['link']       = add_query_arg(
 			[
@@ -181,7 +169,7 @@ class CountryListingPage {
 			],
 			get_admin_url( null, 'admin.php' )
 		);
-		$carriersUpdateParams['lastUpdate'] = $this->getLastUpdate();
+		$carriersUpdateParams['lastUpdate'] = $this->carrierUpdater->getLastUpdate();
 
 		$form = $this->formFactory->create();
 		$form->setAction( 'admin.php?page=' . OptionsPage::SLUG );
@@ -203,7 +191,7 @@ class CountryListingPage {
 			$nextScheduledRun = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		}
 
-		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
+		$carrierChanges         = get_transient( Transients::CARRIER_CHANGES );
 		$settingsChangedMessage = null;
 		if ( $carrierChanges !== false ) {
 			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
@@ -277,14 +265,14 @@ class CountryListingPage {
 	 * @return array Data.
 	 */
 	private function getActiveCountries(): array {
-		$countries = $this->carrierRepository->getCountries();
+		$countries = $this->carrierRepository->getCountriesWithUnavailable();
 
 		$internalCountries = $this->pickupPointsConfig->getInternalCountries();
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$allCarriers      = $this->getCarriersDataByCountry( $country );
+			$allCarriers      = $this->getCarriersDataByCountry( $country, true );
 			$activeCarriers   = array_filter(
 				$allCarriers,
 				static function ( array $carrierData ): bool {
@@ -332,25 +320,6 @@ class CountryListingPage {
 	}
 
 	/**
-	 * Gets last update datetime.
-	 *
-	 * @return string|null
-	 */
-	public function getLastUpdate(): ?string {
-		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
-		if ( $lastCarrierUpdate !== false ) {
-			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
-			if ( $date !== false ) {
-				$date->setTimezone( wp_timezone() );
-
-				return $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
-			}
-		}
-
-		return null;
-	}
-
-	/**
 	 * Gets options of active carriers.
 	 *
 	 * @return array
@@ -383,13 +352,14 @@ class CountryListingPage {
 	 * Gets array of carriers data by country code.
 	 *
 	 * @param string $countryCode Country code.
+	 * @param bool   $includeUnavailable Include unavailable carriers.
 	 *
 	 * @return array
 	 */
-	private function getCarriersDataByCountry( string $countryCode ): array {
+	private function getCarriersDataByCountry( string $countryCode, bool $includeUnavailable ): array {
 		$carriersData    = [];
 		$keyword         = $this->httpRequest->getQuery( self::PARAM_CARRIER_FILTER ) ?? '';
-		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
+		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode, $includeUnavailable );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
 				continue;
@@ -409,7 +379,7 @@ class CountryListingPage {
 			$carriersData[ $carrierId ] = [
 				'name'              => $carrier->getName(),
 				'isActivatedByUser' => $carrierOptions->isActive(),
-				'isActive'          => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
+				'isActive'          => $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ),
 				'detailUrl'         => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,

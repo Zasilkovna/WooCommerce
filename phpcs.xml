@@ -16,6 +16,7 @@
 	<file>bootstrap.php</file>
 	<file>bootstrap-cli.php</file>
 	<file>packeta.php</file>
+	<file>uninstall.php</file>
 	<file>tests</file>
 
 	<exclude-pattern>src/Packetery/Module/Shipping/Generated/</exclude-pattern>

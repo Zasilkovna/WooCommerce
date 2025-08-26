@@ -39,7 +39,7 @@ class ShippingZoneRepository {
 	 */
 	public function getDataStore(): WC_Shipping_Zone_Data_Store_Interface {
 		if ( $this->dataStore === null ) {
-			$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
+			$this->dataStore = $this->wcAdapter->dataStoreLoad( 'shipping-zone' );
 		}
 
 		return $this->dataStore;

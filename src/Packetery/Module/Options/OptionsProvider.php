@@ -10,8 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Order\PacketSynchronizer;
 
 /**
  * Class OptionsProvider
@@ -19,11 +19,6 @@ use Packetery\Module\Order\PacketSynchronizer;
  * @package Packetery
  */
 class OptionsProvider {
-
-	public const OPTION_NAME_PACKETERY                 = 'packetery';
-	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
-	public const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
-	public const OPTION_NAME_PACKETERY_ADVANCED        = 'packetery_advanced';
 
 	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
 	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
@@ -38,6 +33,7 @@ class OptionsProvider {
 	public const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	public const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 	public const PRICES_INCLUDE_TAX_DEFAULT                = false;
+	public const HIDE_CHECKOUT_LOGO_DEFAULT                = false;
 
 	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
 	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
@@ -73,26 +69,23 @@ class OptionsProvider {
 	 */
 	private $advancedData;
 
-	/**
-	 * OptionsProvider constructor.
-	 */
-	public function __construct() {
-		$data = get_option( self::OPTION_NAME_PACKETERY );
+	public function __construct( WpAdapter $wpAdapter ) {
+		$data = $wpAdapter->getOption( OptionNames::PACKETERY );
 		if ( $data === false || $data === null ) {
 			$data = array();
 		}
 
-		$syncData = get_option( self::OPTION_NAME_PACKETERY_SYNC );
+		$syncData = $wpAdapter->getOption( OptionNames::PACKETERY_SYNC );
 		if ( $syncData === false || $syncData === null ) {
 			$syncData = [];
 		}
 
-		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		$autoSubmissionData = $wpAdapter->getOption( OptionNames::PACKETERY_AUTO_SUBMISSION );
 		if ( $autoSubmissionData === false || $autoSubmissionData === null ) {
 			$autoSubmissionData = [];
 		}
 
-		$advancedData = get_option( self::OPTION_NAME_PACKETERY_ADVANCED );
+		$advancedData = $wpAdapter->getOption( OptionNames::PACKETERY_ADVANCED );
 		if ( $advancedData === false || $advancedData === null ) {
 			$advancedData = [];
 		}
@@ -127,10 +120,10 @@ class OptionsProvider {
 	 */
 	public function getAllOptions(): array {
 		return [
-			self::OPTION_NAME_PACKETERY                 => $this->data,
-			self::OPTION_NAME_PACKETERY_SYNC            => $this->syncData,
-			self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
-			self::OPTION_NAME_PACKETERY_ADVANCED        => $this->advancedData,
+			OptionNames::PACKETERY                 => $this->data,
+			OptionNames::PACKETERY_SYNC            => $this->syncData,
+			OptionNames::PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
+			OptionNames::PACKETERY_ADVANCED        => $this->advancedData,
 		];
 	}
 
@@ -427,22 +420,24 @@ class OptionsProvider {
 	/**
 	 * Status syncing packet statuses.
 	 *
-	 * @return array
+	 * @param PacketStatus[] $expectedPacketStatuses Expected packet statuses.
+	 *
+	 * @return string[]
 	 */
-	public function getStatusSyncingPacketStatuses(): array {
-		$value = ( $this->syncData['status_syncing_packet_statuses'] ?? null );
-		if ( is_array( $value ) ) {
-			return $value;
+	public function getStatusSyncingPacketStatuses( array $expectedPacketStatuses ): array {
+		$packetStatusNames         = $this->syncData['status_syncing_packet_statuses'] ?? null;
+		$expectedPacketStatusNames = array_map(
+			static function ( PacketStatus $status ): string {
+				return $status->getName();
+			},
+			$expectedPacketStatuses
+		);
+
+		if ( is_array( $packetStatusNames ) ) {
+			return array_intersect( $packetStatusNames, $expectedPacketStatusNames );
 		}
 
-		return array_keys(
-			array_filter(
-				PacketSynchronizer::getPacketStatuses(),
-				static function ( PacketStatus $packetStatus ): bool {
-					return $packetStatus->hasDefaultSynchronization() === true;
-				}
-			)
-		);
+		return $expectedPacketStatusNames;
 	}
 
 	/**
@@ -482,6 +477,19 @@ class OptionsProvider {
 		return self::PRICES_INCLUDE_TAX_DEFAULT;
 	}
 
+	public function isCheckoutLogoHidden(): bool {
+		$hideCheckoutLogo = $this->get( 'hide_checkout_logo' );
+		if ( $hideCheckoutLogo !== null ) {
+			return (bool) $hideCheckoutLogo;
+		}
+
+		return self::HIDE_CHECKOUT_LOGO_DEFAULT;
+	}
+
+	public function isCheckoutLogoShown(): bool {
+		return ! $this->isCheckoutLogoHidden();
+	}
+
 	/**
 	 * Tells if packet cancellation should be forced.
 	 *
@@ -515,6 +523,9 @@ class OptionsProvider {
 		$result  = [];
 
 		foreach ( $mapping as $gatewayMapping ) {
+			if ( $gatewayMapping['event'] === null ) {
+				continue;
+			}
 			$result[ $gatewayMapping['event'] ] = $gatewayMapping['event'];
 		}
 
@@ -679,6 +690,15 @@ class OptionsProvider {
 		}
 
 		return false;
+	}
+
+	public function isWcCarrierConfigEnabledNullable(): ?bool {
+		$isEnabled = $this->advancedData['new_carrier_settings_enabled'] ?? null;
+		if ( $isEnabled !== null ) {
+			return (bool) $isEnabled;
+		}
+
+		return null;
 	}
 
 	/**

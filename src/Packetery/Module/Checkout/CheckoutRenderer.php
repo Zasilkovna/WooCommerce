@@ -6,6 +6,7 @@ namespace Packetery\Module\Checkout;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Views\UrlBuilder;
 use WC_Shipping_Rate;
@@ -35,16 +36,23 @@ class CheckoutRenderer {
 	 */
 	private $wpAdapter;
 
+	/**
+	 * @var OptionsProvider
+	 */
+	private $optionsProvider;
+
 	public function __construct(
 		Engine $latteEngine,
 		UrlBuilder $urlBuilder,
 		CheckoutService $checkoutService,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		OptionsProvider $optionsProvider
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->urlBuilder      = $urlBuilder;
 		$this->checkoutService = $checkoutService;
 		$this->wpAdapter       = $wpAdapter;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -84,6 +92,7 @@ class CheckoutRenderer {
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
 				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'showLogo'     => $this->optionsProvider->isCheckoutLogoShown(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				],
@@ -106,6 +115,7 @@ class CheckoutRenderer {
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
 				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'showLogo'     => $this->optionsProvider->isCheckoutLogoShown(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				],

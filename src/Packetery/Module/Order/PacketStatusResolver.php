@@ -15,6 +15,16 @@ namespace Packetery\Module\Order;
  * @package Packetery\Module\Order
  */
 class PacketStatusResolver {
+
+	/**
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	public function __construct( PacketSynchronizer $packetSynchronizer ) {
+		$this->packetSynchronizer = $packetSynchronizer;
+	}
+
 	/**
 	 * Gets translated name of packet status.
 	 *
@@ -22,8 +32,8 @@ class PacketStatusResolver {
 	 *
 	 * @return string|null
 	 */
-	public static function getTranslatedName( ?string $status ): ?string {
-		$statuses = PacketSynchronizer::getPacketStatuses();
+	public function getTranslatedName( ?string $status ): ?string {
+		$statuses = $this->packetSynchronizer->getPacketStatuses();
 
 		return isset( $statuses[ $status ] ) ? $statuses[ $status ]->getTranslatedName() : $status;
 	}

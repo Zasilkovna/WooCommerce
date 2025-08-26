@@ -23,7 +23,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: mbstring, intl
-          coverage: yes
+          coverage: no
 
       - name: php version
         run: php -v
@@ -33,6 +33,28 @@ jobs:
 
       - name: Run PHPUnit
         run: composer run tests-unit
+
+  # job for code coverage
+  code-coverage:
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: mbstring, intl
+          coverage: yes
+
+      - name: php version
+        run: php -v
+
+      - name: Install Composer dependencies
+        run: composer install
 
       - name: Run PHPUnit with code coverage
         run: |

@@ -47,6 +47,13 @@
 					"order": $target.data( 'order-data' )
 				}
 			} );
+			let isWizardEnabled = $target.data( 'wizard-enabled' );
+			if (typeof startWizardTour === 'function' && isWizardEnabled === true) {
+				window.startWizardTour();
+				$('a[data-wizard-enabled="true"].packetery-js-enabled-packet-edit-button').each(function() {
+					$(this).data('wizard-enabled', 'false');
+				});
+			}
 
 		} ).on( 'submit', '#order-modal-edit-form', function( e ) {
 			var $target = $( e.target );

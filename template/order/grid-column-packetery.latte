@@ -28,7 +28,7 @@
 	{/if}
 {else}
 	<a data-packetery-order-inline-edit
-		class="button woocommerce-help-tip dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
+		class="button woocommerce-help-tip dashicons packetery-js-enabled-packet-edit-button {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
 		data-order-data="{= json_encode(
 		[
 		'id' => $order->getNumber(),
@@ -57,6 +57,7 @@
 		'orderWarningFields' => $orderWarningFields,
 		]
 		)}"
+		data-wizard-enabled="true"
 		data-tip="{if ! $orderIsSubmittable}{$translations['packetSubmissionNotPossible']}{else}{$translations['setAdditionalPacketInfo']}{/if}"
 	></a>
 	<a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable}hidden{/if}"

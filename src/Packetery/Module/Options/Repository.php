@@ -35,36 +35,70 @@ class Repository {
 	}
 
 	/**
-	 * Get all packetery related options.
-	 *
-	 * @return object[]|null
+	 * @return string[]
 	 */
-	public function getPluginOptions(): ?array {
-		return $this->wpdbAdapter->get_results( 'SELECT `option_name` FROM `' . $this->wpdbAdapter->options . "` WHERE `option_name` LIKE 'packetery%'" );
-	}
-
-	/**
-	 * Fork of delete_expired_transients.
-	 *
-	 * @param string $prefix Custom transient prefix.
-	 *
-	 * @return int|bool
-	 */
-	public function deleteExpiredTransientsByPrefix( string $prefix ) {
+	public function getExpiredTransientsByPrefix( string $prefix ): array {
 		$transientPrefix        = sprintf( '_transient_%s', $prefix );
 		$transientTimeoutPrefix = sprintf( '_transient_timeout_%s', $prefix );
 
-		return $this->wpdbAdapter->query(
+		return $this->wpdbAdapter->get_col(
 			$this->wpdbAdapter->prepare(
-				"DELETE a, b FROM {$this->wpdbAdapter->options} a, {$this->wpdbAdapter->options} b
-				WHERE a.option_name LIKE %s
-				AND a.option_name NOT LIKE %s
-				AND b.option_name = CONCAT( '_transient_timeout_', SUBSTRING( a.option_name, 12 ) )
-				AND b.option_value < %d",
+				"SELECT SUBSTRING(`a`.`option_name`, 12)
+				FROM `{$this->wpdbAdapter->options}` `a`
+				JOIN `{$this->wpdbAdapter->options}` `b`
+				ON `b`.`option_name` = CONCAT('_transient_timeout_', SUBSTRING(`a`.`option_name`, 12))
+				WHERE `a`.`option_name` LIKE %s
+				AND `a`.`option_name` NOT LIKE %s
+				AND `b`.`option_value` < %d",
 				$this->wpdbAdapter->escLike( $transientPrefix ) . '%',
 				$this->wpdbAdapter->escLike( $transientTimeoutPrefix ) . '%',
 				time()
 			)
 		);
+	}
+
+	/**
+	 * @param string[] $prefixes
+	 *
+	 * @return string[]
+	 */
+	public function getAllTransientsByPrefixes( array $prefixes ): array {
+		if ( $prefixes === [] ) {
+			return [];
+		}
+
+		$optionPrefixes = [];
+		foreach ( $prefixes as $prefix ) {
+			$optionPrefixes[] = '_transient_' . $prefix;
+		}
+
+		$transientNames = [];
+		$result         = $this->getAllOptionNamesByPrefixes( $optionPrefixes );
+
+		foreach ( $result as $optionName ) {
+			$transientNames[] = preg_replace( '~^_transient_~', '', $optionName );
+		}
+
+		return $transientNames;
+	}
+
+	/**
+	 * @param string[] $prefixes
+	 *
+	 * @return string[]
+	 */
+	public function getAllOptionNamesByPrefixes( array $prefixes ): array {
+		if ( $prefixes === [] ) {
+			return [];
+		}
+
+		$prefixWhere = [];
+		foreach ( $prefixes as $prefix ) {
+			$prefixWhere[] = sprintf( '`option_name` LIKE "%s"', $this->wpdbAdapter->escLike( $prefix ) . '%' );
+		}
+
+		$prefixWhereDisjunction = implode( ' OR ', $prefixWhere );
+
+		return $this->wpdbAdapter->get_col( "SELECT `option_name` FROM `{$this->wpdbAdapter->options}` WHERE {$prefixWhereDisjunction}" );
 	}
 }

@@ -51,6 +51,7 @@ class Carrier {
 			$dbResult['country'],
 			$dbResult['currency'],
 			(float) $dbResult['max_weight'],
+			(bool) $dbResult['available'],
 			(bool) $dbResult['deleted'],
 			$ageVerified
 		);
@@ -78,6 +79,7 @@ class Carrier {
 			$nonFeedCarrierProvider->getCountry(),
 			$nonFeedCarrierProvider->getCurrency(),
 			10,
+			true,
 			false,
 			$nonFeedCarrierProvider->supportsAgeVerification()
 		);

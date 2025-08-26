@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Tests\Core;
 
-use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Entity\Carrier;
@@ -16,8 +15,12 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 
 class DummyFactory {
-	public static function createAddress(): Address {
-		return new Address( 'Dummy street', 'Dummy city', '123 45' );
+	public static function createAddress( ?string $houseNumber = null, ?string $county = null ): Address {
+		$address = new Address( 'Dummy street', 'Dummy city', '123 45' );
+		$address->setHouseNumber( $houseNumber );
+		$address->setCounty( $county );
+
+		return $address;
 	}
 
 	public static function createInvalidAddress(): Address {
@@ -58,6 +61,48 @@ class DummyFactory {
 		return $order;
 	}
 
+	public static function createCarrierCzzpoint(): Carrier {
+		return new Carrier(
+			'czzpoint',
+			'czzpoint',
+			true,
+			false,
+			false,
+			false,
+			true,
+			true,
+			false,
+			true,
+			'cz',
+			'CZK',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
+	public static function createCarrierZpointcz(): Carrier {
+		return new Carrier(
+			'zpointcz',
+			'zpointcz',
+			true,
+			false,
+			false,
+			false,
+			true,
+			true,
+			false,
+			true,
+			'cz',
+			'CZK',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
 	public static function createCarrierCzechPp(): Carrier {
 		return new Carrier(
 			'zpoint-cz',
@@ -73,8 +118,9 @@ class DummyFactory {
 			'cz',
 			'CZK',
 			5.0,
-			false,
 			true,
+			false,
+			true
 		);
 	}
 
@@ -93,8 +139,9 @@ class DummyFactory {
 			'sk',
 			'EUR',
 			5.0,
-			false,
 			true,
+			false,
+			true
 		);
 	}
 
@@ -113,8 +160,9 @@ class DummyFactory {
 			'cz',
 			'CZK',
 			5.0,
+			true,
 			false,
-			false,
+			false
 		);
 	}
 
@@ -133,8 +181,51 @@ class DummyFactory {
 			'cz',
 			'CZK',
 			5.0,
+			true,
+			true,
+			true
+		);
+	}
+
+	public static function createCarrierGermanHd(): Carrier {
+		return new Carrier(
+			'6373',
+			'DE Hermes HD',
 			false,
 			true,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			'de',
+			'EUR',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
+	public static function createCarrierGermanPp(): Carrier {
+		return new Carrier(
+			'6828',
+			'DE Hermes PP',
+			true,
+			true,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			'de',
+			'EUR',
+			30.0,
+			true,
+			false,
+			true
 		);
 	}
 
@@ -184,21 +275,6 @@ class DummyFactory {
 			1,
 			'de',
 			1.25,
-		);
-	}
-
-	public static function getEmptyPickupPointValidateRequest(): PickupPointValidateRequest {
-		return new PickupPointValidateRequest(
-			'dummyPointId',
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
 		);
 	}
 }
