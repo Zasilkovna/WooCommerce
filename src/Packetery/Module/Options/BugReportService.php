@@ -149,7 +149,7 @@ class BugReportService {
 		$subject = sprintf( (string) $this->wpAdapter->__( 'Packeta: Plugin WP - bug report - %s', 'packeta' ), $siteName );
 
 		/**
-		 * @var array{0:string,1:string,2:string} $headers
+		 * @var non-empty-list<string> $headers
 		 */
 		$headers = [
 			'Content-Type: text/html; charset=UTF-8',
@@ -157,11 +157,13 @@ class BugReportService {
 			"Reply-To: {$replyEmail}",
 		];
 
-		$emailBody = $this->createEmailBody( $replyEmail, $message, $siteName );
-
-		$attachments = $this->createAttachments();
-
-		return $this->wpAdapter->wpMail( $this->supportEmailAddress, $subject, $emailBody, $headers, $attachments );
+		return $this->wpAdapter->wpMail(
+			$this->supportEmailAddress,
+			$subject,
+			$this->createEmailBody( $replyEmail, $message, $siteName ),
+			$headers,
+			$this->createAttachments()
+		);
 	}
 
 	private function createEmailBody( string $replyEmail, string $message, string $siteName ): string {
