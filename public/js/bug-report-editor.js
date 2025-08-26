@@ -6,6 +6,7 @@ jQuery(document).ready(function($) {
 	wp.editor.initialize('packetery-js-bug-report-form-message', {
 		tinymce: {
 			height: 200,
+			width: 800
 		},
 	});
 });

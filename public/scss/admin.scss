@@ -140,10 +140,10 @@
 	font-weight: bold;
 }
 
-#packetery-options-page {
+#packetery-options-page, .packetery_settings {
 	padding-right: 1em;
 
-	input[type=text], input[type=number], select {
+	input[type=text], input[type=number], input[type="email"], select {
 		width: 500px;
 		max-width: none;
 	}
@@ -521,6 +521,7 @@ tbody .packetery-log-column-note {
 	.select2 .select2-selection,
 	input[type="text"],
 	input[type="number"],
+	input[type="email"],
 	select,
 	textarea {
 		border-radius: 0;
@@ -534,6 +535,7 @@ tbody .packetery-log-column-note {
 
 	input[type="text"]:focus,
 	input[type="number"]:focus,
+	input[type="email"],
 	select:focus,
 	textarea:focus {
 		box-shadow: 0 0 15px rgb(0 0 0 / 10%);
