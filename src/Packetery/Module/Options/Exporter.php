@@ -18,6 +18,7 @@ use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\DbLogger;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\WpdbAdapter;
 use Packetery\Nette\Http;
 use Packetery\Tracy\Debugger;
 
@@ -75,6 +76,11 @@ class Exporter {
 	 */
 	private $carrierUpdater;
 
+	/**
+	 * @var WpdbAdapter
+	 */
+	private $wpdbAdapter;
+
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
@@ -84,7 +90,8 @@ class Exporter {
 		ModuleHelper $moduleHelper,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		CarrierUpdater $carrierUpdater
+		CarrierUpdater $carrierUpdater,
+		WpdbAdapter $wpdbAdapter
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
@@ -95,14 +102,13 @@ class Exporter {
 		$this->wpAdapter          = $wpAdapter;
 		$this->wcAdapter          = $wcAdapter;
 		$this->carrierUpdater     = $carrierUpdater;
+		$this->wpdbAdapter        = $wpdbAdapter;
 	}
 
 	/**
 	 * Prepares and outputs export text.
 	 */
 	public function outputExportTxt(): void {
-		global $wpdb;
-
 		if (
 			$this->httpRequest->getQuery( 'page' ) !== Page::SLUG ||
 			$this->httpRequest->getQuery( 'action' ) !== self::ACTION_EXPORT_SETTINGS
@@ -110,6 +116,16 @@ class Exporter {
 			return;
 		}
 
+		$txtContents = $this->getExportContent();
+		header( 'Content-Type: text/plain' );
+		header( 'Content-Transfer-Encoding: Binary' );
+		header( 'Content-Length: ' . strlen( $txtContents ) );
+		header( 'Content-Disposition: attachment; filename="packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt"' );
+		ModuleHelper::renderString( $txtContents );
+		exit;
+	}
+
+	public function getExportContent(): string {
 		$globalSettings = $this->optionsProvider->getAllOptions();
 		if ( isset( $globalSettings[ OptionNames::PACKETERY ]['api_password'] ) ) {
 			$globalSettings[ OptionNames::PACKETERY ]['api_password'] = sprintf(
@@ -149,7 +165,7 @@ class Exporter {
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
 			'phpVersion'        => PHP_VERSION,
-			'dbServer'          => $wpdb->db_server_info(),
+			'dbServer'          => $this->wpdbAdapter->dbServerInfo(),
 			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
 			'packetaDebug'      => wc_bool_to_string( Debugger::isEnabled() ),
@@ -171,15 +187,7 @@ class Exporter {
 		];
 		update_option( OptionNames::LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
-		$txtContents = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/export.latte', $latteParams );
-		header( 'Content-Type: text/plain' );
-		header( 'Content-Transfer-Encoding: Binary' );
-		header( 'Content-Length: ' . strlen( $txtContents ) );
-		header( 'Content-Disposition: attachment; filename="packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt"' );
-		// @codingStandardsIgnoreStart
-		echo $txtContents;
-		// @codingStandardsIgnoreEnd
-		exit;
+		return $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/export.latte', $latteParams );
 	}
 
 	/**

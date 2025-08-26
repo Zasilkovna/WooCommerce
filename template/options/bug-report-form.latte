@@ -1,0 +1,34 @@
+{form $bugReportForm}
+	<table class="form-table packetery_settings" role="presentation">
+		<tr>
+			<th scope="row">
+				<label n:name=replyTo />
+			</th>
+			<td>
+				{input replyTo}
+				{if $bugReportForm['replyTo']->hasErrors()}
+					<div class="error">
+						{$bugReportForm['replyTo']->getError()}
+					</div>
+				{/if}
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">
+				<label for="message">Message</label>
+			</th>
+			<td>
+				{input message, 'id' => 'packetery-js-bug-report-form-message', 'rows' => 10, 'cols' => 50}
+				{if $bugReportForm['message']->hasErrors()}
+					<div class="error">
+						{$bugReportForm['message']->getError()}
+					</div>
+				{/if}
+			</td>
+		</tr>
+	</table>
+
+	<p class="submit">
+		{input submit, 'class' => 'button button-primary'}
+	</p>
+{/form}
