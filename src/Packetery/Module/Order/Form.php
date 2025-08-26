@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\Order;
 use Packetery\Core\Validator;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
@@ -60,7 +61,8 @@ class Form {
 		$form->addText( self::FIELD_WEIGHT, $this->wpAdapter->__( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( Forms\Form::FLOAT );
+			->addRule( Forms\Form::FLOAT, $this->wpAdapter->__( 'The weight must be a number.', 'packeta' ) )
+			->addRule( Forms\Form::MIN, $this->wpAdapter->__( 'The weight must be a positive number.', 'packeta' ), 0 );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
 		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, $this->wpAdapter->__( 'Length', 'packeta' ), $unit )
 			->setNullable();
@@ -148,5 +150,44 @@ class Form {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * @param string[] $invalidFieldNames
+	 *
+	 * @return string
+	 */
+	public function getInvalidFieldsMessageFromValidationResult( array $invalidFieldNames, Order $order ): string {
+		$fieldTranslations = [
+			self::FIELD_VALUE  => $this->wpAdapter->__( 'value', 'packeta' ),
+			self::FIELD_WEIGHT => $this->wpAdapter->__( 'weight', 'packeta' ),
+			self::FIELD_HEIGHT => $this->wpAdapter->__( 'height', 'packeta' ),
+			self::FIELD_WIDTH  => $this->wpAdapter->__( 'width', 'packeta' ),
+			self::FIELD_LENGTH => $this->wpAdapter->__( 'length', 'packeta' ),
+		];
+		$message           = '';
+		$invalidFields     = [];
+
+		foreach ( $invalidFieldNames as $fieldName ) {
+			if ( isset( $fieldTranslations[ $fieldName ] ) ) {
+				$invalidFields[] = $fieldTranslations[ $fieldName ];
+			}
+		}
+
+		if ( $invalidFields !== [] ) {
+			$invalidFieldsString = implode( ', ', $invalidFields );
+
+			$message = sprintf(
+				// translators: %s: Required fields.
+				(string) $this->wpAdapter->__( 'Please fill in all required shipment details (%s) before submitting.', 'packeta' ),
+				$invalidFieldsString
+			);
+		}
+
+		if ( $order->hasToFillCustomsDeclaration() ) {
+			$message .= " {$this->wpAdapter->__( 'Customs declaration has to be filled in order detail.', 'packeta' )}";
+		}
+
+		return $message;
 	}
 }

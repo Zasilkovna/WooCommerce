@@ -295,6 +295,9 @@ class Metabox {
 				$statusClass = $statusClasses[ $statusType ];
 			}
 
+			$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+			$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
+
 			$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
@@ -303,6 +306,7 @@ class Metabox {
 					'statusClass'                => $statusClass,
 					'isPacketSubmissionPossible' => false,
 					'orderWarningFields'         => [],
+					'invalidFieldsMessage'       => $invalidFieldsMessage,
 					'packetCancelLink'           => $packetCancelLink,
 					'packetTrackingUrl'          => $this->coreHelper->getTrackingUrl( $packetId ),
 					'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
@@ -412,6 +416,9 @@ class Metabox {
 			}
 		}
 
+		$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
+
 		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
@@ -421,7 +428,8 @@ class Metabox {
 				'widgetButtonError'          => $widgetButtonError,
 				'showHdWidget'               => $showHdWidget,
 				'isPacketSubmissionPossible' => $isPacketSubmissionPossible,
-				'orderWarningFields'         => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+				'orderWarningFields'         => $invalidFields,
+				'invalidFieldsMessage'       => $invalidFieldsMessage,
 				'packetCancelLink'           => null,
 				'packetTrackingUrl'          => null,
 				'packetStatusTranslatedName' => null,
@@ -444,7 +452,7 @@ class Metabox {
 				'pickupPointAttributes'      => Attribute::$pickupPointAttributes,
 				'homeDeliveryAttributes'     => Attribute::$homeDeliveryAttributes,
 				'translations'               => [
-					'packetSubmissionValidationErrorTooltip' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
+					'packetSubmissionValidationErrorTooltip' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled:', 'packeta' ),
 					'showLogs'                  => $this->wpAdapter->__( 'Show logs', 'packeta' ),
 					'weightIsManual'            => $this->wpAdapter->__( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 					'codIsManual'               => $this->wpAdapter->__( 'COD value is manually set. To calculate the value remove field content and save.', 'packeta' ),

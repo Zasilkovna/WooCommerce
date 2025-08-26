@@ -258,12 +258,6 @@ class AssetManager {
 		}
 
 		if ( $isOrderGridPage ) {
-			$orderGridPageSettings = [
-				'translations' => [
-					'hasToFillCustomsDeclaration' => $this->wpAdapter->__( 'Customs declaration has to be filled in order detail.', 'packeta' ),
-					'packetSubmissionNotPossible' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-				],
-			];
 			$this->enqueueScript(
 				'packetery-admin-grid-order-edit-js',
 				'public/js/admin-grid-order-edit.js',
@@ -276,7 +270,6 @@ class AssetManager {
 			);
 
 			$this->wpAdapter->localizeScript( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
-			$this->wpAdapter->localizeScript( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
 
 			$this->enqueueScript(
 				'packetery-admin-stored-until-modal-js',
@@ -289,7 +282,6 @@ class AssetManager {
 				]
 			);
 			$this->wpAdapter->localizeScript( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
-			$this->wpAdapter->localizeScript( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		$pickupPointPickerSettings = null;

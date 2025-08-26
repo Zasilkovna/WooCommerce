@@ -22,19 +22,17 @@
 				$(document.body).trigger( 'wc-init-datepickers' );
 				$( 'input[name="packeteryDeliverOn"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 
-				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
-					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
-				} else if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
+				if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
 					var orderWarningFields = $lastModalButtonClicked.data( 'order-data' ).orderWarningFields;
 					for ( var invalidFieldNameKey in orderWarningFields ) {
 						if ( ! orderWarningFields.hasOwnProperty( invalidFieldNameKey ) ) {
 							continue;
 						}
 
-						packeteryModal.find( '[name="' + orderWarningFields[ invalidFieldNameKey ] + '"]' ).addClass('packetery-has-warning');
+					packeteryModal.find( '[name="' + orderWarningFields[ invalidFieldNameKey ] + '"]' ).addClass('packetery-has-warning');
 					}
 
-					flashMessage( packeteryModal, 'warning', settings.translations.packetSubmissionNotPossible );
+					flashMessage( packeteryModal, 'warning', $lastModalButtonClicked.data( 'order-data' ).invalidFieldsMessage );
 				}
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
@@ -120,6 +118,7 @@
 				orderData.packeteryAdultContent = response.data.packeteryAdultContent;
 				orderData.orderIsSubmittable = response.data.orderIsSubmittable;
 				orderData.orderWarningFields = response.data.orderWarningFields;
+				orderData.invalidFieldsMessage = response.data.invalidFieldsMessage;
 				orderData.manualWeightIconExtraClass = response.data.hasOrderManualWeight === true ? '' : 'packetery-hidden ';
 				orderData.manualCodIconExtraClass = response.data.hasOrderManualCod === true ? '' : 'packetery-hidden ';
 				orderData.manualValueIconExtraClass = response.data.hasOrderManualValue === true ? '' : 'packetery-hidden ';

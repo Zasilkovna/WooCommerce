@@ -234,6 +234,9 @@ final class OrderController extends WP_REST_Controller {
 		$order->setSize( $size );
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $packeteryDeliverOn ) );
 
+		$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
+
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -253,7 +256,8 @@ final class OrderController extends WP_REST_Controller {
 			Form::FIELD_CALCULATED_VALUE => $order->getCalculatedValue(),
 			Form::FIELD_DELIVER_ON       => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 			'orderIsSubmittable'         => $this->orderValidator->isValid( $order ),
-			'orderWarningFields'         => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+			'orderWarningFields'         => $invalidFields,
+			'invalidFieldsMessage'       => $invalidFieldsMessage,
 			'hasOrderManualWeight'       => $order->hasManualWeight(),
 			'hasOrderManualCod'          => $order->hasManualCod(),
 			'hasOrderManualValue'        => $order->hasManualValue(),
@@ -304,11 +308,15 @@ final class OrderController extends WP_REST_Controller {
 
 		$this->orderRepository->save( $order );
 
+		$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
+
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
 			'packeteryStoredUntil' => $order->getStoredUntil(),
 			'orderIsSubmittable'   => $this->orderValidator->isValid( $order ),
-			'orderWarningFields'   => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+			'orderWarningFields'   => $invalidFields,
+			'invalidFieldsMessage' => $invalidFieldsMessage,
 		];
 
 		return new WP_REST_Response( $data, 200 );
