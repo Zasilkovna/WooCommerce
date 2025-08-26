@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-18T10:25:58+02:00\n"
+"POT-Creation-Date: 2025-08-26T13:20:14+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -1712,8 +1712,8 @@ msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:163
 #: src/Packetery/Module/Order/LabelPrint.php:168
-#: src/Packetery/Module/Order/LabelPrint.php:284
-#: src/Packetery/Module/Order/LabelPrint.php:285
+#: src/Packetery/Module/Order/LabelPrint.php:270
+#: src/Packetery/Module/Order/LabelPrint.php:271
 msgid "Print labels"
 msgstr ""
 
@@ -1734,54 +1734,54 @@ msgstr ""
 msgid "No orders have been selected for Packeta pick-up points"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:223
-msgid "Carrier label printing failed, you can find more information in the Packeta log."
-msgstr ""
-
 #. translators: %s represents shipment tracking number
-#: src/Packetery/Module/Order/LabelPrint.php:242
+#: src/Packetery/Module/Order/LabelPrint.php:228
 msgid "Label printing for shipment %s failed, you can find more information in the Packeta log."
 msgstr ""
 
 #. translators: %s represents error message
-#: src/Packetery/Module/Order/LabelPrint.php:248
+#: src/Packetery/Module/Order/LabelPrint.php:234
 msgid "Carrier label printing failed, you can find more information in the Packeta log. Error: %s"
 msgstr ""
 
 #. translators: %s represents error message
-#: src/Packetery/Module/Order/LabelPrint.php:254
+#: src/Packetery/Module/Order/LabelPrint.php:240
 msgid "Label printing failed, you can find more information in the Packeta log. Error: %s"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:323
+#: src/Packetery/Module/Order/LabelPrint.php:309
 msgid "Label has been printed successfully."
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:326
+#: src/Packetery/Module/Order/LabelPrint.php:312
 msgid "Label could not be printed."
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:370
+#: src/Packetery/Module/Order/LabelPrint.php:356
 msgid "Carrier label has been printed successfully."
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:373
+#: src/Packetery/Module/Order/LabelPrint.php:359
 msgid "Carrier label could not be printed."
 msgstr ""
 
 #. translators: %s represents a packet tracking link.
-#: src/Packetery/Module/Order/LabelPrint.php:453
+#: src/Packetery/Module/Order/LabelPrint.php:439
 msgid "Packeta: Label for packet claim %s has been created"
 msgstr ""
 
 #. translators: %s represents a packet tracking link.
-#: src/Packetery/Module/Order/LabelPrint.php:458
+#: src/Packetery/Module/Order/LabelPrint.php:444
 msgid "Packeta: Label for packet %s has been created"
 msgstr ""
 
 #. translators: %s represents a packet tracking link.
-#: src/Packetery/Module/Order/LabelPrint.php:463
+#: src/Packetery/Module/Order/LabelPrint.php:449
 msgid "Packeta: Carrier label for packet %s has been created"
+msgstr ""
+
+#: src/Packetery/Module/Order/LabelPrint.php:494
+msgid "Carrier label printing failed, you can find more information in the Packeta log."
 msgstr ""
 
 #. translators: %s is packet ID.
