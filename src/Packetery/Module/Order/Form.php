@@ -64,11 +64,11 @@ class Form {
 			->addRule( Forms\Form::FLOAT, $this->wpAdapter->__( 'The weight must be a number.', 'packeta' ) )
 			->addRule( Forms\Form::MIN, $this->wpAdapter->__( 'The weight must be a positive number.', 'packeta' ), 0 );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, $this->wpAdapter->__( 'Length', 'packeta' ), $unit )
+		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, (string) $this->wpAdapter->__( 'Length', 'packeta' ), $unit )
 			->setNullable();
-		$this->formFactory->addDimension( $form, self::FIELD_WIDTH, $this->wpAdapter->__( 'Width', 'packeta' ), $unit )
+		$this->formFactory->addDimension( $form, self::FIELD_WIDTH, (string) $this->wpAdapter->__( 'Width', 'packeta' ), $unit )
 			->setNullable();
-		$this->formFactory->addDimension( $form, self::FIELD_HEIGHT, $this->wpAdapter->__( 'Height', 'packeta' ), $unit )
+		$this->formFactory->addDimension( $form, self::FIELD_HEIGHT, (string) $this->wpAdapter->__( 'Height', 'packeta' ), $unit )
 			->setNullable();
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, $this->wpAdapter->__( 'Adult content', 'packeta' ) )
 			->setRequired( false );
