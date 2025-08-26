@@ -24,6 +24,7 @@ class CarrierTest extends TestCase {
 		self::assertIsString( $carrier->getCountry() );
 		self::assertIsString( $carrier->getCurrency() );
 		self::assertIsFloat( $carrier->getMaxWeight() );
+		self::assertIsBool( $carrier->isAvailable() );
 		self::assertIsBool( $carrier->isDeleted() );
 		self::assertIsBool( $carrier->supportsAgeVerification() );
 		self::assertIsBool( $carDeliveryCarrier->isCarDelivery() );

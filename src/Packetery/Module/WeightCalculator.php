@@ -9,7 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Core\CoreHelper;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
+use WC_Order;
 use WC_Order_Item_Product;
 
 /**
@@ -20,30 +23,32 @@ use WC_Order_Item_Product;
 class WeightCalculator {
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param OptionsProvider $optionsProvider Options provider.
+	 * @var WcAdapter
 	 */
-	public function __construct( OptionsProvider $optionsProvider ) {
+	private $wcAdapter;
+
+	public function __construct(
+		OptionsProvider $optionsProvider,
+		WcAdapter $wcAdapter
+	) {
 		$this->optionsProvider = $optionsProvider;
+		$this->wcAdapter       = $wcAdapter;
 	}
 
 	/**
 	 * Calculates order weight ignoring user specified weight.
 	 *
-	 * @param \WC_Order $order Order.
+	 * @param WC_Order $order Order.
 	 *
 	 * @return float
 	 */
-	public function calculateOrderWeight( \WC_Order $order ): float {
-		$weight = 0;
+	public function calculateOrderWeight( WC_Order $order ): float {
+		$weight = 0.0;
 		foreach ( $order->get_items() as $item ) {
 			$quantity = $item->get_quantity();
 			if ( $item instanceof WC_Order_Item_Product ) {
@@ -56,11 +61,9 @@ class WeightCalculator {
 			}
 		}
 
-		$weightKg = \wc_get_weight( $weight, 'kg' );
-		if ( is_numeric( $weightKg ) ) {
-			$weightKg += $this->optionsProvider->getPackagingWeight();
-		}
+		$weightKg  = $this->wcAdapter->getWeight( $weight, 'kg' );
+		$weightKg += $this->optionsProvider->getPackagingWeight();
 
-		return $weightKg;
+		return CoreHelper::simplifyWeight( $weightKg );
 	}
 }

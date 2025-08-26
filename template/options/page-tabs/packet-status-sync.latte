@@ -5,7 +5,7 @@
 				<label n:name=max_status_syncing_packets />
 			</th>
 			<td>
-				<input n:name=max_status_syncing_packets>
+				<input n:name=max_status_syncing_packets class="packetery-js-wizard-tracking-number-orders">
 			</td>
 		</tr>
 		<tr>
@@ -13,7 +13,7 @@
 				<label n:name=max_days_of_packet_status_syncing />
 			</th>
 			<td>
-				<input n:name=max_days_of_packet_status_syncing>
+				<input n:name=max_days_of_packet_status_syncing class="packetery-js-wizard-tracking-days">
 				<div class="packetery-help-block">
 					<p>{$translations['numberOfDaysToCheckDescription']}</p>
 				</div>
@@ -23,7 +23,7 @@
 			<th scope="row">
 				<label>{$translations['statusSyncingOrderStatusesLabel']}</label>
 			</th>
-			<td>
+			<td class="packetery-js-wizard-tracking-order-status">
 				{foreach $form[ 'status_syncing_order_statuses' ]->getControls() as $control}
 					<input n:name=$control>
 					<label n:name=$control />
@@ -38,7 +38,7 @@
 			<th scope="row">
 				<label>{$translations['statusSyncingPacketStatusesLabel']}</label>
 			</th>
-			<td>
+			<td class="packetery-js-wizard-tracking-packet-status">
 				{foreach $form[ 'status_syncing_packet_statuses' ]->getControls() as $control}
 					<input n:name=$control>
 					<label n:name=$control />
@@ -55,7 +55,7 @@
 				<label n:name=allow_order_status_change />
 			</th>
 			<td>
-				<input n:name=allow_order_status_change>
+				<input n:name=allow_order_status_change class="packetery-js-wizard-tracking-enable-change-order-status">
 			</td>
 		</tr>
 		<tr class="order_status_change_content">
@@ -74,6 +74,6 @@
 
 	</table>
 	<p class="submit">
-		<button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
+		<button n:name=save class="button button-primary packetery-js-wizard-settings-save-button">{$translations['saveChanges']}</button>
 	</p>
 </form>

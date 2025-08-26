@@ -11,6 +11,7 @@ namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierUpdater;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Framework\WcAdapter;
@@ -27,8 +28,7 @@ use Packetery\Tracy\Debugger;
  */
 class Exporter {
 
-	public const OPTION_LAST_SETTINGS_EXPORT = 'packetery_last_settings_export';
-	public const ACTION_EXPORT_SETTINGS      = 'export-settings';
+	public const ACTION_EXPORT_SETTINGS = 'export-settings';
 
 	/**
 	 * @var Http\Request
@@ -70,6 +70,11 @@ class Exporter {
 	 */
 	private $wcAdapter;
 
+	/**
+	 * @var CarrierUpdater
+	 */
+	private $carrierUpdater;
+
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
@@ -78,7 +83,8 @@ class Exporter {
 		DbLogger $dbLogger,
 		ModuleHelper $moduleHelper,
 		WpAdapter $wpAdapter,
-		WcAdapter $wcAdapter
+		WcAdapter $wcAdapter,
+		CarrierUpdater $carrierUpdater
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
@@ -88,6 +94,7 @@ class Exporter {
 		$this->moduleHelper       = $moduleHelper;
 		$this->wpAdapter          = $wpAdapter;
 		$this->wcAdapter          = $wcAdapter;
+		$this->carrierUpdater     = $carrierUpdater;
 	}
 
 	/**
@@ -104,14 +111,14 @@ class Exporter {
 		}
 
 		$globalSettings = $this->optionsProvider->getAllOptions();
-		if ( isset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
-			$globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
+		if ( isset( $globalSettings[ OptionNames::PACKETERY ]['api_password'] ) ) {
+			$globalSettings[ OptionNames::PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
-				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),
-				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], - 2, 2 ),
-				strlen( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] )
+				substr( $globalSettings[ OptionNames::PACKETERY ]['api_password'], 0, 16 ),
+				substr( $globalSettings[ OptionNames::PACKETERY ]['api_password'], - 2, 2 ),
+				strlen( $globalSettings[ OptionNames::PACKETERY ]['api_password'] )
 			);
-			unset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_key'] );
+			unset( $globalSettings[ OptionNames::PACKETERY ]['api_key'] );
 		}
 		$globalSettings['woocommerce_allowed_countries']          = get_option( 'woocommerce_allowed_countries' );
 		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );
@@ -147,7 +154,7 @@ class Exporter {
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
 			'packetaDebug'      => wc_bool_to_string( Debugger::isEnabled() ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
-			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
+			'lastCarrierUpdate' => $this->carrierUpdater->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
 			'taxes'             => $this->formatVariable( $taxes ),
@@ -162,7 +169,7 @@ class Exporter {
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
 			'currencySwitchers' => $this->formatVariable( CurrencySwitcherService::$supportedCurrencySwitchers ),
 		];
-		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
+		update_option( OptionNames::LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
 		$txtContents = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/export.latte', $latteParams );
 		header( 'Content-Type: text/plain' );

@@ -37,13 +37,15 @@
 					{var $suffix = sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['weightIsManual'])}
 				{/if}
 
+
+
 				<div class="packetery-table-row">
 					<div class="packetery-table-cell packetery-order-metabox-label-cell">
 						<label n:name=$inputName /> {$suffix|noescape}
 					</div>
 
 					<div class="packetery-table-cell">
-						<input class="packetery-order-metabox-input{if in_array($inputName, $orderWarningFields, true)} packetery-has-warning{/if}" n:name=$inputName />
+						<input class="packetery-order-metabox-input packetery-js-wizard-metabox-{$inputName} {if in_array($inputName, $orderWarningFields, true)} packetery-has-warning{/if}" n:name=$inputName />
 					</div>
 				</div>
 			{/foreach}
@@ -53,7 +55,7 @@
 						<label n:name='packeteryDeliverOn' />
 					</div>
 					<div class="packetery-table-cell">
-						<input n:name='packeteryDeliverOn' class="date-picker packetery-order-metabox-input">
+						<input n:name='packeteryDeliverOn' class="date-picker packetery-order-metabox-input packetery-js-wizard-metabox-packeteryDeliverOn">
 					</div>
 				</div>
 			{/if}
@@ -72,7 +74,7 @@
 			<div id="packetery-widget-button-wrapper">
 				<div class="packetery-widget-button-row">
 					<img src="{$logo}">
-					<button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_pickup_point >{$form[packetery_pick_pickup_point]->getCaption()}</button>
+					<button class="packetery-order-metabox-input button button-secondary packetery-js-wizard-metabox-pickup-point" n:name=packetery_pick_pickup_point >{$form[packetery_pick_pickup_point]->getCaption()}</button>
 				</div>
 				<span data-packetery-widget-info></span>
 			</div>
@@ -85,7 +87,7 @@
 			<div id="packetery-widget-button-wrapper">
 				<div class="packetery-widget-button-row">
 					<img src="{$logo}">
-					<button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_address >{$form[packetery_pick_address]->getCaption()}</button>
+					<button class="packetery-order-metabox-input button button-secondary packetery-js-wizard-metabox-pickup-address" n:name=packetery_pick_address >{$form[packetery_pick_address]->getCaption()}</button>
 				</div>
 				<span data-packetery-widget-info></span>
 			</div>

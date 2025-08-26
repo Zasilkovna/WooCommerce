@@ -315,7 +315,6 @@ class Client {
 		try {
 			$soapClient = new SoapClient( $this->wsdlUrl );
 			$soapClient->senderGetReturnRouting( $this->apiPassword, $request->getSenderLabel() );
-			// TODO: Set return routing strings.
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );

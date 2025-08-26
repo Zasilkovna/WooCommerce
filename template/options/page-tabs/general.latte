@@ -9,7 +9,7 @@
 				<label n:name=packetery-api_password />
 			</th>
 			<td>
-				<input n:name=packetery-api_password>
+				<input n:name=packetery-api_password class="packetery-js-wizard-general-password">
 				<div class="packetery-help-block">
 					<p>
 						{sprintf( $translations['apiPasswordCanBeFoundAt%sUrl'], $apiPasswordLink )|noescape}
@@ -22,7 +22,7 @@
 				<label n:name=packetery-sender />
 			</th>
 			<td>
-				<input n:name=packetery-sender>
+				<input n:name=packetery-sender class="packetery-js-wizard-general-sender">
 				<div class="packetery-help-block">
 					<p>
 						{$translations['senderDescription']|noescape}
@@ -35,7 +35,7 @@
 				<label n:name=packetery-packeta_label_format />
 			</th>
 			<td>
-				<select n:name=packetery-packeta_label_format></select>
+				<select n:name=packetery-packeta_label_format class="packetery-js-wizard-general-packeta-label-format"></select>
 			</td>
 		</tr>
 		<tr>
@@ -43,7 +43,7 @@
 				<label n:name=packetery-carrier_label_format />
 			</th>
 			<td>
-				<select n:name=packetery-carrier_label_format></select>
+				<select n:name=packetery-carrier_label_format class="packetery-js-wizard-general-carrier-label-format"></select>
 			</td>
 		</tr>
 		<tr>
@@ -51,7 +51,9 @@
 				<label n:name=packetery-cod_payment_methods />
 			</th>
 			<td>
-				<select data-packetery-select2 n:name=packetery-cod_payment_methods></select>
+				<div class="custom-select2-wrapper packetery-js-wizard-general-cod">
+					<select data-packetery-select2 n:name=packetery-cod_payment_methods ></select>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -59,7 +61,7 @@
 				<label n:name=packetery-packaging_weight />
 			</th>
 			<td>
-				<input type="number" step="0.001" n:name=packetery-packaging_weight>
+				<input type="number" step="0.001" n:name=packetery-packaging_weight class="packetery-js-wizard-general-packaging-weight">
 				<div class="packetery-help-block">
 					<p>
 						{$translations['packagingWeightDescription']}
@@ -72,7 +74,7 @@
 				<label n:name=packetery-default_weight_enabled />
 			</th>
 			<td>
-				<input n:name=packetery-default_weight_enabled>
+				<input n:name=packetery-default_weight_enabled class="packetery-js-wizard-general-default-weight-enabled">
 			</td>
 		</tr>
 		<tr id="packetery-default-weight-value">
@@ -80,7 +82,7 @@
 				<label n:name=packetery-default_weight />
 			</th>
 			<td>
-				<input n:name=packetery-default_weight>
+				<input n:name=packetery-default_weight class="packetery-js-wizard-general-default-weight">
 				<div class="packetery-help-block">
 					<p>
 						{$translations['defaultWeightDescription']}
@@ -93,7 +95,7 @@
 				<label n:name=packetery-dimensions_unit />
 			</th>
 			<td>
-				<select n:name=packetery-dimensions_unit></select>
+				<select n:name=packetery-dimensions_unit class="packetery-js-wizard-general-dimensions-unit"></select>
 			</td>
 		</tr>
 		<tr>
@@ -101,7 +103,7 @@
 				<label n:name=packetery-default_dimensions_enabled />
 			</th>
 			<td>
-				<input n:name=packetery-default_dimensions_enabled>
+				<input n:name=packetery-default_dimensions_enabled class="packetery-js-wizard-general-default-dimensions-enabled">
 			</td>
 		</tr>
 		<tr id="packetery-default-dimensions-value">
@@ -110,13 +112,13 @@
 			</th>
 			<td class="packetery-dimensions-block">
 				<label n:name=packetery-default_length />
-				<input n:name=packetery-default_length>
+				<input n:name=packetery-default_length class="packetery-js-wizard-general-default-length">
 				<br>
 				<label n:name=packetery-default_width />
-				<input n:name=packetery-default_width>
+				<input n:name=packetery-default_width class="packetery-js-wizard-general-default-width">
 				<br>
 				<label n:name=packetery-default_height />
-				<input n:name=packetery-default_height>
+				<input n:name=packetery-default_height class="packetery-js-wizard-general-default-height">
 				<br>
 				<div class="packetery-help-block">
 					<p>{$translations['defaultDimensionsDescription']}</p>
@@ -128,7 +130,7 @@
 				<label n:name=packetery-replace_shipping_address_with_pickup_point_address />
 			</th>
 			<td>
-				<input n:name=packetery-replace_shipping_address_with_pickup_point_address>
+				<input n:name=packetery-replace_shipping_address_with_pickup_point_address class="packetery-js-wizard-general-pickup-point-address">
 			</td>
 		</tr>
 		<tr>
@@ -136,8 +138,8 @@
 				<label n:name=packetery-checkout_detection />
 			</th>
 			<td>
-				<select n:name=packetery-checkout_detection></select>
-				<div class="packetery-help-block">
+				<select n:name=packetery-checkout_detection class="packetery-js-wizard-general-checkout-detection"></select>
+				<div class="packetery-help-block" >
 					<p>
 						{$translations['setCheckoutDetectionDescription']}
 					</p>
@@ -149,7 +151,15 @@
 				<label n:name=packetery-checkout_widget_button_location />
 			</th>
 			<td>
-				<select n:name=packetery-checkout_widget_button_location></select>
+				<select n:name=packetery-checkout_widget_button_location class="packetery-js-wizard-general-widget-button-location"></select>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">
+				<label n:name=packetery-hide_checkout_logo />
+			</th>
+			<td>
+				<input n:name=packetery-hide_checkout_logo class="packetery-js-wizard-general-hide-logo">
 			</td>
 		</tr>
 		<tr>
@@ -157,7 +167,7 @@
 				<label n:name=packetery-email_hook />
 			</th>
 			<td>
-				<select n:name=packetery-email_hook></select>
+				<select n:name=packetery-email_hook class="packetery-js-wizard-general-email-hook"></select>
 			</td>
 		</tr>
 		<tr>
@@ -165,7 +175,7 @@
 				<label n:name=packetery-force_packet_cancel />
 			</th>
 			<td>
-				<input n:name=packetery-force_packet_cancel>
+				<input n:name=packetery-force_packet_cancel class="packetery-js-wizard-force-packet-cancel">
 				<div class="packetery-help-block">
 					<p>
 						{$forcePacketCancelDescription}
@@ -178,7 +188,7 @@
 				<label n:name=packetery-widget_auto_open />
 			</th>
 			<td>
-				<input n:name=packetery-widget_auto_open>
+				<input n:name=packetery-widget_auto_open class="packetery-js-wizard-widget-auto-open">
 				<div class="packetery-help-block">
 					<p>
 						{$translations['widgetAutoOpenDescription']}
@@ -191,7 +201,7 @@
 				<label n:name=packetery-free_shipping_shown />
 			</th>
 			<td>
-				<input n:name=packetery-free_shipping_shown>
+				<input n:name=packetery-free_shipping_shown class="packetery-js-wizard-free-shipping-shown">
 				<div class="packetery-help-block">
 					<p>
 						{$translations['freeShippingTextDescription']}
@@ -204,12 +214,12 @@
 				<label n:name=packetery-prices_include_tax />
 			</th>
 			<td>
-				<input n:name=packetery-prices_include_tax>
+				<input n:name=packetery-prices_include_tax class="packetery-js-wizard-prices-include-tax">
 			</td>
 		</tr>
 	</table>
 	<p class="submit">
-		<button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
+		<button n:name=save class="button button-primary packetery-js-wizard-settings-save-button">{$translations['saveChanges']}</button>
 		{if $canValidateSender}
 			<a href="{$senderValidationLink}" class="button">{$translations['validateSender']}</a>
 		{/if}

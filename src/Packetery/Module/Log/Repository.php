@@ -194,15 +194,6 @@ class Repository {
 	}
 
 	/**
-	 * Drops log table.
-	 *
-	 * @return void
-	 */
-	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryLog . '`' );
-	}
-
-	/**
 	 * Save.
 	 *
 	 * @param Record $record Record.

@@ -9,6 +9,7 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\ContextResolver;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
@@ -107,7 +108,7 @@ class AssetManager {
 	 * @param bool   $inFooter Tells where to include script.
 	 * @param array  $deps Script dependencies.
 	 */
-	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
+	public function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		$this->wpAdapter->enqueueScript(
 			$name,
 			$this->wpAdapter->pluginDirUrl( ModuleHelper::getPluginMainFilePath() ) . $file,
@@ -123,7 +124,7 @@ class AssetManager {
 	 * @param string $name Name of script.
 	 * @param string $file Relative file path.
 	 */
-	private function enqueueStyle( string $name, string $file ): void {
+	public function enqueueStyle( string $name, string $file ): void {
 		$this->wpAdapter->enqueueStyle(
 			$name,
 			$this->wpAdapter->pluginDirUrl( ModuleHelper::getPluginMainFilePath() ) . $file,
@@ -139,7 +140,16 @@ class AssetManager {
 		if ( $this->wcAdapter->isCheckout() ) {
 			if ( $this->wpAdapter->doingAjax() === false ) {
 				$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
-				$this->enqueueStyle( 'packetery-custom-front-styles', 'public/css/custom-front.css' );
+
+				$customFrontCssPath = WP_CONTENT_DIR . '/packeta-custom-front.css';
+				if ( file_exists( $customFrontCssPath ) ) {
+					$this->wpAdapter->enqueueStyle(
+						'packetery-custom-front-styles',
+						$customFrontCssPath,
+						[],
+						md5( (string) filemtime( $customFrontCssPath ) )
+					);
+				}
 			}
 			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 				$this->wpAdapter->enqueueScript(
@@ -236,6 +246,7 @@ class AssetManager {
 					Carrier\OptionsPage::SLUG,
 					Log\Page::SLUG,
 					Order\LabelPrint::MENU_SLUG,
+					DashboardPage::SLUG,
 				],
 				true
 			)
@@ -370,6 +381,24 @@ class AssetManager {
 
 		if ( $this->contextResolver->isConfirmModalPage() ) {
 			$this->enqueueScript( 'packetery-confirm', 'public/js/confirm.js', true, [ 'jquery', 'backbone' ] );
+		}
+		if ( $this->contextResolver->isPluginsOverviewPage() ) {
+			$this->enqueueScript(
+				'packetery-admin-confirm-deactivation',
+				'public/js/admin-confirm-deactivation.js',
+				true
+			);
+
+			$this->wpAdapter->localizeScript(
+				'packetery-admin-confirm-deactivation',
+				'translationsDeactivation',
+				[
+					'confirmDeactivation' => $this->wpAdapter->__(
+						'When uninstalling the plugin, ALL data and settings will be removed only if the PACKETERY_REMOVE_ALL_DATA constant is defined in wp-config.php and is set to true. This is to prevent data loss when removing the plugin from the backend and to ensure that only the site owner can perform this action.',
+						'packeta'
+					),
+				]
+			);
 		}
 	}
 }

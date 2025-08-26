@@ -17,6 +17,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
+use Packetery\Module\Transients;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Http\Request;
@@ -24,6 +25,7 @@ use WC_Data_Exception;
 use WC_Order;
 
 class Metabox {
+
 	private const PART_ERROR          = 'error';
 	private const PART_CARRIER_CHANGE = 'carrierChange';
 	private const PART_MAIN           = 'main';
@@ -108,6 +110,11 @@ class Metabox {
 	 */
 	private $wpAdapter;
 
+	/**
+	 * @var PacketStatusResolver
+	 */
+	private $packetStatusResolver;
+
 	public function __construct(
 		Engine $latteEngine,
 		MessageManager $messageManager,
@@ -123,7 +130,8 @@ class Metabox {
 		DetailCommonLogic $detailCommonLogic,
 		Form $orderForm,
 		CarrierModal $carrierModal,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		PacketStatusResolver $packetStatusResolver
 	) {
 		$this->latteEngine          = $latteEngine;
 		$this->messageManager       = $messageManager;
@@ -140,6 +148,7 @@ class Metabox {
 		$this->orderForm            = $orderForm;
 		$this->carrierModal         = $carrierModal;
 		$this->wpAdapter            = $wpAdapter;
+		$this->packetStatusResolver = $packetStatusResolver;
 	}
 
 	public function register(): void {
@@ -254,6 +263,9 @@ class Metabox {
 			);
 			$packetClaimTrackingUrl = $this->coreHelper->getTrackingUrl( $order->getPacketClaimId() );
 		}
+		$runWizardUrl = $this->wpAdapter->adminUrl( "admin.php?page=wc-orders&action=edit&id={$orderId}&wizard-enabled=true&wizard-order-detail-edit-packet-enabled=true" );
+
+		$showRunWizardButton = (bool) $this->wpAdapter->applyFilters( 'packeta_order_detail_show_run_wizard_button', true );
 
 		$packetId = $order->getPacketId();
 		if ( $packetId !== null ) {
@@ -265,7 +277,7 @@ class Metabox {
 				]
 			);
 
-			$packetStatusTranslatedName = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
+			$packetStatusTranslatedName = $this->packetStatusResolver->getTranslatedName( $order->getPacketStatus() );
 			/** @var array<string, string> $statusClasses */
 			$statusClasses = [
 				'received data'         => 'received-data',
@@ -297,6 +309,8 @@ class Metabox {
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,
 					'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+					'runWizardUrl'               => $runWizardUrl,
+					'showRunWizardButton'        => $showRunWizardButton,
 					'storedUntil'                => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
 					'translations'               => [
 						'packetTrackingOnline'      => $this->wpAdapter->__( 'Packet tracking online', 'packeta' ),
@@ -317,6 +331,7 @@ class Metabox {
 						'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
 						'setStoredUntil'            => $this->wpAdapter->__( 'Set the pickup date extension', 'packeta' ),
+						'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					],
 				]
 			);
@@ -342,12 +357,12 @@ class Metabox {
 			$this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT )
 		);
 
-		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
+		$prevInvalidValues = get_transient( Transients::METABOX_NETTE_FORM_PREV_INVALID_VALUES );
 		if ( $prevInvalidValues !== null && $prevInvalidValues !== false ) {
 			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}
-		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
+		delete_transient( Transients::METABOX_NETTE_FORM_PREV_INVALID_VALUES );
 
 		$isPacketSubmissionPossible = $this->orderValidator->isValid( $order );
 		$packetSubmitUrl            = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
@@ -414,6 +429,8 @@ class Metabox {
 				'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 				'packetClaimUrl'             => $packetClaimUrl,
 				'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+				'runWizardUrl'               => $runWizardUrl,
+				'showRunWizardButton'        => $showRunWizardButton,
 				'orderCurrency'              => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'               => $order->hasCod(),
 				'allowsAdultContent'         => $order->allowsAdultContent(),
@@ -433,6 +450,7 @@ class Metabox {
 					'codIsManual'               => $this->wpAdapter->__( 'COD value is manually set. To calculate the value remove field content and save.', 'packeta' ),
 					'valueIsManual'             => $this->wpAdapter->__( 'Order value is manually set. To calculate the value remove field content and save.', 'packeta' ),
 					'submitPacket'              => $this->wpAdapter->__( 'Submit to Packeta', 'packeta' ),
+					'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					'packetClaimTrackingOnline' => $this->wpAdapter->__( 'Packet claim tracking', 'packeta' ),
 					'printPacketClaimLabel'     => $this->wpAdapter->__( 'Print packet claim label', 'packeta' ),
 					'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
@@ -472,7 +490,7 @@ class Metabox {
 		}
 
 		if ( $this->form->isValid() === false ) {
-			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( 'array' ) );
+			set_transient( Transients::METABOX_NETTE_FORM_PREV_INVALID_VALUES, $this->form->getValues( 'array' ) );
 			$this->messageManager->flash_message( $this->wpAdapter->__( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
@@ -503,6 +521,7 @@ class Metabox {
 		} else {
 			$propsToSave[ Form::FIELD_WEIGHT ] = (float) $formValues[ Form::FIELD_WEIGHT ];
 		}
+		$order->setWeight( $propsToSave[ Form::FIELD_WEIGHT ] );
 
 		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
 			foreach ( Attribute::$pickupPointAttributes as $pickupPointAttr ) {

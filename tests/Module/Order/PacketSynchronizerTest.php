@@ -6,10 +6,12 @@ namespace Tests\Module\Order;
 
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Response\PacketStatus;
+use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Exception\InvalidPasswordException;
 use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Order\Repository;
@@ -35,6 +37,14 @@ class PacketSynchronizerTest extends TestCase {
 		$orderRepository = $this->createMock( Repository::class );
 		$wcOrderActions  = $this->createMock( WcOrderActions::class );
 		$wcAdapter       = $this->createMock( WcAdapter::class );
+		$wpAdapter       = $this->createMock( WpAdapter::class );
+		$wpAdapter
+			->method( '__' )
+			->willReturnCallback(
+				static function ( string $key ): string {
+					return $key;
+				}
+			);
 
 		$this->packetSynchronizer = new PacketSynchronizer(
 			$this->client,
@@ -43,6 +53,7 @@ class PacketSynchronizerTest extends TestCase {
 			$orderRepository,
 			$wcOrderActions,
 			$wcAdapter,
+			$wpAdapter
 		);
 	}
 
@@ -102,5 +113,14 @@ class PacketSynchronizerTest extends TestCase {
 
 		$this->expectException( InvalidPasswordException::class );
 		$this->packetSynchronizer->syncStatus( $order );
+	}
+
+	public function testDefaultPacketStatuses(): void {
+		$this->createPacketSynchronize();
+		$packetStatuses = $this->packetSynchronizer->getDefaultPacketStatuses();
+		$this->assertArrayNotHasKey( Entity\PacketStatus::DELIVERED, $packetStatuses );
+		$this->assertArrayNotHasKey( Entity\PacketStatus::RETURNED, $packetStatuses );
+		$this->assertArrayNotHasKey( Entity\PacketStatus::CANCELLED, $packetStatuses );
+		$this->assertArrayNotHasKey( Entity\PacketStatus::UNKNOWN, $packetStatuses );
 	}
 }
