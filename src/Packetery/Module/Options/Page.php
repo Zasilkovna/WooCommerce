@@ -997,9 +997,9 @@ class Page {
 			'exportPluginSettings'                   => __( 'Export the plugin settings', 'packeta' ),
 			'settingsExportDatetime'                 => __( 'Date and time of the last export of settings', 'packeta' ),
 			'settingsNotYetExported'                 => __( 'The settings have not been exported yet.', 'packeta' ),
-			'bugReportTitle'                         => __( 'Report a Bug', 'packeta' ),
-			'bugReportDescription'                   => __( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
-			'exportSettingsTitle'                    => __( 'Export Settings', 'packeta' ),
+			'bugReportTitle'                         => $this->wpAdapter->__( 'Report a bug', 'packeta' ),
+			'bugReportDescription'                   => $this->wpAdapter->__( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
+			'exportSettingsTitle'                    => $this->wpAdapter->__( 'Export settings', 'packeta' ),
 			'senderDescription'                      => sprintf(
 				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),

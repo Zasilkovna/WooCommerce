@@ -3,7 +3,7 @@ jQuery(document).ready(function($) {
 		return;
 	}
 
-	wp.editor.initialize('packetery-bug-report-form-message', {
+	wp.editor.initialize('packetery-js-bug-report-form-message', {
 		tinymce: {
 			height: 200,
 		},

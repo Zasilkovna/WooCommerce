@@ -227,11 +227,11 @@ class WpAdapter {
 	}
 
 	/**
-	 * @param string                    $to          Email recipient.
-	 * @param string                    $subject     Email subject.
-	 * @param string                    $message     Email message.
-	 * @param array<int|string, string> $headers     Email headers.
-	 * @param array<int, string>        $attachments Email attachments.
+	 * @param string   $to
+	 * @param string   $subject
+	 * @param string   $message
+	 * @param string[] $headers
+	 * @param string[] $attachments
 	 */
 	public function wpMail( string $to, string $subject, string $message, array $headers, array $attachments ): bool {
 		return wp_mail( $to, $subject, $message, $headers, $attachments );

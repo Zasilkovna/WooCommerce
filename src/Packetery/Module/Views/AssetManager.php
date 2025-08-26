@@ -241,8 +241,6 @@ class AssetManager {
 					'editor',
 				]
 			);
-
-			$activeTab = $this->request->getQuery( Options\Page::PARAM_TAB ) ?? Options\Page::TAB_GENERAL;
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();

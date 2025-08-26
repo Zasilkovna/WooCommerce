@@ -41,7 +41,7 @@ class BugReportServiceTest extends TestCase {
 
 	private const SEND_BUTTON = 'Send';
 
-	private function createBugReportServiceMock(): BugReportService {
+	private function createBugReportService(): BugReportService {
 		$this->wpAdapter      = $this->createMock( WpAdapter::class );
 		$this->wcAdapter      = $this->createMock( WcAdapter::class );
 		$this->exporter       = $this->createMock( Exporter::class );
@@ -59,7 +59,7 @@ class BugReportServiceTest extends TestCase {
 	}
 
 	public function testCreateForm(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
 		$this->wpAdapter->method( '__' )
 			->willReturnMap(
@@ -87,10 +87,10 @@ class BugReportServiceTest extends TestCase {
 	}
 
 	public function testOnFormSuccessWithValidData(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$values = [
+		$formMock = $this->createMock( Form::class );
+		$values   = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
@@ -137,14 +137,14 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testOnFormSuccessWithFailedEmail(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$values = [
+		$formMock = $this->createMock( Form::class );
+		$values   = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
@@ -191,19 +191,19 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testOnFormError(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$errors = [
+		$formMock = $this->createMock( Form::class );
+		$errors   = [
 			'email'   => 'Email is required.',
 			'message' => 'Message is required.',
 		];
 
-		$form->method( 'getErrors' )
+		$formMock->method( 'getErrors' )
 			->willReturn( $errors );
 
 		$this->messageManager->expects( $this->exactly( 2 ) )
@@ -218,13 +218,13 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormError( $form );
+		$service->onFormError( $formMock );
 	}
 
 	public function testOnFormSuccessWithSpecialCharacters(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form           = $this->createMock( Form::class );
+		$formMock       = $this->createMock( Form::class );
 		$specialEmail   = 'test+tag@example.com';
 		$specialMessage = 'Test message with <script>alert("xss")</script> and special chars: áčďéěíňóřšťúůýž';
 		$values         = [
@@ -273,11 +273,11 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testCreateFormWithCustomAdminEmail(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
 		$this->wpAdapter->method( '__' )
 			->willReturnMap(
@@ -303,21 +303,21 @@ class BugReportServiceTest extends TestCase {
 	}
 
 	public function testOnFormValidateWithEmptyMessage(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form         = $this->createMock( Form::class );
-		$messageField = $this->createMock( BaseControl::class );
-		$values       = [
+		$formMock         = $this->createMock( Form::class );
+		$messageFieldMock = $this->createMock( BaseControl::class );
+		$values           = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => '',
 		];
 
-		$form->method( 'getValues' )
+		$formMock->method( 'getValues' )
 			->willReturn( $values );
 
-		$form->method( 'offsetGet' )
+		$formMock->method( 'offsetGet' )
 			->with( 'message' )
-			->willReturn( $messageField );
+			->willReturn( $messageFieldMock );
 
 		$this->wpAdapter->method( 'wpStripAllTags' )
 			->with( '' )
@@ -327,45 +327,45 @@ class BugReportServiceTest extends TestCase {
 			->with( self::MESSAGE_REQUIRED, self::TEXT_DOMAIN )
 			->willReturn( self::MESSAGE_REQUIRED );
 
-		$messageField->expects( $this->once() )
+		$messageFieldMock->expects( $this->once() )
 			->method( 'addError' )
 			->with( self::MESSAGE_REQUIRED );
 
-		$service->onFormValidate( $form );
+		$service->onFormValidate( $formMock );
 	}
 
 	public function testOnFormValidateWithValidMessage(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form         = $this->createMock( Form::class );
-		$messageField = $this->createMock( BaseControl::class );
-		$values       = [
+		$formMock         = $this->createMock( Form::class );
+		$messageFieldMock = $this->createMock( BaseControl::class );
+		$values           = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => 'This is a valid message',
 		];
 
-		$form->method( 'getValues' )
+		$formMock->method( 'getValues' )
 			->willReturn( $values );
 
-		$form->method( 'offsetGet' )
+		$formMock->method( 'offsetGet' )
 			->with( 'message' )
-			->willReturn( $messageField );
+			->willReturn( $messageFieldMock );
 
 		$this->wpAdapter->method( 'wpStripAllTags' )
 			->with( 'This is a valid message' )
 			->willReturn( 'This is a valid message' );
 
-		$messageField->expects( $this->never() )
+		$messageFieldMock->expects( $this->never() )
 			->method( 'addError' );
 
-		$service->onFormValidate( $form );
+		$service->onFormValidate( $formMock );
 	}
 
 	public function testOnFormSuccessWithWooCommerceSystemStatus(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$values = [
+		$formMock = $this->createMock( Form::class );
+		$values   = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
@@ -418,14 +418,14 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testOnFormSuccessWithoutZipArchive(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$values = [
+		$formMock = $this->createMock( Form::class );
+		$values   = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
@@ -473,14 +473,14 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testOnFormSuccessWithoutWooCommerceSystemStatus(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$values = [
+		$formMock = $this->createMock( Form::class );
+		$values   = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
@@ -526,11 +526,11 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testCreateAttachmentsMethod(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
 		// Test the createAttachments method using reflection
 		$reflection = new \ReflectionClass( $service );
@@ -542,7 +542,7 @@ class BugReportServiceTest extends TestCase {
 	}
 
 	public function testCreateAttachmentsWithZipArchiveAndWooCommerce(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
 		$this->wpAdapter->method( 'currentTime' )
 			->with( 'Y-m-d_H-i-s', false )
@@ -570,7 +570,7 @@ class BugReportServiceTest extends TestCase {
 	}
 
 	public function testAddWooCommerceSystemStatusToZip(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
 		$this->wcAdapter->method( 'adminStatusStatusReport' )
 			->willReturnCallback(
@@ -583,19 +583,19 @@ class BugReportServiceTest extends TestCase {
 		$method     = $reflection->getMethod( 'addWooCommerceSystemStatusToZip' );
 		$method->setAccessible( true );
 
-		$zip = $this->createMock( \ZipArchive::class );
-		$zip->expects( $this->once() )
+		$zipMock = $this->createMock( \ZipArchive::class );
+		$zipMock->expects( $this->once() )
 			->method( 'addFromString' )
 			->with( 'woocommerce-system-status.html', 'WooCommerce System Status Content' );
 
-		$method->invoke( $service, $zip );
+		$method->invoke( $service, $zipMock );
 	}
 
 	public function testOnFormSuccessWithFullZipCreation(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
-		$form   = $this->createMock( Form::class );
-		$values = [
+		$formMock = $this->createMock( Form::class );
+		$values   = [
 			'replyTo' => self::TEST_EMAIL,
 			'message' => self::TEST_MESSAGE,
 		];
@@ -648,11 +648,11 @@ class BugReportServiceTest extends TestCase {
 				'plugin-options'
 			);
 
-		$service->onFormSuccess( $form, $values );
+		$service->onFormSuccess( $formMock, $values );
 	}
 
 	public function testCreateAttachmentsWithRealZipArchive(): void {
-		$service = $this->createBugReportServiceMock();
+		$service = $this->createBugReportService();
 
 		$this->wpAdapter->method( 'currentTime' )
 			->with( 'Y-m-d_H-i-s', false )
