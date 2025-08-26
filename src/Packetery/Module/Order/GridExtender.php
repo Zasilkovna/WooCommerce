@@ -20,6 +20,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
@@ -151,11 +152,16 @@ class GridExtender {
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param string[] $htmlLinks Array of html links.
+	 * @param string[]|mixed $htmlLinks Array of html links.
 	 *
-	 * @return string[]
+	 * @return string[]|mixed
 	 */
-	public function addFilterLinks( array $htmlLinks ): array {
+	public function addFilterLinks( $htmlLinks ) {
+		if ( ! is_array( $htmlLinks ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
+
+			return $htmlLinks;
+		}
 		$linkConfig         = new GridLinksConfig(
 			$this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
 			$this->wpAdapter->__( 'Packeta orders to print', 'packeta' ),
@@ -473,11 +479,17 @@ class GridExtender {
 	/**
 	 * Add order list columns.
 	 *
-	 * @param string[] $columns Order list columns.
+	 * @param string[]|mixed $columns Order list columns.
 	 *
-	 * @return string[] All columns.
+	 * @return string[]|mixed All columns.
 	 */
-	public function addOrderListColumns( array $columns ): array {
+	public function addOrderListColumns( $columns ) {
+		if ( ! is_array( $columns ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'columns', 'array', $columns );
+
+			return $columns;
+		}
+
 		$newColumns = array();
 
 		foreach ( $columns as $columnName => $columnInfo ) {

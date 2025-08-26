@@ -88,6 +88,8 @@
 		</properties>
 	</rule>
 
+	<rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace" />
+
 	<rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
 		<properties>
 			<property name="searchAnnotations" value="true"/>

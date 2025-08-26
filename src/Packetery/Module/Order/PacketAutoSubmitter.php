@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\WcLogger;
 use WC_Payment_Gateway;
 
 /**
@@ -81,7 +82,13 @@ class PacketAutoSubmitter {
 			if ( $mappedEvent === self::EVENT_ON_ORDER_COMPLETED ) {
 				add_action(
 					'woocommerce_order_status_completed',
-					function ( int $orderId ): void {
+					function ( $orderId ): void {
+						if ( ! is_int( $orderId ) ) {
+							WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+
+							return;
+						}
+
 						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId );
 					}
 				);
@@ -92,7 +99,13 @@ class PacketAutoSubmitter {
 			if ( $mappedEvent === self::EVENT_ON_ORDER_PROCESSING ) {
 				add_action(
 					'woocommerce_order_status_processing',
-					function ( int $orderId ): void {
+					function ( $orderId ): void {
+						if ( ! is_int( $orderId ) ) {
+							WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+
+							return;
+						}
+
 						$this->handleEvent( self::EVENT_ON_ORDER_PROCESSING, $orderId );
 					}
 				);
@@ -103,13 +116,24 @@ class PacketAutoSubmitter {
 	/**
 	 * Handle event.
 	 *
-	 * @param string $event               Event.
-	 * @param int    $orderId             WC Order.
-	 *
+	 * @param string|mixed $event   Event.
+	 * @param int|mixed    $orderId WC Order.
 	 * @return void
 	 */
-	public function handleEvent( string $event, int $orderId ): void {
+	public function handleEvent( $event, $orderId ): void {
 		if ( $this->optionsProvider->isPacketAutoSubmissionEnabled() === false ) {
+			return;
+		}
+
+		if ( ! is_string( $event ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
+
+			return;
+		}
+
+		if ( ! is_int( $orderId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+
 			return;
 		}
 

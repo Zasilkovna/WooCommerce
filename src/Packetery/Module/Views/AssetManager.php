@@ -87,7 +87,6 @@ class AssetManager {
 		CheckoutService $checkoutService,
 		WidgetUrlResolver $widgetUrlResolver
 	) {
-
 		$this->contextResolver     = $contextResolver;
 		$this->featureFlagProvider = $featureFlagProvider;
 		$this->featureFlagNotice   = $featureFlagNotice;

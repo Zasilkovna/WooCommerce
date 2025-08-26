@@ -112,7 +112,6 @@ class Form {
 		?bool $adultContent,
 		?string $deliverOn
 	): void {
-
 		$form->setDefaults(
 			[
 				self::FIELD_WEIGHT           => $weight,
