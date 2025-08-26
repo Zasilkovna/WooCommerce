@@ -40,6 +40,9 @@ class EmailShortcodes {
 		$this->wpAdapter->addShortcode( 'packeta_if_carrier', [ $this, 'ifExternalCarrier' ] );
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	private function findOrder( array $shortcodeAttributes ): ?Order {
 		$orderId = $shortcodeAttributes['order_id'] ?? null;
 		if ( $orderId === null || is_numeric( $orderId ) === false ) {
@@ -49,6 +52,9 @@ class EmailShortcodes {
 		return $this->orderRepository->findById( (int) $orderId );
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function trackingNumber( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -58,6 +64,9 @@ class EmailShortcodes {
 		return $order->getPacketBarcode() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function trackingUrl( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -67,6 +76,9 @@ class EmailShortcodes {
 		return $order->getPacketTrackingUrl() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointId( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -78,9 +90,12 @@ class EmailShortcodes {
 			return '';
 		}
 
-		return $pickupPoint->getId();
+		return $pickupPoint->getId() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointName( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -92,9 +107,12 @@ class EmailShortcodes {
 			return '';
 		}
 
-		return $pickupPoint->getName();
+		return $pickupPoint->getName() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointAddress( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -109,6 +127,9 @@ class EmailShortcodes {
 		return $pickupPoint->getFullAddress();
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointStreet( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -120,9 +141,12 @@ class EmailShortcodes {
 			return '';
 		}
 
-		return $pickupPoint->getStreet();
+		return $pickupPoint->getStreet() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointCity( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -134,9 +158,12 @@ class EmailShortcodes {
 			return '';
 		}
 
-		return $pickupPoint->getCity();
+		return $pickupPoint->getCity() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointZip( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -148,9 +175,12 @@ class EmailShortcodes {
 			return '';
 		}
 
-		return $pickupPoint->getZip();
+		return $pickupPoint->getZip() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function pickupPointCountry( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -165,6 +195,9 @@ class EmailShortcodes {
 		return $order->getShippingCountry() ?? '';
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function carrierName( array $shortcodeAttributes ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
@@ -174,6 +207,9 @@ class EmailShortcodes {
 		return $order->getCarrier()->getName();
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function ifPacketSubmitted( array $shortcodeAttributes, string $content = '' ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null || $order->getPacketId() === null ) {
@@ -183,6 +219,9 @@ class EmailShortcodes {
 		return $this->wpAdapter->doShortcode( $content );
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function ifPickupPoint( array $shortcodeAttributes, string $content = '' ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null || $order->getPickupPoint() === null ) {
@@ -192,6 +231,9 @@ class EmailShortcodes {
 		return $this->wpAdapter->doShortcode( $content );
 	}
 
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
 	public function ifExternalCarrier( array $shortcodeAttributes, string $content = '' ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
