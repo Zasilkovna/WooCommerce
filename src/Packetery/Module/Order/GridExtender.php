@@ -432,7 +432,7 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
-				$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+				$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 				$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
 				$this->latteEngine->render(

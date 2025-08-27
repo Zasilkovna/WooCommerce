@@ -234,7 +234,7 @@ final class OrderController extends WP_REST_Controller {
 		$order->setSize( $size );
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $packeteryDeliverOn ) );
 
-		$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+		$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
 		$this->orderRepository->save( $order );
@@ -308,7 +308,7 @@ final class OrderController extends WP_REST_Controller {
 
 		$this->orderRepository->save( $order );
 
-		$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+		$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
 		$data['message'] = __( 'Success', 'packeta' );

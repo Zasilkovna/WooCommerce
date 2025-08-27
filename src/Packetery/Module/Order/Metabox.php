@@ -295,7 +295,7 @@ class Metabox {
 				$statusClass = $statusClasses[ $statusType ];
 			}
 
-			$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+			$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 			$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
 			$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
@@ -416,7 +416,7 @@ class Metabox {
 			}
 		}
 
-		$invalidFields        = Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+		$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
 		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(

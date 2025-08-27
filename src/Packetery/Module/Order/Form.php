@@ -131,7 +131,7 @@ class Form {
 	 *
 	 * @return string[]
 	 */
-	public static function getInvalidFieldsFromValidationResult( array $validationResult ): array {
+	public function getInvalidFieldsFromValidationResult( array $validationResult ): array {
 		$validationFormInputMapping = [
 			self::FIELD_VALUE  => Validator\Order::ERROR_TRANSLATION_KEY_VALUE,
 			self::FIELD_WEIGHT => Validator\Order::ERROR_TRANSLATION_KEY_WEIGHT,
