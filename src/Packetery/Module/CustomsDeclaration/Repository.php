@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\Exception\DeleteErrorException;
 use Packetery\Module\WpdbAdapter;
 
 /**
@@ -273,56 +274,41 @@ class Repository {
 	}
 
 	/**
-	 * Deletes item.
-	 *
-	 * @param int $itemId Item ID.
-	 * @return int|false The number of rows updated, or false on error.
+	 * @throws DeleteErrorException
 	 */
-	public function deleteItem( int $itemId ) {
-		return $this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclarationItem, [ 'id' => $itemId ], '%d' );
+	public function deleteItem( int $itemId ): void {
+		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclarationItem, [ 'id' => $itemId ], '%d' );
 	}
 
 	/**
-	 * Deletes all items.
-	 *
-	 * @param string $customsDeclarationId Customs Declaration ID.
-	 * @return bool true on success, false in case of db failure.
+	 * @throws DeleteErrorException
 	 */
-	private function deleteItems( string $customsDeclarationId ): bool {
+	private function deleteItems( string $customsDeclarationId ): void {
 		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
 
 		if ( count( $items ) === 0 ) {
-			return true;
+			return;
 		}
 
-		$success = true;
 		foreach ( $items as $item ) {
-			$updatedRowCount = $this->deleteItem( (int) $item->getId() );
-			if ( $updatedRowCount === false ) {
-				$success = false;
-			}
+			$this->deleteItem( (int) $item->getId() );
 		}
-
-		return $success;
 	}
 
 	/**
 	 * Completely deletes Customs Declaration with all its items.
 	 *
-	 * @param string $orderId Order ID.
-	 * @return bool true on success, false in case of db failure.
+	 * @throws DeleteErrorException
 	 */
-	public function delete( string $orderId ): bool {
+	public function delete( string $orderId ): void {
 		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );
 
 		if ( $customsDeclarationId === null ) {
-			return true;
+			return;
 		}
 
-		$itemsDeletionSuccess = $this->deleteItems( $customsDeclarationId );
-		$updatedRowCount      = $this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclaration, [ 'id' => $customsDeclarationId ], '%d' );
-
-		return ! ( $itemsDeletionSuccess === false || $updatedRowCount === false );
+		$this->deleteItems( $customsDeclarationId );
+		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclaration, [ 'id' => $customsDeclarationId ], '%d' );
 	}
 
 	/**

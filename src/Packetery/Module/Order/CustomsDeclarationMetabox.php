@@ -15,6 +15,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\Exception\DeleteErrorException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
 use Packetery\Module\Framework\WpAdapter;
@@ -455,7 +456,11 @@ class CustomsDeclarationMetabox {
 		foreach ( $customsDeclarationItems as $customsDeclarationItem ) {
 			$itemId = $customsDeclarationItem->getId();
 			if ( ! isset( $items[ $itemId ] ) ) {
-				$this->customsDeclarationRepository->deleteItem( (int) $itemId );
+				try {
+					$this->customsDeclarationRepository->deleteItem( (int) $itemId );
+				} catch ( DeleteErrorException $e ) {
+					// No user message needed.
+				}
 			}
 		}
 

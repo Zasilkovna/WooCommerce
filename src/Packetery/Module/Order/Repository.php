@@ -18,6 +18,7 @@ use Packetery\Core\Entity\PickupPoint;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
+use Packetery\Module\Exception\DeleteErrorException;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
@@ -686,10 +687,14 @@ class Repository {
 	 * @return bool true on success, false in case of db failure.
 	 */
 	public function delete( int $orderId ): bool {
-		$declarationDeletionSuccess = $this->customsDeclarationRepository->delete( (string) $orderId );
-		$updatedRowCount            = $this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryOrder, [ 'id' => $orderId ], '%d' );
+		try {
+			$this->customsDeclarationRepository->delete( (string) $orderId );
+			$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryOrder, [ 'id' => $orderId ], '%d' );
 
-		return ! ( $declarationDeletionSuccess === false || $updatedRowCount === false );
+			return true;
+		} catch ( DeleteErrorException $e ) {
+			return false;
+		}
 	}
 
 	/**
