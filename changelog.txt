@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.1.1 =
+Fixed: WC logger usage in CLI environment.
+
 = 2.1 =
 Added: New Home page with plugin setup wizard.
 Added: Tutorials (setup, order detail, orders list, customs declaration).

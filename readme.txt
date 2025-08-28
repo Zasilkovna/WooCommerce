@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.8.2
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 10.0.4
@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.1.1 =
+Fixed: WC logger usage in CLI environment.
+
 = 2.1 =
 Added: New Home page with plugin setup wizard.
 Added: Tutorials (setup, order detail, orders list, customs declaration).
