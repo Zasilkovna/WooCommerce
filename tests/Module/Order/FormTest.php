@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types=1 );
+
 namespace Tests\Module\Order;
 
 use Packetery\Core\Entity\Order;
