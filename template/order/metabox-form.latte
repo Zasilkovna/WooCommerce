@@ -40,21 +40,21 @@
 
 
 				<div class="packetery-table-row">
-					<div class="packetery-table-cell packetery-order-metabox-label-cell">
+					<div class="packetery-order-detail-meta-box packetery-order-metabox-label-cell">
 						<label n:name=$inputName /> {$suffix|noescape}
 					</div>
 
-					<div class="packetery-table-cell">
+					<div class="packetery-order-detail-meta-box">
 						<input class="packetery-order-metabox-input packetery-js-wizard-metabox-{$inputName} {if in_array($inputName, $orderWarningFields, true)} packetery-has-warning{/if}" n:name=$inputName />
 					</div>
 				</div>
 			{/foreach}
 			{if $isPacketaPickupPoint}
 				<div class="packetery-table-row">
-					<div class="packetery-table-cell packetery-order-metabox-label-cell">
+					<div class="packetery-order-detail-meta-box packetery-order-metabox-label-cell">
 						<label n:name='packeteryDeliverOn' />
 					</div>
-					<div class="packetery-table-cell">
+					<div class="packetery-order-detail-meta-box">
 						<input n:name='packeteryDeliverOn' class="date-picker packetery-order-metabox-input packetery-js-wizard-metabox-packeteryDeliverOn">
 					</div>
 				</div>

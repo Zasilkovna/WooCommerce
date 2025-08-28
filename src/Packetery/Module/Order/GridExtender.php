@@ -109,6 +109,11 @@ class GridExtender {
 	private $packetStatusResolver;
 
 	/**
+	 * @var Form
+	 */
+	private $orderForm;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -134,7 +139,8 @@ class GridExtender {
 		WpAdapter $wpAdapter,
 		ModuleHelper $moduleHelper,
 		SizeFactory $sizeFactory,
-		PacketStatusResolver $packetStatusResolver
+		PacketStatusResolver $packetStatusResolver,
+		Form $orderForm
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -147,6 +153,7 @@ class GridExtender {
 		$this->moduleHelper          = $moduleHelper;
 		$this->sizeFactory           = $sizeFactory;
 		$this->packetStatusResolver  = $packetStatusResolver;
+		$this->orderForm             = $orderForm;
 	}
 
 	/**
@@ -425,6 +432,9 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
+				$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+				$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
+
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
@@ -433,7 +443,8 @@ class GridExtender {
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
 						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
-						'orderWarningFields'               => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+						'orderWarningFields'               => $invalidFields,
+						'invalidFieldsMessage'             => $invalidFieldsMessage,
 						'packetSubmitUrl'                  => $packetSubmitUrl,
 						'packetCancelLink'                 => $packetCancelLink,
 						'printLink'                        => $printLink,
@@ -442,18 +453,17 @@ class GridExtender {
 						'logPurgerDatetimeModifier'        => $this->wpAdapter->getOption( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'                  => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 						'translations'                     => [
-							'printLabel'                  => __( 'Print label', 'packeta' ),
-							'setAdditionalPacketInfo'     => __( 'Set additional packet information', 'packeta' ),
-							'setStoredUntil'              => __( 'Set the pickup date extension', 'packeta' ),
-							'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-							'submitToPacketa'             => __( 'Submit to Packeta', 'packeta' ),
+							'printLabel'                => __( 'Print label', 'packeta' ),
+							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
+							'setStoredUntil'            => __( 'Set the pickup date extension', 'packeta' ),
+							'submitToPacketa'           => __( 'Submit to Packeta', 'packeta' ),
 							// translators: %s: Order number.
-							'reallyCancelPacketHeading'   => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 							// translators: %s: Packet number.
-							'reallyCancelPacket'          => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
+							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 
-							'cancelPacket'                => __( 'Cancel packet', 'packeta' ),
-							'lastErrorFromApi'            => __( 'Last error from Packeta API', 'packeta' ),
+							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
 				);
