@@ -196,9 +196,10 @@ class Repository {
 	 * Inserts carrier data to db.
 	 *
 	 * @param array $data Carrier data.
+	 * @return int|false The number of rows inserted, or false on error.
 	 */
-	public function insert( array $data ): void {
-		$this->wpdbAdapter->insert( $this->wpdbAdapter->packeteryCarrier, $data );
+	public function insert( array $data ) {
+		return $this->wpdbAdapter->insert( $this->wpdbAdapter->packeteryCarrier, $data );
 	}
 
 	/**
@@ -206,8 +207,9 @@ class Repository {
 	 *
 	 * @param array $data Carrier data.
 	 * @param int   $carrierId Carrier id.
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function update( array $data, int $carrierId ): void {
-		$this->wpdbAdapter->update( $this->wpdbAdapter->packeteryCarrier, $data, [ 'id' => $carrierId ] );
+	public function update( array $data, int $carrierId ) {
+		return $this->wpdbAdapter->update( $this->wpdbAdapter->packeteryCarrier, $data, [ 'id' => $carrierId ] );
 	}
 }

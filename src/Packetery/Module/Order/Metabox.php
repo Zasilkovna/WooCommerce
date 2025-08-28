@@ -581,7 +581,13 @@ class Metabox {
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
 		$order->setPickupPoint( $pickupPoint );
 
-		$this->orderRepository->save( $order );
+		$updatedRowCount = $this->orderRepository->save( $order );
+		if ( $updatedRowCount === false ) {
+			$this->messageManager->flash_message(
+				(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
+			);
+		}
 	}
 
 	/**

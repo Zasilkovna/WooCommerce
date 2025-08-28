@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
@@ -89,18 +90,10 @@ class PacketCanceller {
 	private $moduleHelper;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Soap\Client              $soapApiClient   Soap client API.
-	 * @param Log\ILogger              $logger          Logger.
-	 * @param Repository               $orderRepository Order repository.
-	 * @param Request                  $request         Request.
-	 * @param OptionsProvider          $optionsProvider Options provider.
-	 * @param MessageManager           $messageManager  Message manager.
-	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
-	 * @param WcOrderActions           $wcOrderActions  WC order actions.
-	 * @param ModuleHelper             $moduleHelper    ModuleHelper.
+	 * @var WpAdapter
 	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Soap\Client $soapApiClient,
 		Log\ILogger $logger,
@@ -110,7 +103,8 @@ class PacketCanceller {
 		MessageManager $messageManager,
 		PacketActionsCommonLogic $commonLogic,
 		WcOrderActions $wcOrderActions,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		WpAdapter $wpAdapter
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -121,6 +115,7 @@ class PacketCanceller {
 		$this->commonLogic     = $commonLogic;
 		$this->wcOrderActions  = $wcOrderActions;
 		$this->moduleHelper    = $moduleHelper;
+		$this->wpAdapter       = $wpAdapter;
 	}
 
 	/**
@@ -131,7 +126,11 @@ class PacketCanceller {
 	public function processAction(): void {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
-		$packetId   = $this->request->getQuery( PacketActionsCommonLogic::PARAM_PACKET_ID );
+		/** @var scalar $packetId */
+		$packetId = $this->request->getQuery( PacketActionsCommonLogic::PARAM_PACKET_ID );
+		if ( $packetId !== null ) {
+			$packetId = (string) $packetId;
+		}
 
 		if ( $order === null ) {
 			$record          = new Log\Record();
@@ -154,39 +153,46 @@ class PacketCanceller {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
 
-		$this->cancelPacket( $order, $packetId );
+		$canBeCancelled = $this->isCancellable( $order, $packetId );
+		if ( $canBeCancelled && $packetId !== null ) {
+			$updatedRowCount = $this->cancelPacket( $order, $packetId );
+			if ( $updatedRowCount === false ) {
+				$this->messageManager->flash_message(
+					(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+					MessageManager::TYPE_ERROR
+				);
+			}
+		}
 		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 
-	/**
-	 * Cancels single packet.
-	 *
-	 * @param Entity\Order $order Order ID.
-	 * @param string|null  $packetId Packet ID.
-	 *
-	 * @return void
-	 */
-	public function cancelPacket( Entity\Order $order, ?string $packetId ): void {
-		if ( $packetId === null ) {
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
-			$record->status  = Log\Record::STATUS_ERROR;
-			$record->orderId = $order->getNumber();
-			$record->title   = __( 'Packet cancel error', 'packeta' );
-			$record->params  = [
-				'orderId'      => $order->getNumber(),
-				'packetId'     => $packetId,
-				'referer'      => (string) $this->request->getReferer(),
-				'errorMessage' => 'Packet could not be cancelled',
-			];
-
-			$this->logger->add( $record );
-
-			$this->messageManager->flash_message( __( 'Packet could not be cancelled', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			return;
+	private function isCancellable( Entity\Order $order, ?string $packetId ): bool {
+		if ( $packetId !== null ) {
+			return true;
 		}
 
+		$record          = new Log\Record();
+		$record->action  = Log\Record::ACTION_PACKET_CANCEL;
+		$record->status  = Log\Record::STATUS_ERROR;
+		$record->orderId = $order->getNumber();
+		$record->title   = __( 'Packet cancel error', 'packeta' );
+		$record->params  = [
+			'orderId'      => $order->getNumber(),
+			'packetId'     => null,
+			'referer'      => (string) $this->request->getReferer(),
+			'errorMessage' => 'Packet could not be cancelled',
+		];
+
+		$this->logger->add( $record );
+		$this->messageManager->flash_message( __( 'Packet could not be cancelled', 'packeta' ), MessageManager::TYPE_ERROR );
+
+		return false;
+	}
+
+	/**
+	 * @return int|false The number of rows updated, or false on error.
+	 */
+	public function cancelPacket( Entity\Order $order, string $packetId ) {
 		$request = new Soap\Request\CancelPacket( $packetId );
 		$result  = $this->soapApiClient->cancelPacket( $request );
 
@@ -257,7 +263,7 @@ class PacketCanceller {
 			}
 
 			if ( ! $result->hasFault() ) {
-				$this->messageManager->flash_message( __( 'Packet has been successfully canceled both in the order list and the Packeta system.', 'packeta' ), MessageManager::TYPE_SUCCESS );
+				$this->messageManager->flash_message( __( 'Packet has been successfully canceled in the Packeta system.', 'packeta' ), MessageManager::TYPE_SUCCESS );
 			}
 		}
 
@@ -280,7 +286,7 @@ class PacketCanceller {
 			$this->messageManager->flash_message( __( 'Failed to cancel packet. See Packeta log for more details.', 'packeta' ), MessageManager::TYPE_ERROR );
 		}
 
-		$this->orderRepository->save( $order );
+		return $this->orderRepository->save( $order );
 	}
 
 	/**

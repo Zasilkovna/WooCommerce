@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Exception\DeleteErrorException;
 use WC_Logger;
 
 /**
@@ -177,12 +178,15 @@ class WpdbAdapter {
 	 * @param array<string, int|string> $where       A named array of WHERE clauses (in column => value pairs).
 	 * @param string|null               $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
 	 *
-	 * @return int|false The number of rows updated, or false on error.
+	 * @return int The number of rows deleted, throws DeleteErrorException on error.
+	 * @throws DeleteErrorException
 	 */
-	public function delete( string $table, array $where, ?string $whereFormat = null ) {
+	public function delete( string $table, array $where, ?string $whereFormat = null ): int {
 		$result = $this->wpdb->delete( $table, $where, $whereFormat );
 		if ( $result === false ) {
 			$this->handleError();
+
+			throw new DeleteErrorException( "Could not delete from table `{$table}`." );
 		}
 
 		return $result;

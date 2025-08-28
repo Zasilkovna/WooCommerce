@@ -2232,12 +2232,6 @@ parameters:
 			path: ../src/Packetery/Module/Order/PacketCanceller.php
 
 		-
-			message: '#^Parameter \#2 \$packetId of method Packetery\\Module\\Order\\PacketCanceller\:\:cancelPacket\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/PacketCanceller.php
-
-		-
 			message: '#^Parameter \#2 \$text of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
