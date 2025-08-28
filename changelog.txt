@@ -1,4 +1,14 @@
 == Changelog ==
+= 2.1 =
+Added: New Home page with plugin setup wizard.
+Added: Tutorials (setup, order detail, orders list, customs declaration).
+Added: Option to force database tables creation/update (do_action('packeta_create_tables')).
+Added: New setting option: Hide Packeta logo in widget.
+Updated: Plugin uninstall no longer deletes data and settings (removed only if PACKETERY_REMOVE_ALL_DATA=true is defined); a warning is shown on deactivation.
+Updated: Bulk printing of carrier labels – for external carriers only their labels can be generated.
+Updated: Final shipment statuses (e.g. delivered, canceled) are no longer displayed.
+Fixed: Missing widget in order detail for universal shipping zone.
+
 = 2.0.11 =
 Fixed: Correct loading of shipping methods in case of premature payment plugin queries.
 
