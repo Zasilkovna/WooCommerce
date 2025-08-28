@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use WC_Logger;
+use Packetery\Module\Framework\WcAdapter;
 
 /**
  * Class WpdbAdapter
@@ -89,12 +89,18 @@ class WpdbAdapter {
 	private $wpdb;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param \wpdb $wpdb Wpdb.
 	 */
-	public function __construct( \wpdb $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( \wpdb $wpdb, WcAdapter $wcAdapter ) {
+		$this->wpdb      = $wpdb;
+		$this->wcAdapter = $wcAdapter;
 	}
 
 	/**
@@ -293,13 +299,7 @@ class WpdbAdapter {
 	 * @return void
 	 */
 	private function logError( string $errorMessage ): void {
-		/**
-		 * WC logger.
-		 *
-		 * @var WC_Logger $wcLogger
-		 */
-		$wcLogger = wc_get_logger();
-
+		$wcLogger = $this->wcAdapter->getLogger();
 		$wcLogger->error( sprintf( 'wpdb: %s', $errorMessage ), [ 'source' => 'packeta' ] );
 	}
 
@@ -395,12 +395,7 @@ class WpdbAdapter {
 		$result1 = dbDelta( $createTableQuery );
 		$result2 = dbDelta( $createTableQuery );
 
-		/**
-		 * WC logger.
-		 *
-		 * @var WC_Logger $wcLogger
-		 */
-		$wcLogger = wc_get_logger();
+		$wcLogger = $this->wcAdapter->getLogger();
 		foreach ( $result1 as $tableOrColumn => $message ) {
 			$wcLogger->info( sprintf( 'dbDelta: %s => %s', $tableOrColumn, $message ), [ 'source' => 'packeta' ] );
 		}
