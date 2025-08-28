@@ -1,29 +1,26 @@
 <?php
-/**
- * Class WpdbAdapterFactory
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-/**
- * Class WpdbAdapterFactory
- *
- * @package Packetery
- */
+use Packetery\Module\Framework\WcAdapter;
+
 class WpdbAdapterFactory {
+
 	/**
-	 * Creates WpdbAdapter instance
-	 *
-	 * @return WpdbAdapter
+	 * @var WcAdapter
 	 */
+	private $wcAdapter;
+
+	public function __construct( WcAdapter $wcAdapter ) {
+		$this->wcAdapter = $wcAdapter;
+	}
+
 	public function create(): WpdbAdapter {
 		global $wpdb;
 
-		$instance                                  = new WpdbAdapter( $wpdb );
+		$instance                                  = new WpdbAdapter( $wpdb, $this->wcAdapter );
 		$instance->packeteryCarrier                = sprintf( '%scarrier', $instance->getPacketeryPrefix() );
 		$instance->packeteryOrder                  = sprintf( '%sorder', $instance->getPacketeryPrefix() );
 		$instance->packeteryLog                    = sprintf( '%slog', $instance->getPacketeryPrefix() );

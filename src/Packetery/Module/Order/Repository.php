@@ -19,6 +19,7 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\WpdbAdapter;
@@ -75,6 +76,11 @@ class Repository {
 	private $customsDeclarationRepository;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Repository constructor.
 	 *
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
@@ -90,7 +96,8 @@ class Repository {
 		CoreHelper $coreHelper,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		Carrier\EntityRepository $carrierRepository,
-		CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository,
+		WcAdapter $wcAdapter
 	) {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->builder                      = $orderFactory;
@@ -98,6 +105,7 @@ class Repository {
 		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
+		$this->wcAdapter                    = $wcAdapter;
 	}
 
 	/**
@@ -436,7 +444,7 @@ class Repository {
 			return;
 		}
 
-		$wcLogger  = wc_get_logger();
+		$wcLogger  = $this->wcAdapter->getLogger();
 		$dataToLog = [
 			'order' => $orderData,
 			'trace' => array_map(

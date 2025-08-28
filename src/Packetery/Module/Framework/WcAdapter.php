@@ -72,15 +72,6 @@ class WcAdapter {
 		return wc_get_product( $theProduct );
 	}
 
-	/**
-	 * Creates new logger instance.
-	 *
-	 * @return WC_Logger
-	 */
-	public function createLogger(): WC_Logger {
-		return new WC_Logger();
-	}
-
 	public function isCheckout(): bool {
 		return is_checkout();
 	}
@@ -109,6 +100,11 @@ class WcAdapter {
 	 * @return WC_Logger|WC_Logger_Interface
 	 */
 	public function getLogger() {
+		// Fix for CLI environment.
+		if ( ! defined( 'FS_METHOD' ) ) {
+			define( 'FS_METHOD', 'direct' );
+		}
+
 		return wc_get_logger();
 	}
 
