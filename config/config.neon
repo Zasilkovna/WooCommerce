@@ -46,6 +46,7 @@ services:
 	- Packetery\Module\Email\EmailShortcodes
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
+	- Packetery\Module\Options\BugReportService(supportEmailAddress: %supportEmailAddress%)
 	- Packetery\Module\Options\Page(supportEmailAddress: %supportEmailAddress%)
 	optionsProvider: Packetery\Module\Options\OptionsProvider
 	- Packetery\Module\Carrier\Downloader
