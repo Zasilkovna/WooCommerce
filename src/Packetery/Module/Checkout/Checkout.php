@@ -146,6 +146,10 @@ class Checkout {
 				'actionUpdateOrder',
 			]
 		);
+		$this->wpAdapter->addAction(
+			'woocommerce_store_api_checkout_update_order_from_request',
+			[ $this->validator, 'actionValidateBlockCheckoutData' ]
+		);
 
 		// Must not be registered at backend.
 		$this->wpAdapter->addFilter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
