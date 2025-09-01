@@ -10,6 +10,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\FlagManager\FeatureFlagDownloader;
 use Packetery\Module\Options\FlagManager\FeatureFlagStorage;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
@@ -119,10 +120,10 @@ class FeatureFlagDownloaderTest extends TestCase {
 			->method( 'getOption' )
 			->willReturnCallback(
 				function ( $option ) use ( $dataInOptions, $errors ) {
-					if ( $option === FeatureFlagDownloader::FLAGS_OPTION_ID ) {
+					if ( $option === OptionNames::FEATURE_FLAGS ) {
 						return $dataInOptions;
 					}
-					if ( $option === FeatureFlagDownloader::DISABLED_DUE_ERRORS_OPTION_ID ) {
+					if ( $option === OptionNames::FEATURE_FLAGS_DISABLED_DUE_ERRORS ) {
 						return $errors;
 					}
 					self::fail( 'unexpected option: ' . $option );
