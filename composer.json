@@ -61,6 +61,7 @@
         "check:all": [
             "@check:ec",
             "@check:phpcs",
+            "@composer:normalize:check",
             "@phpstan:all",
             "@tests-unit"
         ],
