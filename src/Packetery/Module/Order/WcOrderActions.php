@@ -10,8 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Log;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
-use WC_Logger;
 
 /**
  * Class WcOrderActions
@@ -42,6 +42,11 @@ class WcOrderActions {
 	private $orderRepository;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Log\ILogger     $logger Logger.
@@ -51,11 +56,13 @@ class WcOrderActions {
 	public function __construct(
 		Log\ILogger $logger,
 		OptionsProvider $optionsProvider,
-		Repository $orderRepository
+		Repository $orderRepository,
+		WcAdapter $wcAdapter
 	) {
 		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
 		$this->orderRepository = $orderRepository;
+		$this->wcAdapter       = $wcAdapter;
 	}
 
 	/**
@@ -98,12 +105,7 @@ class WcOrderActions {
 
 		$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
 		if ( $wcOrder === null ) {
-			/**
-			 * WC logger.
-			 *
-			 * @var WC_Logger $wcLogger
-			 */
-			$wcLogger = wc_get_logger();
+			$wcLogger = $this->wcAdapter->getLogger();
 			$wcLogger->warning( sprintf( 'WC order number %s could not be instantiated.', $orderId ), [ 'source' => 'packeta' ] );
 
 			return;
