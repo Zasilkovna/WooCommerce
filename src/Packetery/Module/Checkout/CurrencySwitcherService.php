@@ -42,7 +42,7 @@ class CurrencySwitcherService {
 	 */
 	public static $supportedCurrencySwitchers = [
 		'WOOCS - WooCommerce Currency Switcher',
-		'WooPayments: Integrated WooCommerce Payments'
+		'WooPayments: Integrated WooCommerce Payments',
 	];
 
 	/**
@@ -56,7 +56,7 @@ class CurrencySwitcherService {
 		if ( $this->moduleHelper->isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
 			return $this->applyFilterWoocsExchangeValue( $price );
 		}
-		elseif ( defined( 'WCPAY_PLUGIN_FILE' ) && \WC_Payments_Features::is_customer_multi_currency_enabled() ) {
+		elseif ( defined( 'WCPAY_PLUGIN_FILE' ) && class_exists( '\WC_Payments_Features' ) && \WC_Payments_Features::is_customer_multi_currency_enabled() ) {
 			return $this->applyFilterWcpayExchangeValue( $price );
 		}
 
@@ -96,9 +96,9 @@ class CurrencySwitcherService {
 	 * @return float
 	 */
 	private function applyFilterWcpayExchangeValue( float $value ): float {
-		if ( $value > 0 ) {
-			$multi_currency = \WC_Payments_Multi_Currency();
-			$value = (float) $multi_currency->get_price( $value, 'product' );
+		if ( $value > 0 && function_exists( 'WC_Payments_Multi_Currency' ) ) {
+			$multiCurrency = \WC_Payments_Multi_Currency();
+			$value         = (float) $multiCurrency->get_price( $value, 'product' );
 		}
 
 		return $value;
