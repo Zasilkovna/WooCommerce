@@ -112,6 +112,7 @@ class Uninstaller {
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_ACTIVATED );
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET );
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET );
+		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED );
 
 		$this->wpdbAdapter->query(
 			$this->wpdbAdapter->prepare(
