@@ -18,4 +18,5 @@ class OptionNames {
 	public const FEATURE_FLAGS_DISABLED_DUE_ERRORS           = 'packeta_feature_flags_disabled_due_errors';
 	public const FEATURE_FLAGS_ERROR_COUNTER                 = 'packeta_feature_flags_error_counter';
 	public const FEATURE_FLAGS                               = 'packeta_feature_flags';
+	public const PACKETERY_DIAGNOSTICS_LOGGING_ENABLED       = 'packetery_diagnostics_logging_enabled';
 }

@@ -18,6 +18,7 @@ use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -136,6 +137,11 @@ class Page {
 	 */
 	private $bugReportService;
 
+	/**
+	 * @var DiagnosticsLoggingFormFactory
+	 */
+	private $diagnosticsLoggingFormFactory;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -149,21 +155,23 @@ class Page {
 		PacketSynchronizer $packetSynchronizer,
 		WpAdapter $wpAdapter,
 		string $supportEmailAddress,
-		BugReportService $bugReportService
+		BugReportService $bugReportService,
+		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory
 	) {
-		$this->latteEngine         = $latteEngine;
-		$this->optionsProvider     = $optionsProvider;
-		$this->formFactory         = $formFactory;
-		$this->packetaClient       = $packetaClient;
-		$this->logger              = $logger;
-		$this->messageManager      = $messageManager;
-		$this->httpRequest         = $httpRequest;
-		$this->moduleHelper        = $moduleHelper;
-		$this->urlBuilder          = $urlBuilder;
-		$this->packetSynchronizer  = $packetSynchronizer;
-		$this->supportEmailAddress = $supportEmailAddress;
-		$this->wpAdapter           = $wpAdapter;
-		$this->bugReportService    = $bugReportService;
+		$this->latteEngine                   = $latteEngine;
+		$this->optionsProvider               = $optionsProvider;
+		$this->formFactory                   = $formFactory;
+		$this->packetaClient                 = $packetaClient;
+		$this->logger                        = $logger;
+		$this->messageManager                = $messageManager;
+		$this->httpRequest                   = $httpRequest;
+		$this->moduleHelper                  = $moduleHelper;
+		$this->urlBuilder                    = $urlBuilder;
+		$this->packetSynchronizer            = $packetSynchronizer;
+		$this->supportEmailAddress           = $supportEmailAddress;
+		$this->wpAdapter                     = $wpAdapter;
+		$this->bugReportService              = $bugReportService;
+		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
 	}
 
 	public function register(): void {
@@ -920,10 +928,16 @@ class Page {
 
 		$bugReportForm = $this->bugReportService->createForm();
 		if (
-			$bugReportForm['submit'] instanceof SubmitButton &&
-			$bugReportForm['submit']->isSubmittedBy()
+			$bugReportForm->isSuccess()
 		) {
 			$bugReportForm->fireEvents();
+		}
+
+		$diagnosticsLoggingForm = $this->diagnosticsLoggingFormFactory->createForm();
+		if (
+			$diagnosticsLoggingForm->isSuccess()
+		) {
+			$diagnosticsLoggingForm->fireEvents();
 		}
 	}
 
@@ -943,7 +957,10 @@ class Page {
 		} elseif ( $activeTab === self::TAB_GENERAL ) {
 			$latteParams = [ 'form' => $this->create_form() ];
 		} elseif ( $activeTab === self::TAB_SUPPORT ) {
-			$latteParams = [ 'bugReportForm' => $this->bugReportService->createForm() ];
+			$latteParams = [
+				'bugReportForm'          => $this->bugReportService->createForm(),
+				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
+			];
 		}
 
 		if ( ! extension_loaded( 'soap' ) ) {
@@ -1027,6 +1044,7 @@ class Page {
 			'bugReportTitle'                         => $this->wpAdapter->__( 'Report a bug', 'packeta' ),
 			'bugReportDescription'                   => $this->wpAdapter->__( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
 			'exportSettingsTitle'                    => $this->wpAdapter->__( 'Export settings', 'packeta' ),
+			'diagnosticsLoggingTitle'                => $this->wpAdapter->__( 'Diagnostics logging', 'packeta' ),
 			'senderDescription'                      => sprintf(
 				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
@@ -1052,6 +1070,7 @@ class Page {
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
+			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. The log will record important function calls, passed parameters, and their results. This information can help developers troubleshoot the issue. We recommend enabling logging only temporarily.', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

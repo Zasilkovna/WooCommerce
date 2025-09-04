@@ -117,6 +117,7 @@ class Uninstaller {
 		$this->wpAdapter->deleteOption( OptionNames::FEATURE_FLAGS );
 		$this->wpAdapter->deleteOption( OptionNames::FEATURE_FLAGS_ERROR_COUNTER );
 		$this->wpAdapter->deleteOption( OptionNames::FEATURE_FLAGS_DISABLED_DUE_ERRORS );
+		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED );
 
 		$this->wpdbAdapter->query(
 			$this->wpdbAdapter->prepare(
