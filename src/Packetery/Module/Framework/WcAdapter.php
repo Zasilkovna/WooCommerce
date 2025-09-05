@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Automattic\WooCommerce\Utilities\LoggingUtil;
 use stdClass;
 use WC_Admin_Status;
 use WC_Blocks_Utils;
@@ -160,5 +161,13 @@ class WcAdapter {
 
 	public function adminStatusStatusReport(): void {
 		WC_Admin_Status::status_report();
+	}
+
+	public function loggingUtilGetLogDirectory( bool $createDir = true ): ?string {
+		if ( class_exists( LoggingUtil::class ) === false ) {
+			return null;
+		}
+
+		return LoggingUtil::get_log_directory( $createDir );
 	}
 }

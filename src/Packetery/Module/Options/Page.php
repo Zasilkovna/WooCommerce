@@ -19,6 +19,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Forms\BugReportForm;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
@@ -134,9 +135,9 @@ class Page {
 	private $supportEmailAddress;
 
 	/**
-	 * @var BugReportService
+	 * @var BugReportForm
 	 */
-	private $bugReportService;
+	private $bugReportForm;
 
 	/**
 	 * @var DiagnosticsLoggingFormFactory
@@ -156,7 +157,7 @@ class Page {
 		PacketSynchronizer $packetSynchronizer,
 		WpAdapter $wpAdapter,
 		string $supportEmailAddress,
-		BugReportService $bugReportService,
+		BugReportForm $bugReportForm,
 		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory
 	) {
 		$this->latteEngine                   = $latteEngine;
@@ -171,7 +172,7 @@ class Page {
 		$this->packetSynchronizer            = $packetSynchronizer;
 		$this->supportEmailAddress           = $supportEmailAddress;
 		$this->wpAdapter                     = $wpAdapter;
-		$this->bugReportService              = $bugReportService;
+		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
 	}
 
@@ -927,7 +928,7 @@ class Page {
 			$advancedForm->fireEvents();
 		}
 
-		$bugReportForm = $this->bugReportService->createForm();
+		$bugReportForm = $this->bugReportForm->createForm();
 		if (
 			$bugReportForm->isSuccess()
 		) {
@@ -959,7 +960,7 @@ class Page {
 			$latteParams = [ 'form' => $this->create_form() ];
 		} elseif ( $activeTab === self::TAB_SUPPORT ) {
 			$latteParams = [
-				'bugReportForm'          => $this->bugReportService->createForm(),
+				'bugReportForm'          => $this->bugReportForm->createForm(),
 				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
 			];
 		}
