@@ -215,6 +215,17 @@ class AssetManager {
 				]
 			);
 
+			$this->wpAdapter->localizeScript(
+				'packetery-admin-options',
+				'translationsAdminOptions',
+				[
+					'confirmLogDeletion' => $this->wpAdapter->__(
+						'Are you sure you want to delete the log file?',
+						'packeta'
+					),
+				]
+			);
+
 			$this->wpAdapter->enqueueEditor();
 			$this->wpAdapter->enqueueScript( 'editor' );
 			$this->enqueueScript(

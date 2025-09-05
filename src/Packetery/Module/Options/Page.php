@@ -17,6 +17,7 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
 use Packetery\Module\Framework\WpAdapter;
@@ -977,6 +978,15 @@ class Page {
 			get_admin_url( null, 'admin.php' )
 		);
 
+		$latteParams['deleteDiagnosticsLogsLink'] = add_query_arg(
+			[
+				'page'   => self::SLUG,
+				'action' => DiagnosticsLogger::ACTION_DELETE_PACKETA_LOG,
+				'tab'    => self::TAB_SUPPORT,
+			],
+			get_admin_url( null, 'admin.php' )
+		);
+
 		$latteParams['activeTab']               = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
 		$latteParams['generalTabLink']          = $this->createLink();
 		$latteParams['advancedTabLink']         = $this->createLink( self::TAB_ADVANCED );
@@ -1071,6 +1081,7 @@ class Page {
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
 			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. The log will record important function calls, passed parameters, and their results. This information can help developers troubleshoot the issue. We recommend enabling logging only temporarily.', 'packeta' ),
+			'diagnosticsLoggingLink'                 => $this->wpAdapter->__( 'Delete log', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

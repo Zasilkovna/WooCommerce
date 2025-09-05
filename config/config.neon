@@ -146,3 +146,4 @@ services:
 	- Packetery\Module\Carrier\CarrierUpdater
 	- Packetery\Module\Labels\CarrierLabelService
 	- Packetery\Module\Labels\LabelPrintParametersService
+	- Packetery\Module\DiagnosticsLogger\DiagnosticsLogger
