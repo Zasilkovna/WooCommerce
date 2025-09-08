@@ -16,6 +16,7 @@ use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Checkout\OrderUpdater;
 use Packetery\Module\Checkout\RateCalculator;
 use Packetery\Module\Checkout\SessionService;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -81,6 +82,7 @@ class CheckoutTest extends TestCase {
 			$this->sessionServiceMock,
 			$checkoutValidatorMock,
 			$orderUpdaterMock,
+			$this->createMock( DiagnosticsLogger::class )
 		);
 	}
 
