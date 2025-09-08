@@ -7,6 +7,7 @@ namespace Packetery\Module\Checkout;
 use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -94,6 +95,11 @@ class Checkout {
 	 */
 	private $orderUpdater;
 
+	/**
+	 * @var DiagnosticsLogger
+	 */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
@@ -109,7 +115,8 @@ class Checkout {
 		CartService $cartService,
 		SessionService $sessionService,
 		CheckoutValidator $validator,
-		OrderUpdater $orderUpdater
+		OrderUpdater $orderUpdater,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
@@ -126,6 +133,7 @@ class Checkout {
 		$this->sessionService          = $sessionService;
 		$this->validator               = $validator;
 		$this->orderUpdater            = $orderUpdater;
+		$this->diagnosticsLogger       = $diagnosticsLogger;
 	}
 
 	public function registerHooks(): void {
@@ -210,45 +218,92 @@ class Checkout {
 	 */
 	public function actionCalculateFees( WC_Cart $cart ): void {
 		$chosenShippingMethodOptionId = $this->checkoutService->calculateShippingAndGetOptionId();
+		$isPacketeryShippingMethod    = $this->checkoutService->isPacketeryShippingMethod( (string) $chosenShippingMethodOptionId );
 
 		if (
 			$chosenShippingMethodOptionId === null ||
-			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethodOptionId ) === false
+			$isPacketeryShippingMethod === false
 		) {
+			$this->diagnosticsLogger->log(
+				'No packetery shipping method chosen',
+				[
+					'chosenShippingMethodOptionId' => $chosenShippingMethodOptionId,
+					'isPacketeryShippingMethod'    => $isPacketeryShippingMethod,
+				]
+			);
+
 			return;
 		}
 
-		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethodOptionId );
-		$chosenCarrier  = $this->carrierEntityRepository->getAnyById(
+		$carrierOptions                      = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethodOptionId );
+		$chosenCarrier                       = $this->carrierEntityRepository->getAnyById(
 			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethodOptionId )
 		);
-		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
-		$isTaxable      = $maxTaxClass !== null;
+		$maxTaxClass                         = $this->cartService->getTaxClassWithMaxRate();
+		$isTaxable                           = $maxTaxClass !== null;
+		$hasCouponFreeShippingForFeesAllowed = $carrierOptions->hasCouponFreeShippingForFeesAllowed();
+		$wcAdapterCart                       = $this->wcAdapter->cart();
+		$isFreeShippingCouponApplied         = $this->rateCalculator->isFreeShippingCouponApplied( $wcAdapterCart );
 
-		if (
-			$carrierOptions->hasCouponFreeShippingForFeesAllowed() &&
-			$this->rateCalculator->isFreeShippingCouponApplied( $this->wcAdapter->cart() )
-		) {
+		$this->diagnosticsLogger->log(
+			'Coupon free shipping for fees parameters',
+			[
+				'hasCouponFreeShippingForFeesAllowed' => $hasCouponFreeShippingForFeesAllowed,
+				'isFreeShippingCouponApplied'         => $isFreeShippingCouponApplied,
+				'wcAdapterCart'                       => $wcAdapterCart,
+			]
+		);
+		if ( $hasCouponFreeShippingForFeesAllowed === true && $isFreeShippingCouponApplied === true ) {
 			return;
 		}
+
+		$this->diagnosticsLogger->log(
+			'Coupon free shipping for fees is not allowed',
+			[
+				'chosenShippingMethodOptionId'        => $chosenShippingMethodOptionId,
+				'hasCouponFreeShippingForFeesAllowed' => $hasCouponFreeShippingForFeesAllowed,
+				'isFreeShippingCouponApplied'         => $isFreeShippingCouponApplied,
+				'chosenCarrier'                       => $chosenCarrier,
+				'carrierOptions'                      => $carrierOptions,
+				'maxTaxClass'                         => $maxTaxClass,
+				'isTaxable'                           => $isTaxable,
+				'cart'                                => $cart,
+			]
+		);
 
 		$this->addAgeVerificationFee( $cart, $chosenCarrier, $carrierOptions, $isTaxable, $maxTaxClass );
 		$this->addCodSurchargeFee( $cart, $carrierOptions, $isTaxable, $maxTaxClass );
 	}
 
 	private function addAgeVerificationFee( WC_Cart $cart, ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
+		$isAgeVerificationRequired = $this->cartService->isAgeVerificationRequired();
+		$ageVerificationFee        = $carrierOptions->getAgeVerificationFee();
+		$this->diagnosticsLogger->log(
+			'Age verification parameters',
+			[
+				'chosenCarrier'             => $chosenCarrier,
+				'ageVerificationFee'        => $ageVerificationFee,
+				'isAgeVerificationRequired' => $isAgeVerificationRequired,
+				'isTaxable'                 => $isTaxable,
+				'maxTaxClass'               => $maxTaxClass,
+			]
+		);
 		if (
 			$chosenCarrier === null ||
 			! $chosenCarrier->supportsAgeVerification() ||
-			$carrierOptions->getAgeVerificationFee() === null ||
-			! $this->cartService->isAgeVerificationRequired()
+			$ageVerificationFee === null ||
+			$isAgeVerificationRequired === false
 		) {
+			$this->diagnosticsLogger->log( 'Age verification fee is not added', [] );
+
 			return;
 		}
-		$feeAmount = $this->currencySwitcherService->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
+		$feeAmount = $this->currencySwitcherService->getConvertedPrice( $ageVerificationFee );
+		$this->diagnosticsLogger->log( 'Age verification converted price is added', [ 'feeAmount' => $feeAmount ] );
 
 		if ( $isTaxable && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
+			$this->diagnosticsLogger->log( 'Age verification tax exclusive fee amount is added', [ 'feeAmount' => $feeAmount ] );
 		}
 		$cart->add_fee( $this->wpAdapter->__( 'Age verification fee', 'packeta' ), $feeAmount, $isTaxable, $maxTaxClass );
 	}
@@ -260,7 +315,15 @@ class Checkout {
 			$paymentMethod = $this->sessionService->getChosenPaymentMethod();
 		}
 
-		if ( $paymentMethod === null || $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) === false ) {
+		$isCodPaymentMethod = $this->paymentHelper->isCodPaymentMethod( (string) $paymentMethod );
+		$this->diagnosticsLogger->log(
+			'COD surcharge parameters',
+			[
+				'paymentMethod'      => $paymentMethod,
+				'isCodPaymentMethod' => $isCodPaymentMethod,
+			]
+		);
+		if ( $paymentMethod === null || $isCodPaymentMethod === false ) {
 			return;
 		}
 
@@ -268,13 +331,16 @@ class Checkout {
 			$carrierOptions->toArray(),
 			$this->wcAdapter->cartGetSubtotal()
 		);
+		$this->diagnosticsLogger->log( 'Get COD surcharge', [ 'applicableSurcharge' => $applicableSurcharge ] );
 		$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
+		$this->diagnosticsLogger->log( 'Get COD surcharge converted', [ 'applicableSurcharge' => $applicableSurcharge ] );
 		if ( $applicableSurcharge <= 0 ) {
 			return;
 		}
 
 		if ( $isTaxable && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
+			$this->diagnosticsLogger->log( 'Get COD surcharge tax exclusive', [ 'applicableSurcharge' => $applicableSurcharge ] );
 		}
 
 		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $applicableSurcharge, $isTaxable, $maxTaxClass );
@@ -306,6 +372,12 @@ class Checkout {
 	 * @return WC_Payment_Gateway[]|mixed
 	 */
 	public function filterPaymentGateways( $availableGateways ) {
+		$this->diagnosticsLogger->log(
+			'Payment gateways for filtering',
+			[
+				'availableGateways' => $availableGateways,
+			]
+		);
 		if ( ! is_array( $availableGateways ) ) {
 			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
 
@@ -316,6 +388,13 @@ class Checkout {
 		$wpOrderPay = $this->checkoutService->getOrderPayParameter();
 		if ( is_numeric( $wpOrderPay ) ) {
 			$order = $this->orderRepository->getByIdWithValidCarrier( (int) $wpOrderPay );
+			$this->diagnosticsLogger->log(
+				'Order found by order pay parameter',
+				[
+					'wpOrderPay' => $wpOrderPay,
+					'order'      => $order,
+				]
+			);
 		}
 
 		if ( $order instanceof Entity\Order ) {
@@ -324,12 +403,27 @@ class Checkout {
 			$chosenMethod = $this->sessionService->getChosenMethodFromSession();
 		}
 
-		if ( ! $this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) ) {
+		$isPacketeryShippingMethod = $this->checkoutService->isPacketeryShippingMethod( $chosenMethod );
+		$this->diagnosticsLogger->log(
+			'Chosen method',
+			[
+				'chosenMethod'              => $chosenMethod,
+				'isPacketeryShippingMethod' => $isPacketeryShippingMethod,
+			]
+		);
+		if ( $isPacketeryShippingMethod === false ) {
 			return $availableGateways;
 		}
 
 		$carrierId = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenMethod );
 		$carrier   = $this->carrierEntityRepository->getAnyById( $carrierId );
+		$this->diagnosticsLogger->log(
+			'Carrier for filtering gateways',
+			[
+				'carrierId' => $carrierId,
+				'carrier'   => $carrier,
+			]
+		);
 		if ( $carrier === null ) {
 			return $availableGateways;
 		}
@@ -342,17 +436,29 @@ class Checkout {
 				continue;
 			}
 
-			if (
-				$this->paymentHelper->isCodPaymentMethod( $availableGateway->id ) &&
-				! $carrier->supportsCod()
-			) {
+			$isCodPaymentMethod                 = $this->paymentHelper->isCodPaymentMethod( $availableGateway->id );
+			$supportsCod                        = $carrier->supportsCod();
+			$hasCheckoutPaymentMethodDisallowed = $carrierOptions->hasCheckoutPaymentMethodDisallowed( $availableGateway->id );
+			$this->diagnosticsLogger->log(
+				'Payment method filtering parameters',
+				[
+					'availableGateway'                   => $availableGateway,
+					'isCodPaymentMethod'                 => $isCodPaymentMethod,
+					'supportsCod'                        => $supportsCod,
+					'hasCheckoutPaymentMethodDisallowed' => $hasCheckoutPaymentMethodDisallowed,
+				]
+			);
+
+			if ( $isCodPaymentMethod === true && $supportsCod === false ) {
 				unset( $availableGateways[ $key ] );
 			}
 
-			if ( $carrierOptions->hasCheckoutPaymentMethodDisallowed( $availableGateway->id ) ) {
+			if ( $hasCheckoutPaymentMethodDisallowed === true ) {
 				unset( $availableGateways[ $key ] );
 			}
 		}
+
+		$this->diagnosticsLogger->log( 'Filtered payment methods', [ 'availableGateways' => $availableGateways ] );
 
 		return $availableGateways;
 	}
