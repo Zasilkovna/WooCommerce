@@ -4,6 +4,7 @@ namespace Packetery\Module\DiagnosticsLogger;
 
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\Page;
 use Packetery\Nette\Http;
 use Packetery\Tracy\Debugger;
@@ -46,6 +47,10 @@ class DiagnosticsLogger {
 	 * @return void
 	 */
 	public function log( string $logMessage, ...$arguments ): void {
+		if ( $this->isLoggingEnabled() === false ) {
+			return;
+		}
+
 		$logMessage .= ' | PHP process ID: ' . getmypid();
 		$logMessage .= ' | Arguments: ' . wp_json_encode( $arguments, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
 
@@ -85,5 +90,9 @@ class DiagnosticsLogger {
 				MessageManager::TYPE_ERROR
 			);
 		}
+	}
+
+	private function isLoggingEnabled(): bool {
+		return (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED ) === true;
 	}
 }
