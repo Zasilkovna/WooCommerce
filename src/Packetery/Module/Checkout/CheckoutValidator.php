@@ -88,6 +88,8 @@ class CheckoutValidator {
 	}
 
 	/**
+	 * Using wc_add_notice works even for block checkout, but WC_REST_Exception is recommended.
+	 *
 	 * @throws WC_REST_Exception
 	 * @throws ProductNotFoundException
 	 */

@@ -138,6 +138,12 @@ class Checkout {
 		);
 
 		$this->wpAdapter->addAction( 'woocommerce_checkout_process', [ $this->validator, 'actionValidateCheckoutData' ] );
+		// Provides following parameters: \Automattic\WooCommerce\Admin\Overrides\Order, WP_REST_Request
+		$this->wpAdapter->addAction(
+			'woocommerce_store_api_checkout_update_order_from_request',
+			[ $this->validator, 'actionValidateBlockCheckoutData' ]
+		);
+
 		$this->wpAdapter->addAction( 'woocommerce_checkout_update_order_meta', [ $this->orderUpdater, 'actionUpdateOrderById' ] );
 		$this->wpAdapter->addAction(
 			'woocommerce_store_api_checkout_order_processed',
@@ -145,10 +151,6 @@ class Checkout {
 				$this->orderUpdater,
 				'actionUpdateOrder',
 			]
-		);
-		$this->wpAdapter->addAction(
-			'woocommerce_store_api_checkout_update_order_from_request',
-			[ $this->validator, 'actionValidateBlockCheckoutData' ]
 		);
 
 		// Must not be registered at backend.
