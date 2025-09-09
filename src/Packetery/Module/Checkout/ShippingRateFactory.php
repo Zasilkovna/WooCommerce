@@ -8,6 +8,7 @@ use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -62,6 +63,11 @@ class ShippingRateFactory {
 	 */
 	private $optionsProvider;
 
+	/**
+	 * @var DiagnosticsLogger
+	 */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
@@ -71,7 +77,8 @@ class ShippingRateFactory {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		CarDeliveryConfig $carDeliveryConfig,
 		RateCalculator $rateCalculator,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
@@ -82,6 +89,7 @@ class ShippingRateFactory {
 		$this->carDeliveryConfig       = $carDeliveryConfig;
 		$this->rateCalculator          = $rateCalculator;
 		$this->optionsProvider         = $optionsProvider;
+		$this->diagnosticsLogger       = $diagnosticsLogger;
 	}
 
 	/**
@@ -96,6 +104,15 @@ class ShippingRateFactory {
 	 */
 	public function createShippingRates( ?array $allowedCarrierNames, string $methodId, int $instanceId ): array {
 		$customerCountry = $this->checkoutService->getCustomerCountry();
+		$this->diagnosticsLogger->log(
+			'createShippingRates parameters',
+			[
+				'customerCountry'     => $customerCountry,
+				'allowedCarrierNames' => $allowedCarrierNames,
+				'methodId'            => $methodId,
+				'instanceId'          => $instanceId,
+			]
+		);
 		if ( $customerCountry === null ) {
 			return [];
 		}
@@ -125,6 +142,17 @@ class ShippingRateFactory {
 				$allowedCarrierNames,
 				$optionId,
 				$rateId
+			);
+
+			$this->diagnosticsLogger->log(
+				'Shipping rate created or is null',
+				[
+					'shippingRate'        => $shippingRate,
+					'carrier'             => $carrier,
+					'allowedCarrierNames' => $allowedCarrierNames,
+					'rateId'              => $rateId,
+					'optionId'            => $optionId,
+				]
 			);
 
 			if ( $shippingRate !== null ) {

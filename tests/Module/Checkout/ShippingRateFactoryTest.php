@@ -14,6 +14,7 @@ use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Checkout\RateCalculator;
 use Packetery\Module\Checkout\ShippingRateFactory;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\BaseShippingMethod;
@@ -32,6 +33,7 @@ class ShippingRateFactoryTest extends TestCase {
 	private CartService&MockObject $cartServiceMock;
 	private CarrierOptionsFactory&MockObject $carrierOptionsFactoryMock;
 	private OptionsProvider&MockObject $optionsProviderMock;
+	private DiagnosticsLogger&MockObject $diagnosticsLogger;
 
 	public function createShippingRateFactory(): ShippingRateFactory {
 		$wpAdapterMock = MockFactory::createWpAdapter( $this );
@@ -48,11 +50,13 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->cartServiceMock             = $this->createMock( CartService::class );
 		$this->carrierOptionsFactoryMock   = $this->createMock( CarrierOptionsFactory::class );
 		$this->optionsProviderMock         = $this->createMock( OptionsProvider::class );
+		$this->diagnosticsLogger           = $this->createMock( DiagnosticsLogger::class );
 
 		$rateCalculator = new RateCalculator(
 			$wpAdapterMock,
 			$wcAdapterMock,
-			$this->createMock( CurrencySwitcherService::class )
+			$this->createMock( CurrencySwitcherService::class ),
+			$this->diagnosticsLogger
 		);
 
 		return new ShippingRateFactory(
@@ -64,7 +68,8 @@ class ShippingRateFactoryTest extends TestCase {
 			$this->carrierOptionsFactoryMock,
 			$this->createMock( CarDeliveryConfig::class ),
 			$rateCalculator,
-			$this->optionsProviderMock
+			$this->optionsProviderMock,
+			$this->diagnosticsLogger
 		);
 	}
 
