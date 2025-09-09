@@ -5,6 +5,22 @@
 
 <hr class="packetery-section-divider">
 
+<h3>{$translations['diagnosticsLoggingTitle']}</h3>
+<p>
+	{$translations['diagnosticsLoggingDescription']}
+</p>
+{form $diagnosticsLoggingForm}
+<p>{input enabled}</p>
+
+	<p class="submit">
+		{input submit, 'class' => 'button button-primary'}
+	</p>
+{/form}
+
+<p><a href="{$deleteDiagnosticsLogsLink}" class="button js-packetery-delete-log">{$translations['diagnosticsLoggingLink']}</a></p>
+
+<hr class="packetery-section-divider">
+
 <h3>{$translations['exportSettingsTitle']}</h3>
 <p>
 	{$translations['optionsExportInfo1']}
