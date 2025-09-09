@@ -15,4 +15,5 @@ class OptionNames {
 	public const PACKETERY_ACTIVATED                         = 'packetery_activated';
 	public const PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET = 'packetery_tutorial_order_detail_edit_packet';
 	public const PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET   = 'packetery_tutorial_order_grid_edit_packet';
+	public const PACKETERY_DIAGNOSTICS_LOGGING_ENABLED       = 'packetery_diagnostics_logging_enabled';
 }

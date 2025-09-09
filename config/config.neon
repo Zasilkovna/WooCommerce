@@ -129,6 +129,7 @@ services:
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
+	- Packetery\Module\Forms\DiagnosticsLoggingFormFactory
 	- Packetery\Module\Order\StoredUntilModal
 	- Packetery\Module\Order\PacketSetStoredUntil
 	- Packetery\Module\Hooks\HookRegistrar
@@ -150,3 +151,4 @@ services:
 	- Packetery\Module\Carrier\CarrierUpdater
 	- Packetery\Module\Labels\CarrierLabelService
 	- Packetery\Module\Labels\LabelPrintParametersService
+	- Packetery\Module\DiagnosticsLogger\DiagnosticsLogger
