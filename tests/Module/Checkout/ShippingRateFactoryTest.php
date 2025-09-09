@@ -12,6 +12,7 @@ use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\RateCalculator;
 use Packetery\Module\Checkout\ShippingRateFactory;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -44,6 +45,7 @@ class ShippingRateFactoryTest extends TestCase {
 	private CheckoutService|MockObject $checkoutService;
 	private ShippingRateFactory $shippingRateFactory;
 	private CarrierActivityBridge|MockObject $carrierActivityBridge;
+	private DiagnosticsLogger&MockObject $diagnosticsLogger;
 
 	/**
 	 * @return array
@@ -77,6 +79,7 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->cartService                  = $this->createMock( CartService::class );
 		$this->checkoutService              = $this->createMock( CheckoutService::class );
 		$this->carrierActivityBridge        = $this->createMock( CarrierActivityBridge::class );
+		$this->diagnosticsLogger            = $this->createMock( DiagnosticsLogger::class );
 
 		$this->shippingRateFactory = new ShippingRateFactory(
 			$this->wpAdapter,
@@ -86,8 +89,9 @@ class ShippingRateFactoryTest extends TestCase {
 			$this->cartService,
 			$this->carrierOptionsFactory,
 			$this->carDeliveryConfig,
-			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
+			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade, $this->diagnosticsLogger ),
 			$this->provider,
+			$this->diagnosticsLogger
 		);
 	}
 
