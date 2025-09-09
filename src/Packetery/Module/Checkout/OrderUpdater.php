@@ -6,6 +6,7 @@ namespace Packetery\Module\Checkout;
 
 use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -68,6 +69,11 @@ class OrderUpdater {
 	 */
 	private $sizeFactory;
 
+	/**
+	 * @var DiagnosticsLogger
+	 */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
@@ -79,7 +85,8 @@ class OrderUpdater {
 		Carrier\EntityRepository $carrierEntityRepository,
 		CartService $cartService,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
-		SizeFactory $sizeFactory
+		SizeFactory $sizeFactory,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
@@ -92,6 +99,7 @@ class OrderUpdater {
 		$this->cartService             = $cartService;
 		$this->packetAutoSubmitter     = $packetAutoSubmitter;
 		$this->sizeFactory             = $sizeFactory;
+		$this->diagnosticsLogger       = $diagnosticsLogger;
 	}
 
 	/**
@@ -102,6 +110,8 @@ class OrderUpdater {
 	public function actionUpdateOrderById( int $orderId ): void {
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		if ( $wcOrder === null ) {
+			$this->diagnosticsLogger->log( 'Action update order by id - Order not found', [ 'orderId' => $orderId ] );
+
 			return;
 		}
 
@@ -119,6 +129,8 @@ class OrderUpdater {
 			$chosenMethod === null ||
 			$this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) === false
 		) {
+			$this->diagnosticsLogger->log( 'Action update order - No packetery shipping method chosen', [ 'chosenMethod' => $chosenMethod ] );
+
 			return;
 		}
 
@@ -129,19 +141,38 @@ class OrderUpdater {
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
+		$this->diagnosticsLogger->log(
+			'Action update order - Chosen method',
+			[
+				'chosenMethod' => $chosenMethod,
+				'checkoutData' => $checkoutData,
+				'propsToSave'  => $propsToSave,
+			]
+		);
+
 		if ( $this->checkoutService->isPickupPointOrder() ) {
 			$this->addPickupPointValidationError( $wcOrder );
 
 			if ( count( $checkoutData ) === 0 ) {
+				$this->diagnosticsLogger->log( 'Action update order - No pickup point data', [] );
+
 				return;
 			}
 			$propsToSave = $this->getPropsFromCheckoutData( $checkoutData, $propsToSave, $wcOrder );
+			$this->diagnosticsLogger->log(
+				'Action update order - Pickup point data',
+				[
+					'propsToSave' => $propsToSave,
+				]
+			);
 
 			$orderHasUnsavedChanges = true;
 		}
 
 		$carrier = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if ( $carrier === null ) {
+			$this->diagnosticsLogger->log( 'Action update order - Carrier not found', [] );
+
 			return;
 		}
 		$order = new Entity\Order( (string) $wcOrder->get_id(), $carrier );
@@ -170,6 +201,13 @@ class OrderUpdater {
 		}
 
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
+		$this->diagnosticsLogger->log(
+			'Action update order',
+			[
+				'pickupPoint' => $pickupPoint,
+				'order'       => $order,
+			]
+		);
 		$order->setPickupPoint( $pickupPoint );
 
 		$this->storage->deleteTransient();
