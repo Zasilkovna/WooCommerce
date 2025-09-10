@@ -42,11 +42,11 @@ class DiagnosticsLogger {
 	}
 
 	/**
-	 * @param string $logMessage
-	 * @param mixed  ...$arguments
+	 * @param string               $logMessage
+	 * @param array<string, mixed> $arguments
 	 * @return void
 	 */
-	public function log( string $logMessage, ...$arguments ): void {
+	public function log( string $logMessage, array $arguments ): void {
 		if ( $this->isLoggingEnabled() === false ) {
 			return;
 		}
