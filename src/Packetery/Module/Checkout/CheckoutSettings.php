@@ -10,6 +10,7 @@ use Packetery\Module\Api;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\OptionPrefixer;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -92,6 +93,9 @@ class CheckoutSettings {
 	 */
 	private $widgetUrlResolver;
 
+	/** @var DiagnosticsLogger */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		Carrier\EntityRepository $carrierEntityRepository,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
@@ -106,7 +110,8 @@ class CheckoutSettings {
 		SessionService $sessionService,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		WidgetUrlResolver $widgetUrlResolver
+		WidgetUrlResolver $widgetUrlResolver,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->widgetOptionsBuilder    = $widgetOptionsBuilder;
@@ -122,6 +127,7 @@ class CheckoutSettings {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
 		$this->widgetUrlResolver       = $widgetUrlResolver;
+		$this->diagnosticsLogger       = $diagnosticsLogger;
 	}
 
 	/**
@@ -160,7 +166,7 @@ class CheckoutSettings {
 		 */
 		$language = (string) $this->wpAdapter->applyFilters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) );
 
-		return [
+		$settings = [
 			'language'                   => $language,
 			'logo'                       => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
 			'showLogo'                   => $this->optionsProvider->isCheckoutLogoShown(),
@@ -186,18 +192,22 @@ class CheckoutSettings {
 			'nonce'                      => (string) $this->wpAdapter->createNonce( 'wp_rest' ),
 			'savedData'                  => $this->storage->getFromTransient(),
 			'widgetUrl'                  => $this->widgetUrlResolver->getUrl(),
-			'translations'               => [
-				'packeta'                       => $this->wpAdapter->__( 'Packeta', 'packeta' ),
-				'choosePickupPoint'             => $this->wpAdapter->__( 'Choose pickup point', 'packeta' ),
-				'pickupPointNotChosen'          => $this->wpAdapter->__( 'Pickup point is not chosen.', 'packeta' ),
-				'placeholderText'               => $this->wpAdapter->__( 'Loading Packeta widget button...', 'packeta' ),
-				'chooseAddress'                 => $this->wpAdapter->__( 'Choose delivery address', 'packeta' ),
-				'addressValidationIsOutOfOrder' => $this->wpAdapter->__( 'Address validation is out of order', 'packeta' ),
-				'invalidAddressCountrySelected' => $this->wpAdapter->__( 'The selected country does not correspond to the destination country.', 'packeta' ),
-				'deliveryAddressNotification'   => $this->wpAdapter->__( 'The order will be delivered to the address:', 'packeta' ),
-				'addressIsNotValidatedAndRequiredByCarrier' => $this->wpAdapter->__( 'Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier.', 'packeta' ),
-			],
 		];
+		$this->diagnosticsLogger->log( 'Checkout settings', $settings );
+
+		$settings['translations'] = [
+			'packeta'                                   => $this->wpAdapter->__( 'Packeta', 'packeta' ),
+			'choosePickupPoint'                         => $this->wpAdapter->__( 'Choose pickup point', 'packeta' ),
+			'pickupPointNotChosen'                      => $this->wpAdapter->__( 'Pickup point is not chosen.', 'packeta' ),
+			'placeholderText'                           => $this->wpAdapter->__( 'Loading Packeta widget button...', 'packeta' ),
+			'chooseAddress'                             => $this->wpAdapter->__( 'Choose delivery address', 'packeta' ),
+			'addressValidationIsOutOfOrder'             => $this->wpAdapter->__( 'Address validation is out of order', 'packeta' ),
+			'invalidAddressCountrySelected'             => $this->wpAdapter->__( 'The selected country does not correspond to the destination country.', 'packeta' ),
+			'deliveryAddressNotification'               => $this->wpAdapter->__( 'The order will be delivered to the address:', 'packeta' ),
+			'addressIsNotValidatedAndRequiredByCarrier' => $this->wpAdapter->__( 'Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier.', 'packeta' ),
+		];
+
+		return $settings;
 	}
 
 	/**
