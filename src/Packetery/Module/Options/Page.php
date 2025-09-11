@@ -1060,6 +1060,7 @@ class Page {
 			'settingsNotYetExported'                 => __( 'The settings have not been exported yet.', 'packeta' ),
 			'bugReportTitle'                         => $this->wpAdapter->__( 'Report a bug', 'packeta' ),
 			'bugReportDescription'                   => $this->wpAdapter->__( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
+			'bugReportInfo'                          => $this->wpAdapter->__( 'We will also zip the following files and attach them to the email, if available: WooCommerce Log, Diagnostics Log, Tracy Log, Wordpress Debug Log, WooCommerce System Status Log, Packeta plugin settings export.', 'packeta' ),
 			'exportSettingsTitle'                    => $this->wpAdapter->__( 'Export settings', 'packeta' ),
 			'diagnosticsLoggingTitle'                => $this->wpAdapter->__( 'Diagnostics logging', 'packeta' ),
 			'senderDescription'                      => sprintf(
