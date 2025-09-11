@@ -144,6 +144,9 @@ class Page {
 	 */
 	private $diagnosticsLoggingFormFactory;
 
+	/** @var DiagnosticsLogger  */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -158,7 +161,8 @@ class Page {
 		WpAdapter $wpAdapter,
 		string $supportEmailAddress,
 		BugReportForm $bugReportForm,
-		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory
+		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->optionsProvider               = $optionsProvider;
@@ -174,6 +178,7 @@ class Page {
 		$this->wpAdapter                     = $wpAdapter;
 		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
+		$this->diagnosticsLogger             = $diagnosticsLogger;
 	}
 
 	public function register(): void {
@@ -962,6 +967,7 @@ class Page {
 			$latteParams = [
 				'bugReportForm'          => $this->bugReportForm->createForm(),
 				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
+				'hasPacketaLog'          => is_file( $this->diagnosticsLogger->getPacketaLogPath() ),
 			];
 		}
 
