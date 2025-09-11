@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 2.1.0\n"
+"Project-Id-Version: Packeta 2.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-26T13:20:14+02:00\n"
+"POT-Creation-Date: 2025-09-08T10:15:32+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -318,7 +318,7 @@ msgid "Address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:352
-#: src/Packetery/Module/Checkout/Checkout.php:252
+#: src/Packetery/Module/Checkout/Checkout.php:256
 msgid "Age verification fee"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgstr ""
 msgid "available"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/Checkout.php:279
+#: src/Packetery/Module/Checkout/Checkout.php:283
 msgid "COD surcharge"
 msgstr ""
 
@@ -600,7 +600,7 @@ msgid "Choose pickup point"
 msgstr ""
 
 #: src/Packetery/Module/Checkout/CheckoutSettings.php:193
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:146
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:156
 msgid "Pickup point is not chosen."
 msgstr ""
 
@@ -629,21 +629,21 @@ msgstr ""
 msgid "Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:95
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:105
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:117
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:125
 msgid "Chosen delivery method is no longer available. Please choose another delivery method."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:126
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:185
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:140
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:188
 msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:154
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:162
 msgid "Customer country could not be obtained."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:165
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:166
 msgid "The selected Packeta carrier is not available for the selected delivery country."
 msgstr ""
 

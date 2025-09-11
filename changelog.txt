@@ -1,4 +1,9 @@
 == Changelog ==
+= 2.1.1 =
+Fixed: Removing all transients and options upon uninstall.
+Updated: Checkout data transient lifetime raised to the default value of WooCommerce.
+Added: Backend checkout data validation when using block checkout.
+
 = 2.1 =
 Added: New Home page with plugin setup wizard.
 Added: Tutorials (setup, order detail, orders list, customs declaration).

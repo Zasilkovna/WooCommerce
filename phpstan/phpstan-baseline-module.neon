@@ -709,18 +709,6 @@ parameters:
 			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
 
 		-
-			message: '#^Parameter \#1 \$message of method Packetery\\Module\\Framework\\WcAdapter\:\:addNotice\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 7
-			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
-
-		-
-			message: '#^Parameter \#2 \$customerCountry of method Packetery\\Module\\Carrier\\EntityRepository\:\:isValidForCountry\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
-
-		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
 			count: 2

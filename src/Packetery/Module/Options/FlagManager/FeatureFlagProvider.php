@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options\FlagManager;
 
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Transients;
 
 /**
  * Class FeatureFlagProvider
@@ -20,8 +21,6 @@ class FeatureFlagProvider {
 
 	public const FLAG_SPLIT_ACTIVE  = 'splitActive';
 	public const FLAG_LAST_DOWNLOAD = 'lastDownload';
-
-	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
 
 	/**
 	 * WP adapter;
@@ -57,7 +56,7 @@ class FeatureFlagProvider {
 	 * @return void
 	 */
 	public function dismissSplitActivationNotice(): void {
-		$this->wpAdapter->setTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED, 'yes' );
+		$this->wpAdapter->setTransient( Transients::SPLIT_MESSAGE_DISMISSED, 'yes' );
 	}
 
 	/**
@@ -68,7 +67,7 @@ class FeatureFlagProvider {
 	public function shouldShowSplitActivationNotice(): bool {
 		return (
 			$this->isSplitActive() &&
-			$this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED ) !== 'yes'
+			$this->wpAdapter->getTransient( Transients::SPLIT_MESSAGE_DISMISSED ) !== 'yes'
 		);
 	}
 }

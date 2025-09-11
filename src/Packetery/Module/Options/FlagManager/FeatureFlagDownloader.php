@@ -15,6 +15,7 @@ use Exception;
 use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 
 /**
@@ -24,10 +25,7 @@ use Packetery\Module\Options\OptionsProvider;
  */
 class FeatureFlagDownloader {
 
-	private const VALID_FOR_SECONDS            = 4 * HOUR_IN_SECONDS;
-	public const FLAGS_OPTION_ID               = 'packeta_feature_flags';
-	public const DISABLED_DUE_ERRORS_OPTION_ID = 'packeta_feature_flags_disabled_due_errors';
-	private const ERROR_COUNTER_OPTION_ID      = 'packeta_feature_flags_error_counter';
+	private const VALID_FOR_SECONDS = 4 * HOUR_IN_SECONDS;
 
 	/**
 	 * Endpoint url.
@@ -102,10 +100,10 @@ class FeatureFlagDownloader {
 		if ( $this->wpAdapter->isWpError( $response ) ) {
 			$logger = $this->wcAdapter->createLogger();
 			$logger->warning( 'Packeta Feature flag API download error: ' . $response->get_error_message() );
-			$errorCount = $this->wpAdapter->getOption( self::ERROR_COUNTER_OPTION_ID, 0 );
-			$this->wpAdapter->updateOption( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
+			$errorCount = $this->wpAdapter->getOption( OptionNames::FEATURE_FLAGS_ERROR_COUNTER, 0 );
+			$this->wpAdapter->updateOption( OptionNames::FEATURE_FLAGS_ERROR_COUNTER, $errorCount + 1 );
 			if ( $errorCount > 5 ) {
-				$this->wpAdapter->updateOption( self::DISABLED_DUE_ERRORS_OPTION_ID, true );
+				$this->wpAdapter->updateOption( OptionNames::FEATURE_FLAGS_DISABLED_DUE_ERRORS, true );
 				$logger->warning( 'Packeta Feature flag API download was disabled due to permanent connection errors.' );
 			}
 
@@ -119,8 +117,8 @@ class FeatureFlagDownloader {
 			FeatureFlagProvider::FLAG_LAST_DOWNLOAD => $lastDownload->format( CoreHelper::MYSQL_DATETIME_FORMAT ),
 		];
 
-		$this->wpAdapter->updateOption( self::FLAGS_OPTION_ID, $flags );
-		$this->wpAdapter->updateOption( self::ERROR_COUNTER_OPTION_ID, 0 );
+		$this->wpAdapter->updateOption( OptionNames::FEATURE_FLAGS, $flags );
+		$this->wpAdapter->updateOption( OptionNames::FEATURE_FLAGS_ERROR_COUNTER, 0 );
 
 		return $flags;
 	}
@@ -133,13 +131,13 @@ class FeatureFlagDownloader {
 	 */
 	public function getFlags(): ?array {
 		if ( $this->featureFlagStorage->getFlags() === null || count( $this->featureFlagStorage->getFlags() ) === 0 ) {
-			$flagsFromOptions = $this->wpAdapter->getOption( self::FLAGS_OPTION_ID );
+			$flagsFromOptions = $this->wpAdapter->getOption( OptionNames::FEATURE_FLAGS );
 			if ( is_array( $flagsFromOptions ) ) {
 				$this->featureFlagStorage->setFlags( $flagsFromOptions );
 			}
 		}
 
-		if ( $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) === true ) {
+		if ( $this->wpAdapter->getOption( OptionNames::FEATURE_FLAGS_DISABLED_DUE_ERRORS ) === true ) {
 			return $this->featureFlagStorage->getFlags() ?? [];
 		}
 
