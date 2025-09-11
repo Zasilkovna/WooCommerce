@@ -87,16 +87,7 @@ class BugReportAttachment {
 		if ( $logDirectory === null || ! is_dir( $logDirectory ) ) {
 			return;
 		}
-		$fileNames = scandir( $logDirectory );
-		if ( ! is_array( $fileNames ) ) {
-			return;
-		}
-		foreach ( $fileNames as $fileName ) {
-			$filePath = $logDirectory . '/' . $fileName;
-			if ( is_file( $filePath ) && strpos( $fileName, 'packeta-' ) === 0 ) {
-				$zip->addFile( $filePath, $fileName );
-			}
-		}
+		$this->addFreshLogsToZipByPrefix( $logDirectory, $zip, 'packeta-' );
 	}
 
 	private function addWpDebugLogToZip( ZipArchive $zip ): void {
@@ -122,16 +113,7 @@ class BugReportAttachment {
 			$this->addLimitedLogContentsToZip( $logDirectory . '/' . $filename, $zip, $filename );
 		}
 
-		$fileNames = scandir( $logDirectory );
-		if ( ! is_array( $fileNames ) ) {
-			return;
-		}
-		foreach ( $fileNames as $fileName ) {
-			$filePath = $logDirectory . '/' . $fileName;
-			if ( is_file( $filePath ) && strpos( $fileName, 'exception-' ) === 0 && $this->logSizeLimiter->isFileFreshEnough( $filePath ) ) {
-				$zip->addFile( $filePath, $fileName );
-			}
-		}
+		$this->addFreshLogsToZipByPrefix( $logDirectory, $zip, 'exception-' );
 	}
 
 	private function addLimitedLogContentsToZip( string $logPath, ZipArchive $zip, string $fileName ): void {
@@ -141,6 +123,23 @@ class BugReportAttachment {
 				$zip->addFromString( $fileName, $limited );
 			} else {
 				$zip->addFile( $logPath, $fileName );
+			}
+		}
+	}
+
+	public function addFreshLogsToZipByPrefix( string $logDirectory, ZipArchive $zip, string $prefix ): void {
+		$fileNames = scandir( $logDirectory );
+		if ( ! is_array( $fileNames ) ) {
+			return;
+		}
+		foreach ( $fileNames as $fileName ) {
+			$filePath = $logDirectory . '/' . $fileName;
+			if (
+				is_file( $filePath ) &&
+				strpos( $fileName, $prefix ) === 0 &&
+				$this->logSizeLimiter->isFileFreshEnough( $filePath )
+			) {
+				$zip->addFile( $filePath, $fileName );
 			}
 		}
 	}
