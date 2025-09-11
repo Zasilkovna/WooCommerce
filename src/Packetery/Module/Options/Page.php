@@ -143,6 +143,9 @@ class Page {
 	 */
 	private $diagnosticsLoggingFormFactory;
 
+	/** @var DiagnosticsLogger  */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -157,7 +160,8 @@ class Page {
 		WpAdapter $wpAdapter,
 		string $supportEmailAddress,
 		BugReportForm $bugReportForm,
-		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory
+		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->optionsProvider               = $optionsProvider;
@@ -173,6 +177,7 @@ class Page {
 		$this->wpAdapter                     = $wpAdapter;
 		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
+		$this->diagnosticsLogger             = $diagnosticsLogger;
 	}
 
 	public function register(): void {
@@ -917,6 +922,8 @@ class Page {
 
 		$bugReportForm = $this->bugReportForm->createForm();
 		if (
+			$bugReportForm['submit'] instanceof SubmitButton &&
+			$bugReportForm['submit']->isSubmittedBy() &&
 			$bugReportForm->isSuccess()
 		) {
 			$bugReportForm->fireEvents();
@@ -924,6 +931,8 @@ class Page {
 
 		$diagnosticsLoggingForm = $this->diagnosticsLoggingFormFactory->createForm();
 		if (
+			$diagnosticsLoggingForm['save'] instanceof SubmitButton &&
+			$diagnosticsLoggingForm['save']->isSubmittedBy() &&
 			$diagnosticsLoggingForm->isSuccess()
 		) {
 			$diagnosticsLoggingForm->fireEvents();
@@ -949,6 +958,7 @@ class Page {
 			$latteParams = [
 				'bugReportForm'          => $this->bugReportForm->createForm(),
 				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
+				'hasPacketaLog'          => is_file( $this->diagnosticsLogger->getPacketaLogPath() ),
 			];
 		}
 
@@ -1041,6 +1051,7 @@ class Page {
 			'settingsNotYetExported'                 => __( 'The settings have not been exported yet.', 'packeta' ),
 			'bugReportTitle'                         => $this->wpAdapter->__( 'Report a bug', 'packeta' ),
 			'bugReportDescription'                   => $this->wpAdapter->__( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
+			'bugReportInfo'                          => $this->wpAdapter->__( 'We will also zip the following files and attach them to the email, if available: WooCommerce Log, Diagnostics Log, Tracy Log, Wordpress Debug Log, WooCommerce System Status Log, Packeta plugin settings export.', 'packeta' ),
 			'exportSettingsTitle'                    => $this->wpAdapter->__( 'Export settings', 'packeta' ),
 			'diagnosticsLoggingTitle'                => $this->wpAdapter->__( 'Diagnostics logging', 'packeta' ),
 			'senderDescription'                      => sprintf(

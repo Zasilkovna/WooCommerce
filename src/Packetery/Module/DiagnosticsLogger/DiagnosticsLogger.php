@@ -51,8 +51,8 @@ class DiagnosticsLogger {
 			return;
 		}
 
-		$logMessage .= ' | PHP process ID: ' . getmypid();
-		$logMessage .= ' | Arguments: ' . wp_json_encode( $arguments, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+		$logMessage .= '  @  (PID: ' . getmypid() . ')';
+		$logMessage .= '  @  Arguments: ' . wp_json_encode( $arguments, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
 
 		$this->logger->log( $logMessage, 'packeta' );
 	}
@@ -65,8 +65,7 @@ class DiagnosticsLogger {
 			return;
 		}
 
-		$logDir = Debugger::$logDirectory;
-		$file   = $logDir . '/packeta.log';
+		$file = $this->getPacketaLogPath();
 
 		if ( is_file( $file ) === false ) {
 			$this->messageManager->flash_message(
@@ -94,5 +93,11 @@ class DiagnosticsLogger {
 
 	private function isLoggingEnabled(): bool {
 		return (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED ) === true;
+	}
+
+	public function getPacketaLogPath(): string {
+		$logDir = Debugger::$logDirectory;
+
+		return $logDir . '/packeta.log';
 	}
 }

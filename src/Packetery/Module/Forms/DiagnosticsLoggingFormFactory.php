@@ -29,10 +29,10 @@ class DiagnosticsLoggingFormFactory {
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
 		$form->addCheckbox( 'enabled', __( 'Enable logging', 'packeta' ) )
-			->setDefaultValue(
+			->setValue(
 				$this->wpAdapter->getOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED )
 			);
-		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
+		$form->addSubmit( 'save', __( 'Save', 'packeta' ) );
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
 		return $form;
