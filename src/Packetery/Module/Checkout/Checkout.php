@@ -137,7 +137,7 @@ class Checkout {
 			]
 		);
 
-		$this->wpAdapter->addAction( 'woocommerce_checkout_process', [ $this->validator, 'actionValidateCheckoutData' ] );
+		$this->wpAdapter->addAction( 'woocommerce_after_checkout_validation', [ $this->validator, 'actionValidateCheckoutData' ], 10, 2 );
 		// Provides following parameters: \Automattic\WooCommerce\Admin\Overrides\Order, WP_REST_Request
 		$this->wpAdapter->addAction(
 			'woocommerce_store_api_checkout_update_order_from_request',
