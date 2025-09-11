@@ -51,8 +51,8 @@ class DiagnosticsLogger {
 			return;
 		}
 
-		$logMessage .= ' | PHP process ID: ' . getmypid();
-		$logMessage .= ' | Arguments: ' . wp_json_encode( $arguments, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+		$logMessage .= '  @  (PID: ' . getmypid() . ')';
+		$logMessage .= '  @  Arguments: ' . wp_json_encode( $arguments, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
 
 		$this->logger->log( $logMessage, 'packeta' );
 	}
