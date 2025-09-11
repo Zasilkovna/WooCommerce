@@ -32,7 +32,7 @@ class DiagnosticsLoggingFormFactory {
 			->setDefaultValue(
 				$this->wpAdapter->getOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED )
 			);
-		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
+		$form->addSubmit( 'save', __( 'Save', 'packeta' ) );
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
 		return $form;
