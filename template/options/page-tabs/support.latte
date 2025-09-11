@@ -1,3 +1,9 @@
+{varType array $translations}
+{varType bool $hasPacketaLog}
+{varType string $deleteDiagnosticsLogsLink}
+{varType string $exportLink}
+{varType null|string $lastExport}
+
 <h3>{$translations['bugReportTitle']}</h3>
 <p>{$translations['bugReportDescription']}</p>
 
@@ -17,8 +23,9 @@
 	</p>
 {/form}
 
-<p><a href="{$deleteDiagnosticsLogsLink}" class="button js-packetery-delete-log">{$translations['diagnosticsLoggingLink']}</a></p>
-
+{if $hasPacketaLog === true}
+	<p><a href="{$deleteDiagnosticsLogsLink}" class="button js-packetery-delete-log">{$translations['diagnosticsLoggingLink']}</a></p>
+{/if}
 <hr class="packetery-section-divider">
 
 <h3>{$translations['exportSettingsTitle']}</h3>
