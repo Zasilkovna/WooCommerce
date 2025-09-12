@@ -1079,7 +1079,7 @@ class Page {
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
-			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. The log will record important function calls, passed parameters, and their results. This information can help developers troubleshoot the issue. We recommend enabling logging only temporarily.', 'packeta' ),
+			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. After enabling it, please repeat the action that is not working as expected. The log will then record important function calls, passed parameters, and their results. Once you have reproduced the issue, disable diagnostic logging again. This information can help developers troubleshoot the problem.', 'packeta' ),
 			'diagnosticsLoggingLink'                 => $this->wpAdapter->__( 'Delete log', 'packeta' ),
 		];
 
