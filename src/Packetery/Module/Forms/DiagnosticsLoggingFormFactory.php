@@ -5,6 +5,7 @@ namespace Packetery\Module\Forms;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionNames;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
 
 class DiagnosticsLoggingFormFactory {
@@ -28,12 +29,20 @@ class DiagnosticsLoggingFormFactory {
 
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
-		$form->addCheckbox( 'enabled', __( 'Enable logging', 'packeta' ) )
-			->setValue(
-				$this->wpAdapter->getOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED )
-			);
+		$form->addCheckbox( 'enabled', __( 'Enable logging', 'packeta' ) );
 		$form->addSubmit( 'save', __( 'Save', 'packeta' ) );
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
+
+		if ( $form['save'] instanceof SubmitButton &&
+			$form['save']->isSubmittedBy() === false
+		) {
+			$form->setValues(
+				[
+					'enabled' => $this->wpAdapter->getOption( OptionNames::PACKETERY_DIAGNOSTICS_LOGGING_ENABLED ),
+				],
+				true
+			);
+		}
 
 		return $form;
 	}
