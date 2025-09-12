@@ -235,13 +235,13 @@ class WpAdapter {
 	}
 
 	/**
-	 * @param string   $to
-	 * @param string   $subject
-	 * @param string   $message
-	 * @param string[] $headers
-	 * @param string[] $attachments
+	 * @param string|string[] $to
+	 * @param string          $subject
+	 * @param string          $message
+	 * @param string[]        $headers
+	 * @param string[]        $attachments
 	 */
-	public function wpMail( string $to, string $subject, string $message, array $headers, array $attachments ): bool {
+	public function wpMail( $to, string $subject, string $message, array $headers, array $attachments ): bool {
 		return wp_mail( $to, $subject, $message, $headers, $attachments );
 	}
 

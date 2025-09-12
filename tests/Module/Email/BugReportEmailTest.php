@@ -67,7 +67,7 @@ class BugReportEmailTest extends TestCase {
 				}
 			);
 
-		$this->assertTrue( $bugReportEmail->sendBugReport( $specialEmail, $specialMessage ) );
+		$this->assertTrue( $bugReportEmail->sendBugReport( $specialEmail, $specialMessage, false ) );
 	}
 
 	public function testSuccessWithWooCommerceSystemStatus(): void {
@@ -99,7 +99,7 @@ class BugReportEmailTest extends TestCase {
 				}
 			);
 
-		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE ) );
+		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE, false ) );
 	}
 
 	public function testSuccessWithoutZipArchive(): void {
@@ -131,7 +131,7 @@ class BugReportEmailTest extends TestCase {
 				}
 			);
 
-		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE ) );
+		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE, false ) );
 	}
 
 	public function testSuccessWithoutWooCommerceSystemStatus(): void {
@@ -163,7 +163,7 @@ class BugReportEmailTest extends TestCase {
 				}
 			);
 
-		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE ) );
+		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE, false ) );
 	}
 
 	public function testSuccessWithFullZipCreation(): void {
@@ -195,6 +195,6 @@ class BugReportEmailTest extends TestCase {
 				}
 			);
 
-		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE ) );
+		$this->assertTrue( $bugReportEmail->sendBugReport( self::TEST_EMAIL, self::TEST_MESSAGE, false ) );
 	}
 }

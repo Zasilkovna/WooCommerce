@@ -17,7 +17,7 @@
 		</tr>
 		<tr>
 			<th scope="row">
-				<label for="message">Message</label>
+				<label for="message">{$translations['message']}</label>
 			</th>
 			<td>
 				{input message, 'id' => 'packetery-js-bug-report-form-message', 'rows' => 10, 'cols' => 50}
@@ -26,6 +26,12 @@
 						{$bugReportForm['message']->getError()}
 					</div>
 				{/if}
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"></th>
+			<td>
+				{input sendCopy}
 			</td>
 		</tr>
 	</table>

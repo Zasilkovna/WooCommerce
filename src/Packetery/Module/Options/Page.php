@@ -1090,6 +1090,7 @@ class Page {
 			),
 			'bugReportScreenshotsSecondStep'         => $this->wpAdapter->__( 'Copy the link(s) generated after uploading', 'packeta' ),
 			'bugReportScreenshotsThirdStep'          => $this->wpAdapter->__( 'Paste the link(s) into your message.', 'packeta' ),
+			'message'                                => $this->wpAdapter->__( 'Message', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
