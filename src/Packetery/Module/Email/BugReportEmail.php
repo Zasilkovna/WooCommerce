@@ -33,7 +33,7 @@ class BugReportEmail {
 		$this->bugReportAttachment = $bugReportAttachment;
 	}
 
-	public function sendBugReport( string $replyEmail, string $message ): bool {
+	public function sendBugReport( string $replyEmail, string $message, bool $sendCopy ): bool {
 		$siteName = $this->wpAdapter->getBlogInfo( 'name', 'raw' );
 		// translators: %s is site name
 		$subject = sprintf( $this->wpAdapter->__( 'Packeta: Plugin WP - bug report - %s', 'packeta' ), $siteName );
@@ -47,8 +47,13 @@ class BugReportEmail {
 			"Reply-To: {$replyEmail}",
 		];
 
+		$to = $this->supportEmailAddress;
+		if ( $sendCopy ) {
+			$to = [ $this->supportEmailAddress, $replyEmail ];
+		}
+
 		return $this->wpAdapter->wpMail(
-			$this->supportEmailAddress,
+			$to,
 			$subject,
 			$this->createEmailBody( $replyEmail, $message, $siteName ),
 			$headers,

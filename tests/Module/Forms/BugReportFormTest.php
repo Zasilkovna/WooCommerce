@@ -166,31 +166,15 @@ class BugReportFormTest extends TestCase {
 	public function testOnFormValidateWithEmptyMessage(): void {
 		$bugReportForm = $this->createBugReportForm();
 
-		$formMock         = $this->createMock( Form::class );
-		$messageFieldMock = $this->createMock( BaseControl::class );
-		$values           = [
-			'replyTo' => self::TEST_EMAIL,
-			'message' => '',
-		];
+		$formMock = $this->createMock( Form::class );
+		$formMock->method( 'hasErrors' )
+			->willReturn( true );
+		$formMock->method( 'getErrors' )
+			->willReturn( [ self::MESSAGE_REQUIRED ] );
 
-		$formMock->method( 'getValues' )
-			->willReturn( $values );
-
-		$formMock->method( 'offsetGet' )
-			->with( 'message' )
-			->willReturn( $messageFieldMock );
-
-		$this->wpAdapter->method( 'wpStripAllTags' )
-			->with( '' )
-			->willReturn( '' );
-
-		$this->wpAdapter->method( '__' )
-			->with( self::MESSAGE_REQUIRED, self::TEXT_DOMAIN )
-			->willReturn( self::MESSAGE_REQUIRED );
-
-		$messageFieldMock->expects( $this->once() )
-			->method( 'addError' )
-			->with( self::MESSAGE_REQUIRED );
+		$this->messageManager
+			->expects( $this->once() )
+			->method( 'flash_message' );
 
 		$bugReportForm->onFormValidate( $formMock );
 	}
