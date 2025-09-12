@@ -68,11 +68,6 @@ class DiagnosticsLogger {
 		$file = $this->getPacketaLogPath();
 
 		if ( is_file( $file ) === false ) {
-			$this->messageManager->flash_message(
-				$this->wpAdapter->__( 'Log file does not exist.' ),
-				MessageManager::TYPE_INFO
-			);
-
 			return;
 		}
 
@@ -81,12 +76,16 @@ class DiagnosticsLogger {
 		if ( $isDeleteSuccess === true ) {
 			$this->messageManager->flash_message(
 				$this->wpAdapter->__( 'Log file was deleted.' ),
-				MessageManager::TYPE_SUCCESS
+				MessageManager::TYPE_SUCCESS,
+				MessageManager::RENDERER_PACKETERY,
+				'plugin-options'
 			);
 		} else {
 			$this->messageManager->flash_message(
 				$this->wpAdapter->__( 'Log file could not be deleted.' ),
-				MessageManager::TYPE_ERROR
+				MessageManager::TYPE_ERROR,
+				MessageManager::RENDERER_PACKETERY,
+				'plugin-options'
 			);
 		}
 	}
