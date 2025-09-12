@@ -1,3 +1,5 @@
+{varType array $translations}
+
 {form $bugReportForm}
 	<table class="form-table packetery_settings" role="presentation">
 		<tr>
@@ -27,6 +29,18 @@
 			</td>
 		</tr>
 	</table>
+	<p>
+		{$translations['bugReportScreenshotsTitle']}
+	</p>
+	<ol>
+		<li>{$translations['bugReportScreenshotsFirstStep']|noescape}</li>
+		<li>{$translations['bugReportScreenshotsSecondStep']}</li>
+		<li>{$translations['bugReportScreenshotsThirdStep']}</li>
+	</ol>
+
+	<p>
+		{$translations['bugReportInfo']}
+	</p>
 
 	<p class="submit">
 		{input submit, 'class' => 'button button-primary'}

@@ -1079,8 +1079,17 @@ class Page {
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
-			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. The log will record important function calls, passed parameters, and their results. This information can help developers troubleshoot the issue. We recommend enabling logging only temporarily.', 'packeta' ),
+			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. After enabling it, please repeat the action that is not working as expected. The log will then record important function calls, passed parameters, and their results. Once you have reproduced the issue, disable diagnostic logging again. This information can help developers troubleshoot the problem.', 'packeta' ),
 			'diagnosticsLoggingLink'                 => $this->wpAdapter->__( 'Delete log', 'packeta' ),
+			'bugReportScreenshotsTitle'              => $this->wpAdapter->__( 'If possible, please provide screenshots showing the problem. You can do it this way:', 'packeta' ),
+			'bugReportScreenshotsFirstStep'          => sprintf(
+			/* translators: 1: ImgBB link start 2: ImgBB link end */
+				$this->wpAdapter->__( 'Go to %1$sImgBB%2$s and upload your screenshots.', 'packeta' ),
+				'<a href="https://imgbb.com/" target="_blank">',
+				'</a>'
+			),
+			'bugReportScreenshotsSecondStep'         => $this->wpAdapter->__( 'Copy the link(s) generated after uploading', 'packeta' ),
+			'bugReportScreenshotsThirdStep'          => $this->wpAdapter->__( 'Paste the link(s) into your message.', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
