@@ -137,32 +137,34 @@ class AssetManager {
 	 * Enqueues javascript files and stylesheets for checkout.
 	 */
 	public function enqueueFrontAssets(): void {
-		if ( $this->wcAdapter->isCheckout() ) {
-			if ( $this->wpAdapter->doingAjax() === false ) {
-				$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
+		if ( ! $this->wcAdapter->isCheckout() ) {
+			return;
+		}
+		if ( $this->wpAdapter->doingAjax() === false ) {
+			$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
 
-				$customFrontCssPath = WP_CONTENT_DIR . '/packeta-custom-front.css';
-				if ( file_exists( $customFrontCssPath ) ) {
-					$this->wpAdapter->enqueueStyle(
-						'packetery-custom-front-styles',
-						$customFrontCssPath,
-						[],
-						md5( (string) filemtime( $customFrontCssPath ) )
-					);
-				}
-			}
-			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
-				$this->wpAdapter->enqueueScript(
-					'packetery-widget-library',
-					$this->widgetUrlResolver->getUrl(),
+			$customFrontCssFilename = 'packeta-custom-front.css';
+			$customFrontCssPath     = WP_CONTENT_DIR . '/' . $customFrontCssFilename;
+			if ( file_exists( $customFrontCssPath ) ) {
+				$this->wpAdapter->enqueueStyle(
+					'packetery-custom-front-styles',
+					$this->wpAdapter->contentUrl( $customFrontCssFilename ),
 					[],
-					Plugin::VERSION,
-					false
+					md5( (string) filemtime( $customFrontCssPath ) )
 				);
-			} elseif ( $this->wpAdapter->doingAjax() === false ) {
-				$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
-				$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkoutSettings->createSettings() );
 			}
+		}
+		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
+			$this->wpAdapter->enqueueScript(
+				'packetery-widget-library',
+				$this->widgetUrlResolver->getUrl(),
+				[],
+				Plugin::VERSION,
+				false
+			);
+		} elseif ( $this->wpAdapter->doingAjax() === false ) {
+			$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
+			$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkoutSettings->createSettings() );
 		}
 	}
 
