@@ -12,6 +12,7 @@ use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
 use WC_REST_Exception;
+use WP_Error;
 
 class CheckoutValidator {
 
@@ -76,14 +77,17 @@ class CheckoutValidator {
 	}
 
 	/**
-	 * Checks if all attributes required for chosen method are set, sets an error otherwise.
+	 * Using wc_add_notice is not safe because it can be cleared by other plugins.
+	 *
+	 * @param array<string, string|int|string[]|bool> $data
+	 * @param WP_Error                                $wpError
 	 *
 	 * @throws ProductNotFoundException
 	 */
-	public function actionValidateCheckoutData(): void {
+	public function actionValidateCheckoutData( array $data, WP_Error $wpError ): void {
 		$error = $this->getFirstError();
 		if ( $error !== null ) {
-			$this->wcAdapter->addNotice( $error, 'error' );
+			$wpError->add( 'packeta_cart_validation_failed', $error );
 		}
 	}
 
