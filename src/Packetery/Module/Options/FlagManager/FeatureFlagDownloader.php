@@ -100,7 +100,7 @@ class FeatureFlagDownloader {
 		);
 
 		if ( $this->wpAdapter->isWpError( $response ) ) {
-			$logger = $this->wcAdapter->createLogger();
+			$logger = $this->wcAdapter->getLogger();
 			$logger->warning( 'Packeta Feature flag API download error: ' . $response->get_error_message() );
 			$errorCount = $this->wpAdapter->getOption( self::ERROR_COUNTER_OPTION_ID, 0 );
 			$this->wpAdapter->updateOption( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );

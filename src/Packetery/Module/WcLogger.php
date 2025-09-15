@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Packetery\Module;
 
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Tracy\Logger;
 
 class WcLogger {
@@ -16,8 +17,12 @@ class WcLogger {
 	 */
 	private static function log( $message, string $level ): void {
 		$logCallback = static function () use ( $level, $message ): void {
-			/** WC_Logger is always returned. @noinspection NullPointerExceptionInspection */
-			wc_get_logger()->log(
+			$container = CompatibilityBridge::getContainer();
+			/** @var WcAdapter $wcAdapter */
+			$wcAdapter = $container->getByType( WcAdapter::class );
+			$wcLogger  = $wcAdapter->getLogger();
+
+			$wcLogger->log(
 				$level,
 				Logger::formatMessage( $message ),
 				[ 'source' => 'packeta' ]
