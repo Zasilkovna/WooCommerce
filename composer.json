@@ -77,8 +77,10 @@
         ],
         "phpstan:core": "phpstan analyse -c phpstan/core.neon",
         "phpstan:module": "phpstan analyse -c phpstan/module.neon --memory-limit 2G",
-        "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests -c phpunit.xml.dist --log-junit ./tests-coverage/log/junit.xml --testsuite mandatory --coverage-clover tests-coverage/clover.xml --coverage-html ./tests-coverage --coverage-cobertura tests-coverage/cobertura.xml --coverage-text=./tests-coverage/coverage.txt",
-        "tests-unit": "vendor/bin/phpunit tests",
+        "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit -c phpunit.xml.dist --log-junit ./tests-coverage/log/junit.xml --testsuite unit --coverage-clover tests-coverage/clover.xml --coverage-html ./tests-coverage --coverage-cobertura tests-coverage/cobertura.xml --coverage-text=./tests-coverage/coverage.txt",
+        "tests-integration": "vendor/bin/phpunit --testsuite integration",
+        "tests-integration-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit -c phpunit.xml.dist --log-junit ./tests-coverage/integration/log/junit.xml --testsuite integration --coverage-clover tests-coverage/integration/clover.xml --coverage-html ./tests-coverage/integration --coverage-cobertura tests-coverage/integration/cobertura.xml --coverage-text=./tests-coverage/integration/coverage.txt",
+        "tests-unit": "vendor/bin/phpunit --testsuite unit",
         "wpify-scoper": "wpify-scoper"
     }
 }

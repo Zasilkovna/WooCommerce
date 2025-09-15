@@ -10,3 +10,4 @@
 /node_modules/
 phpunit.xml
 soap-php-bugfix-dev.wsdl
+/cli/demo-install/install-wpwc.config.local.sh
