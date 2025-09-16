@@ -53,6 +53,73 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 By default, the cache directory is located in the `wp-content/packeta/temp` directory.
 You can change the path to the cache directory by setting `PACKETERY_CACHE_BASE_PATH` constant in `wp-config.php`.
 
+###### Custom Cache Directory Configuration
+
+The `PACKETERY_CACHE_BASE_PATH` constant allows you to specify a custom location for the Packeta plugin's cache and log directories. This is useful for:
+
+- Storing cache files outside the web root for security
+- Using a dedicated directory with specific permissions
+- Organizing cache files in a centralized location
+
+**Configuration:**
+
+Add the following line to your `wp-config.php` file:
+
+```php
+define('PACKETERY_CACHE_BASE_PATH', '/var/cache/packeta');
+```
+
+**Directory Structure:**
+
+When you set a custom cache base path, you need to create the following directory structure:
+
+```
+/var/cache/packeta/
+├── cache/          # Plugin cache files
+└── log/            # Plugin log files
+```
+
+**Required Permissions and User Access:**
+
+The web server must have write permissions to the cache base directory and its subdirectories. When using WP-CLI or other command-line tools, ensure both web server and CLI users have appropriate access.
+
+**User Types:**
+- **Web server user**: Typically `www-data`, `apache`, or `nginx`
+- **CLI user**: Often the same as the file owner or a different user (e.g., `root`, `admin`, or your system user)
+
+**Recommended Permissions:**
+- **Directory permissions**: `775`
+- **File permissions**: `664`
+
+**Complete Setup:**
+
+```bash
+# Create the base directory and subdirectories
+mkdir -p /var/cache/packeta/cache
+mkdir -p /var/cache/packeta/log
+
+# Set group ownership to web server group
+chgrp www-data /var/cache/packeta
+chgrp www-data /var/cache/packeta/cache
+chgrp www-data /var/cache/packeta/log
+
+# Set permissions to allow group write access
+chmod 775 /var/cache/packeta
+chmod 775 /var/cache/packeta/cache
+chmod 775 /var/cache/packeta/log
+```
+
+This ensures both the web server and CLI users can access the cache directory.
+
+**Important Notes:**
+
+- You must manually create the required subdirectories (`cache/` and `log/`) before using the plugin
+- The directory should be outside the web root when possible for security reasons
+- Make sure the path is absolute (not relative) to avoid issues
+- **PHP open_basedir restriction**: If your server has `open_basedir` configured, ensure your cache directory path is included in the allowed directories. For example, if using `/var/cache/packeta`, add `/var/cache/` to your `open_basedir` setting in `php.ini` or server configuration
+- **SELinux/AppArmor**: On systems with mandatory access control, ensure the web server has appropriate permissions to access the cache directory
+- **Disk space**: Ensure sufficient disk space is available for cache and log files
+
 #### Filters
 
 WP Filters are used to easily alter preselected system behaviors.
