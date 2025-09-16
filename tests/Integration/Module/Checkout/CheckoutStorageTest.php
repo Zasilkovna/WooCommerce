@@ -10,11 +10,10 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order\Attribute as Attr;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Http\UrlScript;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Tests\Integration\IntegrationTestsHelper;
+use Tests\Integration\AbstractIntegrationTestCase;
 
-class CheckoutStorageTest extends TestCase {
+class CheckoutStorageTest extends AbstractIntegrationTestCase {
 	/**
 	 * Allows setting raw POST payload (including non-array) to exercise branches when POST is not an array.
 	 *
@@ -55,9 +54,8 @@ class CheckoutStorageTest extends TestCase {
 	}
 
 	public function testTransientStorage(): void {
-		$container = IntegrationTestsHelper::getContainer();
 		/** @var CheckoutStorage $checkoutStorage */
-		$checkoutStorage = $container->getByType( CheckoutStorage::class );
+		$checkoutStorage = $this->container->getByType( CheckoutStorage::class );
 
 		$dummyData = [
 			'dummyKey' => [ 'dummyDataKey' => 'dummyDataValue' ],

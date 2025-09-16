@@ -32,7 +32,7 @@ jobs:
         run: composer install
 
       - name: Run PHPUnit
-        run: composer run tests-unit
+        run: composer run tests:unit
 
   # job for code coverage
   code-coverage:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Run PHPUnit with code coverage
         run: |
-          composer run tests-coverage
+          composer run tests:coverage
           cat tests-coverage/coverage.txt > tests-coverage/coverage-summary.txt
 
       - name: Post coverage report as comment in PR
