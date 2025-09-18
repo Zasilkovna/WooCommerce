@@ -20,6 +20,7 @@ use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\ShippingMethod;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionMethod;
+use Tests\Core\DummyFactory;
 use Tests\Integration\AbstractIntegrationTestCase;
 use Tests\Module\MockFactory;
 
@@ -124,67 +125,16 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 	}
 
 	public static function createShippingRatesProvider(): array {
-		$carrierCzFirst  = new Entity\Carrier(
-			'100',
-			'Carrier CZ',
-			true,
-			false,
-			false,
-			false,
-			false,
-			false,
-			false,
-			true,
-			'cz',
-			'CZK',
-			30.0,
-			true,
-			false,
-			true,
-		);
-		$carrierCzSecond = new Entity\Carrier(
-			'101',
-			'Carrier CZ 2',
-			true,
-			false,
-			false,
-			false,
-			false,
-			false,
-			false,
-			true,
-			'cz',
-			'CZK',
-			30.0,
-			true,
-			false,
-			true,
-		);
-		$carrierSk       = new Entity\Carrier(
-			'200',
-			'Carrier SK',
-			true,
-			false,
-			false,
-			false,
-			false,
-			false,
-			false,
-			true,
-			'sk',
-			'EUR',
-			30.0,
-			true,
-			false,
-			false,
-		);
+		$carrierCzPp = DummyFactory::createCarrierCzechPp();
+		$carrierCzHd = DummyFactory::createCarrierCzechHdRequiresSize();
+		$carrierDe   = DummyFactory::createCarrierGermanPp();
 
-		$carrierOptionsCzFirst  = new Carrier\Options(
-			OptionPrefixer::getOptionId( $carrierCzFirst->getId() ),
+		$carrierOptionsCzPp = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierCzPp->getId() ),
 			[
-				'id'                  => $carrierCzFirst->getId(),
+				'id'                  => $carrierCzPp->getId(),
 				'active'              => true,
-				'name'                => 'Carrier CZ',
+				'name'                => 'Carrier CZ I',
 				'weight_limits'       => [
 					[
 						'weight' => 5.0,
@@ -194,12 +144,12 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'free_shipping_limit' => null,
 			],
 		);
-		$carrierOptionsCzSecond = new Carrier\Options(
-			OptionPrefixer::getOptionId( $carrierCzSecond->getId() ),
+		$carrierOptionsCzHd = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierCzHd->getId() ),
 			[
-				'id'                   => $carrierCzSecond->getId(),
+				'id'                   => $carrierCzHd->getId(),
 				'active'               => true,
-				'name'                 => 'Carrier CZ 2',
+				'name'                 => 'Carrier CZ II',
 				'weight_limits'        => null,
 				'product_value_limits' => [
 					[
@@ -215,12 +165,12 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'pricing_type'         => 'byProductValue',
 			],
 		);
-		$carrierOptionsSk       = new Carrier\Options(
-			OptionPrefixer::getOptionId( $carrierSk->getId() ),
+		$carrierOptionsDe   = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierDe->getId() ),
 			[
-				'id'                  => $carrierSk->getId(),
+				'id'                  => $carrierDe->getId(),
 				'active'              => true,
-				'name'                => 'Carrier SK',
+				'name'                => 'Carrier DE',
 				'weight_limits'       => [
 					[
 						'weight' => 5.0,
@@ -254,7 +204,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
-				'availableCarriers'         => [ [ $carrierCzFirst, $carrierOptionsCzFirst ], [ $carrierCzSecond, $carrierOptionsCzSecond ] ],
+				'availableCarriers'         => [ [ $carrierCzPp, $carrierOptionsCzPp ], [ $carrierCzHd, $carrierOptionsCzHd ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
@@ -268,10 +218,10 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 			],
 			'specific carrier method with matching country' => [
 				'allowedCarrierNames'       => null,
-				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierSk->getId(),
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
 				'instanceId'                => 7,
-				'customerCountry'           => 'sk',
-				'availableCarriers'         => [ [ $carrierSk, $carrierOptionsSk ] ],
+				'customerCountry'           => 'de',
+				'availableCarriers'         => [ [ $carrierDe, $carrierOptionsDe ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
@@ -285,10 +235,10 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 			],
 			'specific carrier method with age verification not available' => [
 				'allowedCarrierNames'       => null,
-				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierSk->getId(),
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
 				'instanceId'                => 7,
 				'customerCountry'           => 'sk',
-				'availableCarriers'         => [ [ $carrierSk, $carrierOptionsSk ] ],
+				'availableCarriers'         => [ [ $carrierDe, $carrierOptionsDe ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
@@ -302,10 +252,10 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 			],
 			'specific carrier method with mismatched country' => [
 				'allowedCarrierNames'       => null,
-				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierSk->getId(),
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
 				'instanceId'                => 7,
 				'customerCountry'           => 'cz',
-				'availableCarriers'         => [ [ $carrierSk, $carrierOptionsSk ] ],
+				'availableCarriers'         => [ [ $carrierDe, $carrierOptionsDe ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
@@ -318,11 +268,11 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'expectedRateCount'         => 0,
 			],
 			'allowedCarrierNames filter allows only one' => [
-				'allowedCarrierNames'       => [ $carrierCzFirst->getId() => 'Custom CZ' ],
+				'allowedCarrierNames'       => [ $carrierCzPp->getId() => 'Custom CZ' ],
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
-				'availableCarriers'         => [ [ $carrierCzFirst, $carrierOptionsCzFirst ], [ $carrierSk, $carrierOptionsSk ] ],
+				'availableCarriers'         => [ [ $carrierCzPp, $carrierOptionsCzPp ], [ $carrierDe, $carrierOptionsDe ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
