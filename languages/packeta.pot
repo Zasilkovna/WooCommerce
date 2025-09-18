@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-08T10:15:32+02:00\n"
+"POT-Creation-Date: 2025-09-18T12:57:34+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -318,7 +318,7 @@ msgid "Address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:352
-#: src/Packetery/Module/Checkout/Checkout.php:256
+#: src/Packetery/Module/Checkout/Checkout.php:258
 msgid "Age verification fee"
 msgstr ""
 
@@ -590,7 +590,7 @@ msgstr ""
 msgid "available"
 msgstr ""
 
-#: src/Packetery/Module/Checkout/Checkout.php:283
+#: src/Packetery/Module/Checkout/Checkout.php:285
 msgid "COD surcharge"
 msgstr ""
 
@@ -600,7 +600,7 @@ msgid "Choose pickup point"
 msgstr ""
 
 #: src/Packetery/Module/Checkout/CheckoutSettings.php:193
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:156
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:162
 msgid "Pickup point is not chosen."
 msgstr ""
 
@@ -629,21 +629,21 @@ msgstr ""
 msgid "Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:117
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:125
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:123
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:131
 msgid "Chosen delivery method is no longer available. Please choose another delivery method."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:140
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:188
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:146
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:194
 msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:162
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:168
 msgid "Customer country could not be obtained."
 msgstr ""
 
-#: src/Packetery/Module/Checkout/CheckoutValidator.php:166
+#: src/Packetery/Module/Checkout/CheckoutValidator.php:172
 msgid "The selected Packeta carrier is not available for the selected delivery country."
 msgstr ""
 
@@ -1655,7 +1655,7 @@ msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:442
 #: src/Packetery/Module/Order/Metabox.php:447
-#: src/Packetery/Module/Views/AssetManager.php:265
+#: src/Packetery/Module/Views/AssetManager.php:267
 msgid "It is not possible to submit the shipment because all the information required for this shipment is not filled."
 msgstr ""
 
@@ -2215,11 +2215,11 @@ msgstr ""
 msgid "Database %s table of Packeta plugin could not be created or altered, you can find more information in Packeta log."
 msgstr ""
 
-#: src/Packetery/Module/Views/AssetManager.php:264
+#: src/Packetery/Module/Views/AssetManager.php:266
 msgid "Customs declaration has to be filled in order detail."
 msgstr ""
 
-#: src/Packetery/Module/Views/AssetManager.php:396
+#: src/Packetery/Module/Views/AssetManager.php:398
 msgid "When uninstalling the plugin, ALL data and settings will be removed only if the PACKETERY_REMOVE_ALL_DATA constant is defined in wp-config.php and is set to true. This is to prevent data loss when removing the plugin from the backend and to ensure that only the site owner can perform this action."
 msgstr ""
 
