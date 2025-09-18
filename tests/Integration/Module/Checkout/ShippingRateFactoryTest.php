@@ -124,7 +124,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 	}
 
 	public static function createShippingRatesProvider(): array {
-		$carrierCz  = new Entity\Carrier(
+		$carrierCzFirst  = new Entity\Carrier(
 			'100',
 			'Carrier CZ',
 			true,
@@ -142,7 +142,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 			false,
 			true,
 		);
-		$carrierCz2 = new Entity\Carrier(
+		$carrierCzSecond = new Entity\Carrier(
 			'101',
 			'Carrier CZ 2',
 			true,
@@ -160,7 +160,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 			false,
 			true,
 		);
-		$carrierSk  = new Entity\Carrier(
+		$carrierSk       = new Entity\Carrier(
 			'200',
 			'Carrier SK',
 			true,
@@ -179,10 +179,10 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 			false,
 		);
 
-		$carrierOptionsCz  = new Carrier\Options(
-			OptionPrefixer::getOptionId( $carrierCz->getId() ),
+		$carrierOptionsCzFirst  = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierCzFirst->getId() ),
 			[
-				'id'                  => $carrierCz->getId(),
+				'id'                  => $carrierCzFirst->getId(),
 				'active'              => true,
 				'name'                => 'Carrier CZ',
 				'weight_limits'       => [
@@ -194,10 +194,10 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'free_shipping_limit' => null,
 			],
 		);
-		$carrierOptionsCz2 = new Carrier\Options(
-			OptionPrefixer::getOptionId( $carrierCz2->getId() ),
+		$carrierOptionsCzSecond = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierCzSecond->getId() ),
 			[
-				'id'                   => $carrierCz2->getId(),
+				'id'                   => $carrierCzSecond->getId(),
 				'active'               => true,
 				'name'                 => 'Carrier CZ 2',
 				'weight_limits'        => null,
@@ -215,7 +215,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'pricing_type'         => 'byProductValue',
 			],
 		);
-		$carrierOptionsSk  = new Carrier\Options(
+		$carrierOptionsSk       = new Carrier\Options(
 			OptionPrefixer::getOptionId( $carrierSk->getId() ),
 			[
 				'id'                  => $carrierSk->getId(),
@@ -254,7 +254,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
-				'availableCarriers'         => [ [ $carrierCz, $carrierOptionsCz ], [ $carrierCz2, $carrierOptionsCz2 ] ],
+				'availableCarriers'         => [ [ $carrierCzFirst, $carrierOptionsCzFirst ], [ $carrierCzSecond, $carrierOptionsCzSecond ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
@@ -318,11 +318,11 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 				'expectedRateCount'         => 0,
 			],
 			'allowedCarrierNames filter allows only one' => [
-				'allowedCarrierNames'       => [ $carrierCz->getId() => 'Custom CZ' ],
+				'allowedCarrierNames'       => [ $carrierCzFirst->getId() => 'Custom CZ' ],
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
-				'availableCarriers'         => [ [ $carrierCz, $carrierOptionsCz ], [ $carrierSk, $carrierOptionsSk ] ],
+				'availableCarriers'         => [ [ $carrierCzFirst, $carrierOptionsCzFirst ], [ $carrierSk, $carrierOptionsSk ] ],
 				'cartTotal'                 => 100.0,
 				'cartWeight'                => 1.0,
 				'totalValue'                => 100.0,
@@ -365,8 +365,7 @@ class ShippingRateFactoryTest extends AbstractIntegrationTestCase {
 		$optionsMap      = [];
 		foreach ( $availableCarriers as $pair ) {
 			if ( is_array( $pair ) && count( $pair ) === 2 ) {
-				/** @var Entity\Carrier $carrier */
-				/** @var Carrier\Options $options */
+				/** @var array<Entity\Carrier, Carrier\Options> $pair */
 				[ $carrier, $options ] = $pair;
 
 				$carrierEntities[]                     = $carrier;
