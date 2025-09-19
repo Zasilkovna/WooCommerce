@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.8.2
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 10.1.2
@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.1.2 =
+Fixed: Plugin no longer crashes on the orders list when a refunded order is present.
+
 = 2.1.1 =
 Fixed: Removing all transients and options upon uninstall.
 Updated: Checkout data transient lifetime raised to the default value of WooCommerce.
