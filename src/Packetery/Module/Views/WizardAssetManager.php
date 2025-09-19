@@ -11,29 +11,20 @@ use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 
 class WizardAssetManager {
-	/**
-	 * @var WpAdapter
-	 */
+
+	/** @var WpAdapter */
 	private $wpAdapter;
 
-	/**
-	 * @var AssetManager
-	 */
+	/** @var AssetManager */
 	private $assetManager;
 
-	/**
-	 * @var Request
-	 */
+	/** @var Request */
 	private $request;
 
-	/**
-	 * @var ContextResolver
-	 */
+	/** @var ContextResolver */
 	private $contextResolver;
 
-	/**
-	 * @var DetailCommonLogic
-	 */
+	/** @var DetailCommonLogic */
 	private $detailCommonLogic;
 
 	public function __construct(
