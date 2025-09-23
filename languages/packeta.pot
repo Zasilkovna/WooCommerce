@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 2.1.1\n"
+"Project-Id-Version: Packeta 2.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-18T12:57:34+02:00\n"
+"POT-Creation-Date: 2025-09-19T12:28:06+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -43,7 +43,7 @@ msgstr ""
 #: src/Packetery/Module/Views/ViewAdmin.php:88
 #: src/Packetery/Module/Views/ViewFrontend.php:68
 #: src/Packetery/Module/Views/ViewMail.php:80
-#: src/Packetery/Module/Views/WizardAssetManager.php:462
+#: src/Packetery/Module/Views/WizardAssetManager.php:459
 msgid "Packeta"
 msgstr ""
 
@@ -811,7 +811,7 @@ msgstr ""
 #: src/Packetery/Module/Order/CarrierModalFormFactory.php:72
 #: src/Packetery/Module/Order/LabelPrintModal.php:125
 #: src/Packetery/Module/Order/Modal.php:61
-#: src/Packetery/Module/Views/WizardAssetManager.php:404
+#: src/Packetery/Module/Views/WizardAssetManager.php:401
 msgid "Cancel"
 msgstr ""
 
@@ -973,7 +973,7 @@ msgid "1/16 A4, direct print, 1pc/page"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:319
-#: src/Packetery/Module/Views/WizardAssetManager.php:281
+#: src/Packetery/Module/Views/WizardAssetManager.php:278
 msgid "Allow packet auto-submission"
 msgstr ""
 
@@ -1000,17 +1000,17 @@ msgid "Settings saved."
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:375
-#: src/Packetery/Module/Views/WizardAssetManager.php:251
+#: src/Packetery/Module/Views/WizardAssetManager.php:248
 msgid "Number of orders synced during one cron call"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:381
-#: src/Packetery/Module/Views/WizardAssetManager.php:255
+#: src/Packetery/Module/Views/WizardAssetManager.php:252
 msgid "Number of days for which the order status is checked"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:411
-#: src/Packetery/Module/Views/WizardAssetManager.php:267
+#: src/Packetery/Module/Views/WizardAssetManager.php:264
 msgid "Allow order status change"
 msgstr ""
 
@@ -1019,12 +1019,12 @@ msgid "Order status"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:483
-#: src/Packetery/Module/Views/WizardAssetManager.php:299
+#: src/Packetery/Module/Views/WizardAssetManager.php:296
 msgid "Advanced carrier settings"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:516
-#: src/Packetery/Module/Views/WizardAssetManager.php:159
+#: src/Packetery/Module/Views/WizardAssetManager.php:156
 msgid "API password"
 msgstr ""
 
@@ -1034,32 +1034,32 @@ msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:519
 #: src/Packetery/Module/Order/CollectionPrint.php:190
-#: src/Packetery/Module/Views/WizardAssetManager.php:166
+#: src/Packetery/Module/Views/WizardAssetManager.php:163
 msgid "Sender"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:525
-#: src/Packetery/Module/Views/WizardAssetManager.php:177
+#: src/Packetery/Module/Views/WizardAssetManager.php:174
 msgid "Packeta Label Format"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:532
-#: src/Packetery/Module/Views/WizardAssetManager.php:181
+#: src/Packetery/Module/Views/WizardAssetManager.php:178
 msgid "Carrier Label Format"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:543
-#: src/Packetery/Module/Views/WizardAssetManager.php:185
+#: src/Packetery/Module/Views/WizardAssetManager.php:182
 msgid "Payment methods that represent cash on delivery"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:547
-#: src/Packetery/Module/Views/WizardAssetManager.php:189
+#: src/Packetery/Module/Views/WizardAssetManager.php:186
 msgid "Weight of packaging material"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:553
-#: src/Packetery/Module/Views/WizardAssetManager.php:193
+#: src/Packetery/Module/Views/WizardAssetManager.php:190
 msgid "Enable default weight"
 msgstr ""
 
@@ -1068,19 +1068,19 @@ msgid "Default weight"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:565
-#: src/Packetery/Module/Views/WizardAssetManager.php:197
+#: src/Packetery/Module/Views/WizardAssetManager.php:194
 msgid "Units used for dimensions"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:573
-#: src/Packetery/Module/Views/WizardAssetManager.php:201
+#: src/Packetery/Module/Views/WizardAssetManager.php:198
 msgid "Enable default dimensions"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:577
 #: src/Packetery/Module/Order/Form.php:72
-#: src/Packetery/Module/Views/WizardAssetManager.php:314
-#: src/Packetery/Module/Views/WizardAssetManager.php:352
+#: src/Packetery/Module/Views/WizardAssetManager.php:311
+#: src/Packetery/Module/Views/WizardAssetManager.php:349
 msgid "Length"
 msgstr ""
 
@@ -1092,25 +1092,25 @@ msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:588
 #: src/Packetery/Module/Order/Form.php:76
-#: src/Packetery/Module/Views/WizardAssetManager.php:322
-#: src/Packetery/Module/Views/WizardAssetManager.php:360
+#: src/Packetery/Module/Views/WizardAssetManager.php:319
+#: src/Packetery/Module/Views/WizardAssetManager.php:357
 msgid "Height"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:599
 #: src/Packetery/Module/Order/Form.php:74
-#: src/Packetery/Module/Views/WizardAssetManager.php:318
-#: src/Packetery/Module/Views/WizardAssetManager.php:356
+#: src/Packetery/Module/Views/WizardAssetManager.php:315
+#: src/Packetery/Module/Views/WizardAssetManager.php:353
 msgid "Width"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:610
-#: src/Packetery/Module/Views/WizardAssetManager.php:205
+#: src/Packetery/Module/Views/WizardAssetManager.php:202
 msgid "Replace shipping address with pickup point address"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:615
-#: src/Packetery/Module/Views/WizardAssetManager.php:209
+#: src/Packetery/Module/Views/WizardAssetManager.php:206
 msgid "Force checkout type"
 msgstr ""
 
@@ -1127,7 +1127,7 @@ msgid "Block-based checkout"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:625
-#: src/Packetery/Module/Views/WizardAssetManager.php:213
+#: src/Packetery/Module/Views/WizardAssetManager.php:210
 msgid "Widget button location in checkout"
 msgstr ""
 
@@ -1140,32 +1140,32 @@ msgid "After transport methods"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:632
-#: src/Packetery/Module/Views/WizardAssetManager.php:217
+#: src/Packetery/Module/Views/WizardAssetManager.php:214
 msgid "Hide Packeta checkout logo"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:638
-#: src/Packetery/Module/Views/WizardAssetManager.php:221
+#: src/Packetery/Module/Views/WizardAssetManager.php:218
 msgid "Hook used to view information in email"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:647
-#: src/Packetery/Module/Views/WizardAssetManager.php:225
+#: src/Packetery/Module/Views/WizardAssetManager.php:222
 msgid "Force order cancellation"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:651
-#: src/Packetery/Module/Views/WizardAssetManager.php:229
+#: src/Packetery/Module/Views/WizardAssetManager.php:226
 msgid "Automatically open widget when shipping was selected"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:655
-#: src/Packetery/Module/Views/WizardAssetManager.php:233
+#: src/Packetery/Module/Views/WizardAssetManager.php:230
 msgid "Display the FREE shipping text in checkout"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:659
-#: src/Packetery/Module/Views/WizardAssetManager.php:237
+#: src/Packetery/Module/Views/WizardAssetManager.php:234
 msgid "Prices include tax"
 msgstr ""
 
@@ -1198,7 +1198,7 @@ msgid "This plugin requires an active SOAP library for proper operation. Contact
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:948
-#: src/Packetery/Module/Views/WizardAssetManager.php:226
+#: src/Packetery/Module/Views/WizardAssetManager.php:223
 msgid "Cancel the packet for an order even if the cancellation in the Packeta system will not be successful."
 msgstr ""
 
@@ -1220,13 +1220,13 @@ msgid "Packet auto-submission"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:964
-#: src/Packetery/Module/Views/WizardAssetManager.php:286
+#: src/Packetery/Module/Views/WizardAssetManager.php:283
 msgid "Choose events for payment methods that will trigger packet submission"
 msgstr ""
 
 #. translators: %s represents URL.
 #: src/Packetery/Module/Options/Page.php:966
-#: src/Packetery/Module/Views/WizardAssetManager.php:161
+#: src/Packetery/Module/Views/WizardAssetManager.php:158
 msgid "API password can be found at %s"
 msgstr ""
 
@@ -1288,32 +1288,32 @@ msgid "Packet status tracking"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:997
-#: src/Packetery/Module/Views/WizardAssetManager.php:259
+#: src/Packetery/Module/Views/WizardAssetManager.php:256
 msgid "Order statuses, for which cron will check the packet status"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:998
-#: src/Packetery/Module/Views/WizardAssetManager.php:260
+#: src/Packetery/Module/Views/WizardAssetManager.php:257
 msgid "Cron will automatically track all orders with these statuses and check if the shipment status has changed."
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:999
-#: src/Packetery/Module/Views/WizardAssetManager.php:263
+#: src/Packetery/Module/Views/WizardAssetManager.php:260
 msgid "Packet statuses that are being checked"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:1000
-#: src/Packetery/Module/Views/WizardAssetManager.php:264
+#: src/Packetery/Module/Views/WizardAssetManager.php:261
 msgid "If an order has a shipment with one of these selected statuses, the shipment status will be tracked."
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:1001
-#: src/Packetery/Module/Views/WizardAssetManager.php:256
+#: src/Packetery/Module/Views/WizardAssetManager.php:253
 msgid "Number of days after the creation of an order, during which the order status will be checked."
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:1002
-#: src/Packetery/Module/Views/WizardAssetManager.php:230
+#: src/Packetery/Module/Views/WizardAssetManager.php:227
 msgid "If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout."
 msgstr ""
 
@@ -1322,7 +1322,7 @@ msgid "Change order status after data submission to Packeta."
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:1004
-#: src/Packetery/Module/Views/WizardAssetManager.php:234
+#: src/Packetery/Module/Views/WizardAssetManager.php:231
 msgid "If enabled, \"FREE\" will be displayed after the name of the shipping method, if free shipping is applied."
 msgstr ""
 
@@ -1437,7 +1437,7 @@ msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:197
 #: src/Packetery/Module/Order/GridExtender.php:492
-#: src/Packetery/Module/Views/WizardAssetManager.php:478
+#: src/Packetery/Module/Views/WizardAssetManager.php:475
 msgid "Pickup point or carrier"
 msgstr ""
 
@@ -1455,7 +1455,7 @@ msgid "Customs declaration"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:257
-#: src/Packetery/Module/Views/WizardAssetManager.php:552
+#: src/Packetery/Module/Views/WizardAssetManager.php:549
 msgid "Add item"
 msgstr ""
 
@@ -1476,7 +1476,7 @@ msgid "View/hide customs declaration form"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:291
-#: src/Packetery/Module/Views/WizardAssetManager.php:488
+#: src/Packetery/Module/Views/WizardAssetManager.php:485
 msgid "EAD"
 msgstr ""
 
@@ -1493,80 +1493,80 @@ msgid "Postal clearance (no EAD and no fees)"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:302
-#: src/Packetery/Module/Views/WizardAssetManager.php:492
+#: src/Packetery/Module/Views/WizardAssetManager.php:489
 msgid "Delivery cost"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:308
-#: src/Packetery/Module/Views/WizardAssetManager.php:496
+#: src/Packetery/Module/Views/WizardAssetManager.php:493
 msgid "Invoice number"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:312
-#: src/Packetery/Module/Views/WizardAssetManager.php:500
+#: src/Packetery/Module/Views/WizardAssetManager.php:497
 msgid "Invoice issue date"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:317
-#: src/Packetery/Module/Views/WizardAssetManager.php:504
+#: src/Packetery/Module/Views/WizardAssetManager.php:501
 msgid "Invoice PDF file"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:330
-#: src/Packetery/Module/Views/WizardAssetManager.php:508
+#: src/Packetery/Module/Views/WizardAssetManager.php:505
 msgid "MRN"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:338
-#: src/Packetery/Module/Views/WizardAssetManager.php:512
+#: src/Packetery/Module/Views/WizardAssetManager.php:509
 msgid "EAD PDF file"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:482
-#: src/Packetery/Module/Views/WizardAssetManager.php:516
+#: src/Packetery/Module/Views/WizardAssetManager.php:513
 msgid "Customs code"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:487
-#: src/Packetery/Module/Views/WizardAssetManager.php:334
-#: src/Packetery/Module/Views/WizardAssetManager.php:372
-#: src/Packetery/Module/Views/WizardAssetManager.php:520
+#: src/Packetery/Module/Views/WizardAssetManager.php:331
+#: src/Packetery/Module/Views/WizardAssetManager.php:369
+#: src/Packetery/Module/Views/WizardAssetManager.php:517
 msgid "Value"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:493
-#: src/Packetery/Module/Views/WizardAssetManager.php:524
+#: src/Packetery/Module/Views/WizardAssetManager.php:521
 msgid "Product name (EN)"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:496
-#: src/Packetery/Module/Views/WizardAssetManager.php:528
+#: src/Packetery/Module/Views/WizardAssetManager.php:525
 msgid "Product name"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:498
-#: src/Packetery/Module/Views/WizardAssetManager.php:532
+#: src/Packetery/Module/Views/WizardAssetManager.php:529
 msgid "Units count"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:504
-#: src/Packetery/Module/Views/WizardAssetManager.php:536
+#: src/Packetery/Module/Views/WizardAssetManager.php:533
 msgid "Country of origin code"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:509
 #: src/Packetery/Module/Order/Form.php:67
-#: src/Packetery/Module/Views/WizardAssetManager.php:540
+#: src/Packetery/Module/Views/WizardAssetManager.php:537
 msgid "Weight (kg)"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:521
-#: src/Packetery/Module/Views/WizardAssetManager.php:544
+#: src/Packetery/Module/Views/WizardAssetManager.php:541
 msgid "Food or book?"
 msgstr ""
 
 #: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:522
-#: src/Packetery/Module/Views/WizardAssetManager.php:548
+#: src/Packetery/Module/Views/WizardAssetManager.php:545
 msgid "Is VOC?"
 msgstr ""
 
@@ -1585,8 +1585,8 @@ msgstr ""
 
 #: src/Packetery/Module/Order/Form.php:78
 #: src/Packetery/Module/Order/Modal.php:77
-#: src/Packetery/Module/Views/WizardAssetManager.php:326
-#: src/Packetery/Module/Views/WizardAssetManager.php:364
+#: src/Packetery/Module/Views/WizardAssetManager.php:323
+#: src/Packetery/Module/Views/WizardAssetManager.php:361
 msgid "Adult content"
 msgstr ""
 
@@ -1604,12 +1604,12 @@ msgid "Date must be later than %s"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:160
-#: src/Packetery/Module/Views/WizardAssetManager.php:450
+#: src/Packetery/Module/Views/WizardAssetManager.php:447
 msgid "Packeta orders to submit"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:161
-#: src/Packetery/Module/Views/WizardAssetManager.php:454
+#: src/Packetery/Module/Views/WizardAssetManager.php:451
 msgid "Packeta orders to print"
 msgstr ""
 
@@ -1622,7 +1622,7 @@ msgid "Use this link to start interactive tutorial"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:247
-#: src/Packetery/Module/Views/WizardAssetManager.php:446
+#: src/Packetery/Module/Views/WizardAssetManager.php:443
 msgid "Packeta shipping method"
 msgstr ""
 
@@ -1689,9 +1689,9 @@ msgid "Last error from Packeta API"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:487
-#: src/Packetery/Module/Views/WizardAssetManager.php:310
-#: src/Packetery/Module/Views/WizardAssetManager.php:348
-#: src/Packetery/Module/Views/WizardAssetManager.php:458
+#: src/Packetery/Module/Views/WizardAssetManager.php:307
+#: src/Packetery/Module/Views/WizardAssetManager.php:345
+#: src/Packetery/Module/Views/WizardAssetManager.php:455
 msgid "Weight"
 msgstr ""
 
@@ -1700,13 +1700,13 @@ msgid "Tracking No."
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:490
-#: src/Packetery/Module/Views/WizardAssetManager.php:470
+#: src/Packetery/Module/Views/WizardAssetManager.php:467
 msgid "Packeta packet status"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:491
-#: src/Packetery/Module/Views/WizardAssetManager.php:412
-#: src/Packetery/Module/Views/WizardAssetManager.php:474
+#: src/Packetery/Module/Views/WizardAssetManager.php:409
+#: src/Packetery/Module/Views/WizardAssetManager.php:471
 msgid "Stored until"
 msgstr ""
 
@@ -1790,7 +1790,7 @@ msgid "Label print of packet %s"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrintModal.php:124
-#: src/Packetery/Module/Views/WizardAssetManager.php:408
+#: src/Packetery/Module/Views/WizardAssetManager.php:405
 msgid "Print"
 msgstr ""
 
@@ -2204,14 +2204,18 @@ msgstr ""
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
+#: src/Packetery/Module/Upgrade.php:292
+msgid "Database order table could not be migrate, more information might be found in WooCommerce logs."
+msgstr ""
+
 #. translators: %s: Short table name.
-#: src/Packetery/Module/Upgrade.php:426
-#: src/Packetery/Module/Upgrade.php:486
+#: src/Packetery/Module/Upgrade.php:436
+#: src/Packetery/Module/Upgrade.php:496
 msgid "Database %s table could not be created or altered, more information might be found in WooCommerce logs."
 msgstr ""
 
 #. translators: %s: Short table name.
-#: src/Packetery/Module/Upgrade.php:479
+#: src/Packetery/Module/Upgrade.php:489
 msgid "Database %s table of Packeta plugin could not be created or altered, you can find more information in Packeta log."
 msgstr ""
 
@@ -2268,362 +2272,362 @@ msgstr ""
 msgid "Pickup Point Address"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:86
+#: src/Packetery/Module/Views/WizardAssetManager.php:83
 msgid "Next"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:87
+#: src/Packetery/Module/Views/WizardAssetManager.php:84
 msgid "Previous"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:88
+#: src/Packetery/Module/Views/WizardAssetManager.php:85
 msgid "Close"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:89
+#: src/Packetery/Module/Views/WizardAssetManager.php:86
 msgid "of"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:90
+#: src/Packetery/Module/Views/WizardAssetManager.php:87
 msgid "Are you sure?"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:92
+#: src/Packetery/Module/Views/WizardAssetManager.php:89
 msgid "Save all changes"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:93
+#: src/Packetery/Module/Views/WizardAssetManager.php:90
 msgid "Save with this button after all changes are made."
 msgstr ""
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Views/WizardAssetManager.php:169
+#: src/Packetery/Module/Views/WizardAssetManager.php:166
 msgid "Fill in the %1$ssender label%2$s here - you will find it in %3$sclient section%4$s - user information - field 'Indication'."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:178
+#: src/Packetery/Module/Views/WizardAssetManager.php:175
 msgid "Select the label print format for Packeta according to your printer."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:182
+#: src/Packetery/Module/Views/WizardAssetManager.php:179
 msgid "Select the label print format for the carrier according to your printer."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:186
+#: src/Packetery/Module/Views/WizardAssetManager.php:183
 msgid "Select the payment method that will be set as cash on delivery. This information will be passed to the carrier to calculate surcharges."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:190
+#: src/Packetery/Module/Views/WizardAssetManager.php:187
 msgid "This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. It is also taken into account when evaluating weight rules in the cart."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:194
+#: src/Packetery/Module/Views/WizardAssetManager.php:191
 msgid "If no weight is set for the products in order, this value will be used."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:198
+#: src/Packetery/Module/Views/WizardAssetManager.php:195
 msgid "Units used for package dimensions, such as centimeters (cm) or millimeters (mm)."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:202
+#: src/Packetery/Module/Views/WizardAssetManager.php:199
 msgid "When enabled, these values will be automatically used for any order that contains products with zero dimensions."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:206
+#: src/Packetery/Module/Views/WizardAssetManager.php:203
 msgid "If this option is enabled, the customers shipping address will automatically be replaced with the selected pickup point address."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:210
+#: src/Packetery/Module/Views/WizardAssetManager.php:207
 msgid "If you have trouble displaying the widget button in the checkout, you can set what type of checkout you are using."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:214
+#: src/Packetery/Module/Views/WizardAssetManager.php:211
 msgid "Determines where the pickup point selection button will appear at checkout."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:218
+#: src/Packetery/Module/Views/WizardAssetManager.php:215
 msgid "Hides the Packeta logo at checkout."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:222
+#: src/Packetery/Module/Views/WizardAssetManager.php:219
 msgid "This option determines where the pickup point information will be displayed in the e-mail. Choose the appropriate option based on the structure of e-mails in your e-shop."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:238
+#: src/Packetery/Module/Views/WizardAssetManager.php:235
 msgid "If enabled, VAT will not be added to shipping prices and surcharges."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:252
+#: src/Packetery/Module/Views/WizardAssetManager.php:249
 msgid "The number of orders that will be checked during a single cron call."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:268
+#: src/Packetery/Module/Views/WizardAssetManager.php:265
 msgid "You can enable automatic change of order status here."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:282
+#: src/Packetery/Module/Views/WizardAssetManager.php:279
 msgid "You can enable automatic submission of the shipment when the order status changes here."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:285
+#: src/Packetery/Module/Views/WizardAssetManager.php:282
 msgid "Status mapping"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:300
+#: src/Packetery/Module/Views/WizardAssetManager.php:297
 msgid "You can enable the advanced carrier settings to get better support of WooCommerce features here."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:311
-#: src/Packetery/Module/Views/WizardAssetManager.php:349
+#: src/Packetery/Module/Views/WizardAssetManager.php:308
+#: src/Packetery/Module/Views/WizardAssetManager.php:346
 msgid "Here you see the shipment weight, calculated from the products in the order. If products don’t have a weight, the default value set in the plugin settings will be used. You can also adjust it manually."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:315
-#: src/Packetery/Module/Views/WizardAssetManager.php:353
+#: src/Packetery/Module/Views/WizardAssetManager.php:312
+#: src/Packetery/Module/Views/WizardAssetManager.php:350
 msgid "Enter the shipment length in mm or cm, depending on plugin settings. The length of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:319
-#: src/Packetery/Module/Views/WizardAssetManager.php:357
+#: src/Packetery/Module/Views/WizardAssetManager.php:316
+#: src/Packetery/Module/Views/WizardAssetManager.php:354
 msgid "Enter the shipment width in mm or cm, depending on plugin settings. The width of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:323
-#: src/Packetery/Module/Views/WizardAssetManager.php:361
+#: src/Packetery/Module/Views/WizardAssetManager.php:320
+#: src/Packetery/Module/Views/WizardAssetManager.php:358
 msgid "Enter the shipment height in mm or cm, depending on plugin settings. The height of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually."
+msgstr ""
+
+#: src/Packetery/Module/Views/WizardAssetManager.php:324
+#: src/Packetery/Module/Views/WizardAssetManager.php:362
+msgid "Automatically checked for orders with adult products."
 msgstr ""
 
 #: src/Packetery/Module/Views/WizardAssetManager.php:327
 #: src/Packetery/Module/Views/WizardAssetManager.php:365
-msgid "Automatically checked for orders with adult products."
-msgstr ""
-
-#: src/Packetery/Module/Views/WizardAssetManager.php:330
-#: src/Packetery/Module/Views/WizardAssetManager.php:368
 msgid "COD"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:331
-#: src/Packetery/Module/Views/WizardAssetManager.php:369
+#: src/Packetery/Module/Views/WizardAssetManager.php:328
+#: src/Packetery/Module/Views/WizardAssetManager.php:366
 msgid "You can edit the cash on delivery manually, otherwise the total order value is used."
+msgstr ""
+
+#: src/Packetery/Module/Views/WizardAssetManager.php:332
+#: src/Packetery/Module/Views/WizardAssetManager.php:370
+msgid "You can edit the packet value manually, otherwise the total order price is used."
 msgstr ""
 
 #: src/Packetery/Module/Views/WizardAssetManager.php:335
 #: src/Packetery/Module/Views/WizardAssetManager.php:373
-msgid "You can edit the packet value manually, otherwise the total order price is used."
-msgstr ""
-
-#: src/Packetery/Module/Views/WizardAssetManager.php:338
-#: src/Packetery/Module/Views/WizardAssetManager.php:376
 msgid "Deliver on"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:339
-#: src/Packetery/Module/Views/WizardAssetManager.php:377
+#: src/Packetery/Module/Views/WizardAssetManager.php:336
+#: src/Packetery/Module/Views/WizardAssetManager.php:374
 msgid "Deferred delivery date – if set, the packet will be ready for pickup from this date onward."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:380
+#: src/Packetery/Module/Views/WizardAssetManager.php:377
 msgid "Pickup point"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:381
+#: src/Packetery/Module/Views/WizardAssetManager.php:378
 msgid "Here you can change the pickup point where the packet will be delivered."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:384
+#: src/Packetery/Module/Views/WizardAssetManager.php:381
 msgid "Pickup address"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:385
+#: src/Packetery/Module/Views/WizardAssetManager.php:382
 msgid "Here you can change the delivery address of the packet via the widget."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:388
+#: src/Packetery/Module/Views/WizardAssetManager.php:385
 msgid "Tracking url"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:389
-#: src/Packetery/Module/Views/WizardAssetManager.php:417
+#: src/Packetery/Module/Views/WizardAssetManager.php:386
+#: src/Packetery/Module/Views/WizardAssetManager.php:414
 msgid "Here you can find the URL to track the packet, you can click through to online tracking."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:392
+#: src/Packetery/Module/Views/WizardAssetManager.php:389
 msgid "Claim tracking url"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:393
+#: src/Packetery/Module/Views/WizardAssetManager.php:390
 msgid "Here you can find the URL to track the claim packet (Claim Assistant), you can click through to online tracking."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:396
+#: src/Packetery/Module/Views/WizardAssetManager.php:393
 msgid "Claim password"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:397
+#: src/Packetery/Module/Views/WizardAssetManager.php:394
 msgid "Password required to submit the packet via Claim Assistant."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:400
+#: src/Packetery/Module/Views/WizardAssetManager.php:397
 msgid "Submit"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:401
+#: src/Packetery/Module/Views/WizardAssetManager.php:398
 msgid "Use this button to submit the packet. Clicking it will send the packet to the Packeta system"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:405
+#: src/Packetery/Module/Views/WizardAssetManager.php:402
 msgid "Button to cancel the packet. Clicking it will cancel the packet in the Packeta system, allowing you to submit it again."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:409
+#: src/Packetery/Module/Views/WizardAssetManager.php:406
 msgid "Clicking this button opens a PDF of the label ready for printing."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:413
-#: src/Packetery/Module/Views/WizardAssetManager.php:475
+#: src/Packetery/Module/Views/WizardAssetManager.php:410
+#: src/Packetery/Module/Views/WizardAssetManager.php:472
 msgid "Here you can see the date until which the packet can be picked up (shown if shipment tracking is enabled and the packet is ready for pickup)."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:416
+#: src/Packetery/Module/Views/WizardAssetManager.php:413
 msgid "Claim url"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:420
+#: src/Packetery/Module/Views/WizardAssetManager.php:417
 msgid "Claim label"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:421
+#: src/Packetery/Module/Views/WizardAssetManager.php:418
 msgid "Here you can find the URL to track the claim packet (claim assistant), you can click through to online tracking."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:424
+#: src/Packetery/Module/Views/WizardAssetManager.php:421
 msgid "Cancel claim"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:425
+#: src/Packetery/Module/Views/WizardAssetManager.php:422
 msgid "Button to cancel a claim assistant packet. Clicking it will cancel the packet in the Packeta system, and you’ll be able to submit it again."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:428
+#: src/Packetery/Module/Views/WizardAssetManager.php:425
 msgid "Packet status"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:429
-#: src/Packetery/Module/Views/WizardAssetManager.php:471
+#: src/Packetery/Module/Views/WizardAssetManager.php:426
+#: src/Packetery/Module/Views/WizardAssetManager.php:468
 msgid "Here you can see the current stage of the packet (shown only if this option is enabled in the plugin settings)."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:432
+#: src/Packetery/Module/Views/WizardAssetManager.php:429
 msgid "Logs"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:433
+#: src/Packetery/Module/Views/WizardAssetManager.php:430
 msgid "Button that, when clicked, shows the logs for this order. This lets you easily check what actions have been taken on the order in the system."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:442
+#: src/Packetery/Module/Views/WizardAssetManager.php:439
 msgid "Bulk actions"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:443
+#: src/Packetery/Module/Views/WizardAssetManager.php:440
 msgid "Here you can use Packeta bulk actions – submit packets, print labels, or print a packet list."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:447
+#: src/Packetery/Module/Views/WizardAssetManager.php:444
 msgid "Filter to show Packeta orders sent either to pickup points or to a carrier."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:451
+#: src/Packetery/Module/Views/WizardAssetManager.php:448
 msgid "Shows Packeta orders that haven’t been submitted yet."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:455
+#: src/Packetery/Module/Views/WizardAssetManager.php:452
 msgid "Shows Packeta orders where the label hasn’t been printed yet"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:459
+#: src/Packetery/Module/Views/WizardAssetManager.php:456
 msgid "Total packet weight from the order, you can adjust it"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:463
+#: src/Packetery/Module/Views/WizardAssetManager.php:460
 msgid "Here you can find Packeta actions – submit packet, add details, or print labels (shown only when available)."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:466
+#: src/Packetery/Module/Views/WizardAssetManager.php:463
 msgid "Tracking no."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:467
+#: src/Packetery/Module/Views/WizardAssetManager.php:464
 msgid "Here you can find the packet number assigned by Packeta, clickable for online tracking.."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:479
+#: src/Packetery/Module/Views/WizardAssetManager.php:476
 msgid "Here you can see the name of the pickup point or the carrier."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:489
+#: src/Packetery/Module/Views/WizardAssetManager.php:486
 msgid "European Administrative Document (EAD) for shipments outside the EU."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:493
+#: src/Packetery/Module/Views/WizardAssetManager.php:490
 msgid "Delivery cost included on the invoice"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:497
+#: src/Packetery/Module/Views/WizardAssetManager.php:494
 msgid "Invoice number for the shipment."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:501
-#: src/Packetery/Module/Views/WizardAssetManager.php:505
+#: src/Packetery/Module/Views/WizardAssetManager.php:498
+#: src/Packetery/Module/Views/WizardAssetManager.php:502
 msgid "The date the invoice was issued."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:509
+#: src/Packetery/Module/Views/WizardAssetManager.php:506
 msgid "MRN – a unique reference code for customs shipments."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:513
+#: src/Packetery/Module/Views/WizardAssetManager.php:510
 msgid "PDF file of the EAD document to attach to the shipment."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:517
+#: src/Packetery/Module/Views/WizardAssetManager.php:514
 msgid "Customs code of the product for the declaration."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:521
+#: src/Packetery/Module/Views/WizardAssetManager.php:518
 msgid "Value of the product"
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:525
+#: src/Packetery/Module/Views/WizardAssetManager.php:522
 msgid "Product name in English."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:529
+#: src/Packetery/Module/Views/WizardAssetManager.php:526
 msgid "Product name in your local language."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:533
+#: src/Packetery/Module/Views/WizardAssetManager.php:530
 msgid "Number of product units in the shipment."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:537
+#: src/Packetery/Module/Views/WizardAssetManager.php:534
 msgid "Country of origin code of the product."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:541
+#: src/Packetery/Module/Views/WizardAssetManager.php:538
 msgid "Weight of the product in kilograms."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:545
+#: src/Packetery/Module/Views/WizardAssetManager.php:542
 msgid "Check if the product is food or a book."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:549
+#: src/Packetery/Module/Views/WizardAssetManager.php:546
 msgid "Check if the product contains VOC (volatile organic compounds)."
 msgstr ""
 
-#: src/Packetery/Module/Views/WizardAssetManager.php:553
+#: src/Packetery/Module/Views/WizardAssetManager.php:550
 msgid "Add another item to the customs declaration."
 msgstr ""
 
