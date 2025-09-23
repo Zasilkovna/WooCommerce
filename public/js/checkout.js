@@ -103,6 +103,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var resetWidgetInfo = function() {
 			resetWidgetInfoClasses();
+			$widgetDiv.find( '.packeta-widget-place' ).html('');
 			$widgetDiv.find( '.packeta-widget-info' ).html('');
 			$widgetDiv.find( '.packeta-widget-selected-address' ).html('');
 		};
@@ -163,6 +164,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					$( '#' + attribute ).val( '' );
 				}
 			}
+			$widgetDiv.find( '.packeta-widget-place' ).html( '' );
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 		};
 
@@ -176,6 +178,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				$( '#' + attribute ).val( '' );
 			}
 
+			$widgetDiv.find( '.packeta-widget-place' ).html( '' );
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 		};
 
@@ -243,7 +246,22 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId, settings.pickupPointAttrs );
-				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
+				let street = getRateAttrValue( carrierRateId, 'packetery_point_street', '' )
+				let city = getRateAttrValue( carrierRateId, 'packetery_point_city', '' )
+				let zip = getRateAttrValue( carrierRateId, 'packetery_point_zip', '' )
+				let type = getRateAttrValue( carrierRateId, 'packetery_point_type', '' )
+
+				const widgetPlace =
+					type && type === 'internal'
+						? getRateAttrValue( carrierRateId, 'packetery_point_place', '' )
+						: '';
+
+				const widgetInfo = street && city && zip
+					? [street, `${city} ${zip}`].filter(Boolean).join(', ')
+					: '';
+
+				$widgetDiv.find( '.packeta-widget-place' ).html( widgetPlace );
+				$widgetDiv.find( '.packeta-widget-info' ).html( widgetInfo );
 				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
 				$widgetButtonRow.removeClass( 'packetery-hidden' );
 				$widgetDiv.removeClass( 'packetery-hidden' );
@@ -553,7 +571,17 @@ var packeteryLoadCheckout = function( $, settings ) {
 					resetWidgetInfo();
 
 					fillHiddenFields( carrierRateId, settings.pickupPointAttrs, pickupPoint );
-					$widgetDiv.find( '.packeta-widget-info' ).html( pickupPoint.name );
+					const widgetPlace =
+						pickupPoint && pickupPoint.pickupPointType === 'internal'
+							? pickupPoint.place
+							: '';
+
+					const widgetInfo = pickupPoint
+						? [pickupPoint.street, `${pickupPoint.city} ${pickupPoint.zip}`].filter(Boolean).join(', ')
+						: '';
+
+					$widgetDiv.find('.packeta-widget-place').html(widgetPlace);
+					$widgetDiv.find('.packeta-widget-info').html(widgetInfo);
 
 					var pickupPointDataToSave = rateAttrValues[ carrierRateId ];
 					pickupPointDataToSave.packetery_rate_id = carrierRateId;

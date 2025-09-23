@@ -12,6 +12,7 @@ export const View = ( { cart } ) => {
 	const {
 		buttonCallback,
 		buttonLabel,
+		buttonPlace,
 		buttonInfo,
 		inputValue,
 		inputRequired,
@@ -34,6 +35,7 @@ export const View = ( { cart } ) => {
 			showLogo={ showLogo }
 			logoSrc={ logo }
 			logoAlt={ translations.packeta }
+			place={ buttonPlace }
 			info={ buttonInfo }
 			loading={ loading }
 			placeholderText={ translations.placeholderText }

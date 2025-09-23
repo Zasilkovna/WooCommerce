@@ -27,6 +27,7 @@ class EmailShortcodes {
 		$this->wpAdapter->addShortcode( 'packeta_tracking_number', [ $this, 'trackingNumber' ] );
 		$this->wpAdapter->addShortcode( 'packeta_tracking_url', [ $this, 'trackingUrl' ] );
 		$this->wpAdapter->addShortcode( 'packeta_pickup_point_id', [ $this, 'pickupPointId' ] );
+		$this->wpAdapter->addShortcode( 'packeta_pickup_place', [ $this, 'pickupPointPlace' ] );
 		$this->wpAdapter->addShortcode( 'packeta_pickup_point_name', [ $this, 'pickupPointName' ] );
 		$this->wpAdapter->addShortcode( 'packeta_pickup_point_address', [ $this, 'pickupPointAddress' ] );
 		$this->wpAdapter->addShortcode( 'packeta_pickup_point_street', [ $this, 'pickupPointStreet' ] );
@@ -91,6 +92,23 @@ class EmailShortcodes {
 		}
 
 		return $pickupPoint->getId() ?? '';
+	}
+
+	/**
+	 * @param array<string,mixed> $shortcodeAttributes
+	 */
+	public function pickupPointPlace( array $shortcodeAttributes ): string {
+		$order = $this->findOrder( $shortcodeAttributes );
+		if ( $order === null ) {
+			return '';
+		}
+
+		$pickupPoint = $order->getPickupPoint();
+		if ( $pickupPoint === null ) {
+			return '';
+		}
+
+		return $pickupPoint->getPlace() ?? '';
 	}
 
 	/**
