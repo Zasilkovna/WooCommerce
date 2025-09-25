@@ -83,6 +83,16 @@ if ( file_exists( $localConfigFile ) ) {
 	$configurator->addConfig( $localConfigFile ); // Local Development ENV only!
 }
 
+$wpContentConfigDir = WP_CONTENT_DIR . '/packeta/config/';
+if ( is_dir( $wpContentConfigDir ) ) {
+	$configFiles = glob( $wpContentConfigDir . '*.neon' );
+	if ( $configFiles !== false ) {
+		foreach ( $configFiles as $configFile ) {
+			$configurator->addConfig( $configFile );
+		}
+	}
+}
+
 $container = $configurator->createContainer();
 CompatibilityBridge::setContainer( $container );
 
