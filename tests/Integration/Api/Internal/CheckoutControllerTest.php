@@ -22,10 +22,8 @@ class CheckoutControllerTest extends AbstractIntegrationTestCase {
 		add_action( 'rest_api_init', [ $registrar, 'registerRoutes' ] );
 		/**
 		 * Register routes on the required WordPress hook to avoid notices and trigger the hook so routes are actually registered for this test run.
-		 *
-		 * @since 1.0
 		 */
-		do_action( 'rest_api_init' );
+		do_action( 'rest_api_init' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment
 
 		/** @var CheckoutRouter $router */
 		$router = $this->container->getByType( CheckoutRouter::class );
