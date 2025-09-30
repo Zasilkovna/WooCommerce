@@ -53,6 +53,24 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 By default, the cache directory is located in the `wp-content/packeta/temp` directory.
 You can change the path to the cache directory by setting `PACKETERY_CACHE_BASE_PATH` constant in `wp-config.php`.
 
+###### Custom Cache Directory Configuration
+
+By default, the Packeta plugin stores its cache and log files in the `wp-content/packeta/temp` directory.
+If you need to store these files in a different location, you can configure a custom cache directory.
+
+**How to configure a custom cache directory:**
+
+1. **Add the configuration** to your WordPress `wp-config.php` file, for example:
+	```php
+	define('PACKETERY_CACHE_BASE_PATH', '/var/www/public_html/wp-content/packeta');
+	```
+
+2. **Check permissions**:
+	- The plugin uses two folders inside the main one: `cache` and `log`
+	- If the main folder or these folders do not exist, the plugin tries to create them with permissions 0775.
+	- The web server needs write access to both the main folder and subfolders
+	- Contact your system administrator if you're unsure about permissions
+
 #### Filters
 
 WP Filters are used to easily alter preselected system behaviors.

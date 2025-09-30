@@ -13,6 +13,7 @@ use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Nette\Http\RequestFactory;
 use Packetery\Nette\InvalidStateException;
+use Packetery\Nette\Utils\FileSystem;
 use Packetery\Tracy\Debugger;
 
 require_once __DIR__ . '/constants.php';
@@ -30,7 +31,8 @@ if ( PHP_SAPI !== 'cli' ) {
 $cacheBasePathConstantName = 'PACKETERY_CACHE_BASE_PATH';
 
 if ( defined( $cacheBasePathConstantName ) ) {
-	$tempDir    = constant( $cacheBasePathConstantName );
+	$tempDir = constant( $cacheBasePathConstantName );
+	Filesystem::createDir( $tempDir, 0775 );
 	$logBaseDir = $tempDir;
 } else {
 	$tempDir    = __DIR__ . '/temp';
@@ -48,6 +50,7 @@ $configurator->createRobotLoader()
 	->register();
 
 $cacheDir = $tempDir . '/cache';
+Filesystem::createDir( $cacheDir, 0775 );
 
 $oldVersion = get_option( OptionNames::VERSION );
 if ( $oldVersion !== Plugin::VERSION ) {
@@ -66,6 +69,8 @@ $configurator->addDynamicParameters(
 );
 
 Debugger::$logDirectory = $logBaseDir . '/log';
+Filesystem::createDir( Debugger::$logDirectory, 0775 );
+
 if ( $configurator->isDebugMode() && wp_doing_cron() === false ) {
 	$configurator->enableDebugger( Debugger::$logDirectory );
 	Debugger::$strictMode = false;
