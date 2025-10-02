@@ -1333,42 +1333,6 @@ parameters:
 			path: ../src/Packetery/Module/Options/Exporter.php
 
 		-
-			message: '#^Binary operation "\+" between mixed and 1 results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
-
-		-
-			message: '#^Cannot access offset ''features'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
-
-		-
-			message: '#^Cannot access offset ''split'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
-
-		-
-			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
-
-		-
-			message: '#^Cannot call method get_error_message\(\) on array\|WP_Error\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
-
-		-
-			message: '#^Method Packetery\\Module\\Options\\FlagManager\\FeatureFlagStorage\:\:setFlags\(\) has parameter \$flags with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagStorage.php
-
-		-
 			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
 			identifier: arrayFilter.strict
 			count: 1
