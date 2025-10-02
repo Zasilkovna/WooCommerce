@@ -22,7 +22,7 @@ class OptionsProvider {
 
 	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
 	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	public const DEFAULT_VALUE_CARRIER_SETTINGS            = false;
+	public const DEFAULT_VALUE_CARRIER_SETTINGS            = true;
 	public const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
 	public const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	public const FORCE_PACKET_CANCEL_DEFAULT               = true;
@@ -699,7 +699,7 @@ class OptionsProvider {
 			return (bool) $isEnabled;
 		}
 
-		return false;
+		return self::DEFAULT_VALUE_CARRIER_SETTINGS;
 	}
 
 	public function isWcCarrierConfigEnabledNullable(): ?bool {
