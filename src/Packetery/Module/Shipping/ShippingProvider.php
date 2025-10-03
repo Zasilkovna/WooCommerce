@@ -8,9 +8,7 @@ use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ContextResolver;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
 use WC_Abstract_Order;
@@ -20,16 +18,6 @@ class ShippingProvider {
 	 * @var array<int, array<string, string>>
 	 */
 	private static $sortedMethodsCache = [];
-
-	/**
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
-
-	/**
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointConfig;
 
 	/**
 	 * @var CarDeliveryConfig
@@ -57,16 +45,12 @@ class ShippingProvider {
 	private $carrierOptionsFactory;
 
 	public function __construct(
-		FeatureFlagProvider $featureFlagProvider,
-		PacketaPickupPointsConfig $pickupPointConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		ContextResolver $contextResolver,
 		ShippingZoneRepository $shippingZoneRepository,
 		EntityRepository $carrierRepository,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->featureFlagProvider    = $featureFlagProvider;
-		$this->pickupPointConfig      = $pickupPointConfig;
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->contextResolver        = $contextResolver;
 		$this->shippingZoneRepository = $shippingZoneRepository;
@@ -99,13 +83,6 @@ class ShippingProvider {
 			if ( $this->carDeliveryConfig->isDisabled() ) {
 				$carDeliveryIds = implode( '|', Carrier::CAR_DELIVERY_CARRIERS );
 				if ( preg_match( '/^ShippingMethod_(' . $carDeliveryIds . ')\.php$/', $filename ) ) {
-					continue;
-				}
-			}
-			if ( $this->featureFlagProvider->isSplitActive() === false ) {
-				$internalCountries = implode( '|', $this->pickupPointConfig->getInternalCountries() );
-				$vendorGroups      = Carrier::VENDOR_GROUP_ZPOINT . '|' . Carrier::VENDOR_GROUP_ZBOX;
-				if ( preg_match( '/^ShippingMethod_(' . $internalCountries . ')(' . $vendorGroups . ')\.php$/', $filename ) ) {
 					continue;
 				}
 			}

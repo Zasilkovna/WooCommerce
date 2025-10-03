@@ -2,12 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Module\Carrier;
+namespace Tests\Module\Carrier;
 
 use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use PHPUnit\Framework\TestCase;
 
 class PacketaPickupPointsConfigTest extends TestCase {
@@ -56,14 +55,9 @@ class PacketaPickupPointsConfigTest extends TestCase {
 	 * @dataProvider compoundCarrierGroupsProvider
 	 */
 	public function testGetCompoundCarrierVendorGroups( string $carrierId, array $expectedGroups ): void {
-		$featureFlagProvider = $this->createMock( FeatureFlagProvider::class );
-		$featureFlagProvider->method( 'isSplitActive' )
-			->willReturn( true );
-
 		$packetaPickupPointsConfig = new PacketaPickupPointsConfig(
 			new CompoundCarrierCollectionFactory(),
-			new VendorCollectionFactory(),
-			$featureFlagProvider,
+			new VendorCollectionFactory()
 		);
 
 		self::assertEquals( $expectedGroups, $packetaPickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId ) );

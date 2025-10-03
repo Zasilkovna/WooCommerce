@@ -118,7 +118,6 @@ services:
 	- Packetery\Module\WidgetOptionsBuilder
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
-	- Packetery\Module\Options\FlagManager\FeatureFlagProvider
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
