@@ -14,6 +14,7 @@ use Packetery\Module\Checkout\CheckoutValidator;
 use Packetery\Module\Checkout\SessionService;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Order\PickupPointValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use WC_REST_Exception;
@@ -30,16 +31,18 @@ class CheckoutValidatorTest extends TestCase {
 	private EntityRepository&MockObject $carrierEntityRepository;
 
 	private function createCheckoutValidator(): CheckoutValidator {
-		$this->wpAdapter               = $this->createMock( WpAdapter::class );
-		$this->wcAdapter               = $this->createMock( WcAdapter::class );
-		$this->checkoutService         = $this->createMock( CheckoutService::class );
-		$this->cartService             = $this->createMock( CartService::class );
-		$this->sessionService          = $this->createMock( SessionService::class );
-		$this->checkoutStorage         = $this->createMock( CheckoutStorage::class );
-		$this->carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
-		$this->carrierEntityRepository = $this->createMock( EntityRepository::class );
+		$this->pickupPointValidatorMock = $this->createMock( PickupPointValidator::class );
+		$this->wpAdapter                = $this->createMock( WpAdapter::class );
+		$this->wcAdapter                = $this->createMock( WcAdapter::class );
+		$this->checkoutService          = $this->createMock( CheckoutService::class );
+		$this->cartService              = $this->createMock( CartService::class );
+		$this->sessionService           = $this->createMock( SessionService::class );
+		$this->checkoutStorage          = $this->createMock( CheckoutStorage::class );
+		$this->carrierOptionsFactory    = $this->createMock( CarrierOptionsFactory::class );
+		$this->carrierEntityRepository  = $this->createMock( EntityRepository::class );
 
 		return new CheckoutValidator(
+			$this->pickupPointValidatorMock,
 			$this->wpAdapter,
 			$this->wcAdapter,
 			$this->checkoutService,
