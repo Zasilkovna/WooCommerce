@@ -15,8 +15,6 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options;
-use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Metabox;
 use Packetery\Module\Plugin;
@@ -29,16 +27,6 @@ class AssetManager {
 	 * @var ContextResolver
 	 */
 	private $contextResolver;
-
-	/**
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
-
-	/**
-	 * @var FeatureFlagNotice
-	 */
-	private $featureFlagNotice;
 
 	/**
 	 * @var Metabox
@@ -77,8 +65,6 @@ class AssetManager {
 
 	public function __construct(
 		ContextResolver $contextResolver,
-		FeatureFlagProvider $featureFlagProvider,
-		FeatureFlagNotice $featureFlagNotice,
 		Metabox $orderMetabox,
 		Request $request,
 		CheckoutSettings $checkoutSettings,
@@ -87,16 +73,14 @@ class AssetManager {
 		CheckoutService $checkoutService,
 		WidgetUrlResolver $widgetUrlResolver
 	) {
-		$this->contextResolver     = $contextResolver;
-		$this->featureFlagProvider = $featureFlagProvider;
-		$this->featureFlagNotice   = $featureFlagNotice;
-		$this->orderMetabox        = $orderMetabox;
-		$this->request             = $request;
-		$this->checkoutSettings    = $checkoutSettings;
-		$this->wpAdapter           = $wpAdapter;
-		$this->wcAdapter           = $wcAdapter;
-		$this->checkoutService     = $checkoutService;
-		$this->widgetUrlResolver   = $widgetUrlResolver;
+		$this->contextResolver   = $contextResolver;
+		$this->orderMetabox      = $orderMetabox;
+		$this->request           = $request;
+		$this->checkoutSettings  = $checkoutSettings;
+		$this->wpAdapter         = $wpAdapter;
+		$this->wcAdapter         = $wcAdapter;
+		$this->checkoutService   = $checkoutService;
+		$this->widgetUrlResolver = $widgetUrlResolver;
 	}
 
 	/**
@@ -251,10 +235,6 @@ class AssetManager {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/css/admin.css' );
-			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
-			if ( $this->featureFlagProvider->shouldShowSplitActivationNotice() ) {
-				$this->wpAdapter->addAction( 'admin_notices', [ $this->featureFlagNotice, 'renderSplitActivationNotice' ] );
-			}
 		}
 
 		if ( $isOrderGridPage ) {

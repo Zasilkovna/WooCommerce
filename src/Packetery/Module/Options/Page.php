@@ -966,7 +966,7 @@ class Page {
 		$latteParams['logoPacketa']                  = $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' );
 		$advancedCarrierSettingsDescription          = sprintf(
 			// translators: first %s is line break, second one is e-mail address
-			__( 'BETA: Once enabled, Packeta carriers will appear as separate shipping methods in WooCommerce - Settings - Shipping. After enabling this feature, you will need to set up shipping methods in WooCommerce again.%1$sThis is an experimental feature. If you experience any issues, please email us at %2$s with a description of the issue.', 'packeta' ),
+			__( 'When this feature is active, Packeta carriers will appear as separate shipping methods under WooCommerce → Settings → Shipping. After enabling or disabling this feature, you need to reconfigure your shipping methods in WooCommerce.%1$sIf you encounter any issues, please contact us at %2$s.', 'packeta' ),
 			'<br>',
 			'<a href="mailto:' . $this->supportEmailAddress . '">' . $this->supportEmailAddress . '</a>'
 		);
