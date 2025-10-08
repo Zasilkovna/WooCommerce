@@ -641,13 +641,14 @@ class Page {
 
 		$container->addCheckbox( 'auto_email_info_insertion', __( 'Automatically insert packet and pickup point information into emails', 'packeta' ) )
 			->setRequired( false )
-			->setDefaultValue( OptionsProvider::AUTO_EMAIL_INFO_INSERTION_DEFAULT );
+			->setDefaultValue( OptionsProvider::AUTO_EMAIL_INFO_INSERTION_DEFAULT )
+			->addCondition( Form::EQUAL, true )
+				->toggle( '#packetery-email-hook' );
 
 		$container->addSelect(
 			'email_hook',
 			__( 'Hook used to view information in email', 'packeta' ),
 			[
-				''                                     => __( 'None', 'packeta' ),
 				'woocommerce_email_footer'             => 'woocommerce_email_footer',
 				'woocommerce_email_before_order_table' => 'woocommerce_email_before_order_table',
 				'woocommerce_email_after_order_table'  => 'woocommerce_email_after_order_table',
