@@ -7,6 +7,7 @@ namespace Tests\Module\Checkout;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\Options as CarrierOptions;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutStorage;
@@ -14,7 +15,9 @@ use Packetery\Module\Checkout\CheckoutValidator;
 use Packetery\Module\Checkout\SessionService;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Payment\PaymentHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use WC_REST_Exception;
@@ -29,9 +32,12 @@ class CheckoutValidatorTest extends TestCase {
 	private CheckoutStorage&MockObject $checkoutStorage;
 	private CarrierOptionsFactory&MockObject $carrierOptionsFactory;
 	private EntityRepository&MockObject $carrierEntityRepository;
+	private OptionsProvider&MockObject $optionsProviderMock;
+	private PickupPointValidator&MockObject $pickupPointValidatorMock;
+	private PaymentHelper&MockObject $paymentHelperMock;
+	private PacketaPickupPointsConfig&MockObject $pickupPointsConfigMock;
 
 	private function createCheckoutValidator(): CheckoutValidator {
-		$this->pickupPointValidatorMock = $this->createMock( PickupPointValidator::class );
 		$this->wpAdapter                = $this->createMock( WpAdapter::class );
 		$this->wcAdapter                = $this->createMock( WcAdapter::class );
 		$this->checkoutService          = $this->createMock( CheckoutService::class );
@@ -40,9 +46,12 @@ class CheckoutValidatorTest extends TestCase {
 		$this->checkoutStorage          = $this->createMock( CheckoutStorage::class );
 		$this->carrierOptionsFactory    = $this->createMock( CarrierOptionsFactory::class );
 		$this->carrierEntityRepository  = $this->createMock( EntityRepository::class );
+		$this->optionsProviderMock      = $this->createMock( OptionsProvider::class );
+		$this->pickupPointValidatorMock = $this->createMock( PickupPointValidator::class );
+		$this->paymentHelperMock        = $this->createMock( PaymentHelper::class );
+		$this->pickupPointsConfigMock   = $this->createMock( PacketaPickupPointsConfig::class );
 
 		return new CheckoutValidator(
-			$this->pickupPointValidatorMock,
 			$this->wpAdapter,
 			$this->wcAdapter,
 			$this->checkoutService,
@@ -50,7 +59,11 @@ class CheckoutValidatorTest extends TestCase {
 			$this->sessionService,
 			$this->checkoutStorage,
 			$this->carrierOptionsFactory,
-			$this->carrierEntityRepository
+			$this->carrierEntityRepository,
+			$this->optionsProviderMock,
+			$this->pickupPointValidatorMock,
+			$this->paymentHelperMock,
+			$this->pickupPointsConfigMock,
 		);
 	}
 

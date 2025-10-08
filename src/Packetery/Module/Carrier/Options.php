@@ -196,4 +196,12 @@ class Options {
 
 		return null;
 	}
+
+	/**
+	 * @return string[]|null
+	 */
+	public function getVendorGroups(): ?array {
+		return ( isset( $this->options['vendor_groups'] ) && is_array( $this->options['vendor_groups'] ) ) ?
+			$this->options['vendor_groups'] : null;
+	}
 }

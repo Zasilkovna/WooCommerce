@@ -1,36 +1,21 @@
 <?php
-/**
- * Class PickupPointValidate
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Rest;
 
+use Exception;
 use Packetery\Core\Api\Rest\Exception\InvalidApiKeyException;
 use Packetery\Core\Interfaces\IWebRequestClient;
 
-/**
- * Class PickupPointValidate
- *
- * @package Packetery
- */
 class PickupPointValidate {
 
-	private const URL_VALIDATE_ENDPOINT = 'https://widget.packeta.com/v6/api/pps/api/widget/validate';
+	private const URL_VALIDATE_ENDPOINT = 'https://widget.packeta.com/v6/pps/api/widget/v1/validate';
 
-	/**
-	 * HTTP client.
-	 *
-	 * @var IWebRequestClient
-	 */
+	/** @var IWebRequestClient */
 	private $webRequestClient;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $apiKey;
 
 	private function __construct( IWebRequestClient $webRequestClient, string $apiKey ) {
@@ -47,12 +32,7 @@ class PickupPointValidate {
 	}
 
 	/**
-	 * Validates pickup point.
-	 *
-	 * @param PickupPointValidateRequest $request Pickup point validate request.
-	 *
-	 * @return PickupPointValidateResponse
-	 * @throws RestException Thrown on failure.
+	 * @throws RestException
 	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
 		$postData           = $request->getSubmittableData();
@@ -68,9 +48,14 @@ class PickupPointValidate {
 		try {
 			$result      = $this->webRequestClient->post( self::URL_VALIDATE_ENDPOINT, $options );
 			$resultArray = json_decode( $result, true );
+			$errors      = is_array( $resultArray['errors'] ) ? $resultArray['errors'] : [];
 
-			return new PickupPointValidateResponse( $resultArray['isValid'], $resultArray['errors'] );
-		} catch ( \Exception $exception ) {
+			if ( isset( $resultArray['status'] ) && in_array( (int) $resultArray['status'], [ 400, 401 ], true ) ) {
+				return new PickupPointValidateResponse( true, $errors );
+			}
+
+			return new PickupPointValidateResponse( $resultArray['isValid'] ?? false, $errors );
+		} catch ( Exception $exception ) {
 			throw new RestException( $exception->getMessage() );
 		}
 	}

@@ -1,9 +1,4 @@
 <?php
-/**
- * Class PickupPointValidator
- *
- * @package Packetery\Module
- */
 
 declare( strict_types=1 );
 
@@ -16,73 +11,44 @@ use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
-/**
- * Class PickupPointValidator
- *
- * @package Packetery\Module
- */
 class PickupPointValidator {
-
-	// TODO: It needs to be thoroughly tested.
-	public const IS_ACTIVE = false;
 
 	public const VALIDATION_HTTP_ERROR_SESSION_KEY = 'packetery_validation_http_error';
 
-	/**
-	 * Options provider.
-	 *
-	 * @var OptionsProvider
-	 */
+	/** @var OptionsProvider */
 	private $optionsProvider;
 
-	/**
-	 * Logger.
-	 *
-	 * @var ILogger
-	 */
+	/** @var ILogger */
 	private $logger;
 
-	/**
-	 * HTTP Client.
-	 *
-	 * @var WebRequestClient
-	 */
+	/** @var WebRequestClient */
 	private $webRequestClient;
 
-	/**
-	 * @var WpAdapter
-	 */
+	/** @var WpAdapter */
 	private $wpAdapter;
 
-	/**
-	 * @param OptionsProvider  $optionsProvider
-	 * @param ILogger          $logger
-	 * @param WebRequestClient $webRequestClient
-	 * @param WpAdapter        $wpAdapter
-	 */
+	/** @var WcAdapter */
+	private $wcAdapter;
+
 	public function __construct(
 		OptionsProvider $optionsProvider,
 		ILogger $logger,
 		WebRequestClient $webRequestClient,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter
 	) {
 		$this->optionsProvider  = $optionsProvider;
 		$this->logger           = $logger;
 		$this->webRequestClient = $webRequestClient;
 		$this->wpAdapter        = $wpAdapter;
+		$this->wcAdapter        = $wcAdapter;
 	}
 
-	/**
-	 * Validates pickup point.
-	 *
-	 * @param PickupPointValidateRequest $request Pickup point validate request.
-	 *
-	 * @return PickupPointValidateResponse
-	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
 		$apiKey = $this->optionsProvider->get_api_key();
 		try {
@@ -99,8 +65,24 @@ class PickupPointValidator {
 		}
 
 		try {
-			// We do not log successful requests.
-			return $pickupPointValidate->validate( $request );
+			$validationResponse = $pickupPointValidate->validate( $request );
+
+			if ( $validationResponse->isValid() === false ) {
+				$record = $this->createPickUpPointValidateErrorRecord();
+			} else {
+				$record         = new Record();
+				$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
+				$record->status = Record::STATUS_SUCCESS;
+				$record->title  = $this->wpAdapter->__( 'Pickup point validated.', 'packeta' );
+			}
+			$record->params = [
+				'request' => $request->getSubmittableData(),
+				'isValid' => $validationResponse->isValid(),
+				'errors'  => $validationResponse->getErrors(),
+			];
+			$this->logger->add( $record );
+
+			return $validationResponse;
 		} catch ( RestException $exception ) {
 			$record         = $this->createPickUpPointValidateErrorRecord();
 			$record->params = [
@@ -109,7 +91,7 @@ class PickupPointValidator {
 			];
 
 			$this->logger->add( $record );
-			WC()->session->set( self::VALIDATION_HTTP_ERROR_SESSION_KEY, $exception->getMessage() );
+			$this->wcAdapter->sessionSet( self::VALIDATION_HTTP_ERROR_SESSION_KEY, $exception->getMessage() );
 
 			return new PickupPointValidateResponse( true, [] );
 		}
@@ -122,28 +104,5 @@ class PickupPointValidator {
 		$record->title  = $this->wpAdapter->__( 'Pickup point could not be validated.', 'packeta' );
 
 		return $record;
-	}
-
-	/**
-	 * Returns translated validation errors.
-	 *
-	 * @return array<string, string>
-	 */
-	public function getTranslatedError(): array {
-		return [
-			'NotFound'                    => __( 'The pick-up point was not found.', 'packeta' ),
-			'InvalidCarrier'              => __( 'The pick-up point has not allowed carrier.', 'packeta' ),
-			'InvalidCountry'              => __( 'The pick-up point is not in allowed country.', 'packeta' ),
-			'EmptyListOfAllowedCountries' => __( 'Cannot perform country validation because the list of allowed countries is empty.', 'packeta' ),
-			'NoClaimAssistant'            => __( 'The pick-up point does not offer Complaints Assistant Service.', 'packeta' ),
-			'NoPacketConsignment'         => __( 'The pick-up point is not submission point.', 'packeta' ),
-			'InvalidWeight'               => __( 'The pick-up point does not accept packets with given weight.', 'packeta' ),
-			'NoAgeVerification'           => __( 'The pick-up point does not offer Age Verification Service.', 'packeta' ),
-			'PickupPointVacation'         => __( 'The pick-up point currently does not accept any packets due to reported holiday.', 'packeta' ),
-			'PickupPointClosing'          => __( 'The pick-up point does not accept new shipments because it will be closed soon.', 'packeta' ),
-			'PickupPointIsFull'           => __( 'The pick-up point does not accept any packets at the moment due to its full capacity.', 'packeta' ),
-			'PickupPointForbidden'        => __( 'The pick-up point cannot be selected.', 'packeta' ),
-			'PickupPointTechnicalReason'  => __( 'The pick-up point cannot be chosen as a final destination of your packet due to technical reasons.', 'packeta' ),
-		];
 	}
 }

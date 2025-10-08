@@ -217,6 +217,12 @@ parameters:
 			path: ../src/Packetery/Module/Carrier/Options.php
 
 		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:getVendorGroups\(\) should return array\<string\>\|null but returns array\<string, bool\|string\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
 			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:hasCouponFreeShippingActive\(\) should return bool but returns bool\|string\.$#'
 			identifier: return.type
 			count: 1
@@ -2657,12 +2663,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../src/Packetery/Module/WeightCalculator.php
-
-		-
-			message: '#^Argument of an invalid type array\|null supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
 
 		-
 			message: '#^Cannot access offset ''address_validation'' on mixed\.$#'

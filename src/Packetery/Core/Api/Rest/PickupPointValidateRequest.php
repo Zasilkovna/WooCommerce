@@ -1,132 +1,86 @@
 <?php
-/**
- * Class PickupPointValidateRequest
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Rest;
 
-/**
- * Class PickupPointValidateRequest
- *
- * @package Packetery
- */
+use Packetery\Core\Entity\Carrier;
+
 class PickupPointValidateRequest {
 
-	/**
-	 * Pickup point id.
-	 *
-	 * @var string
-	 */
-	private $id;
+	/** @var array<string, bool|float|list<array<string, mixed>>|string|null> */
+	private $options;
+
+	/** @var array<string, string|null> */
+	private $point;
 
 	/**
-	 * Carrier id.
-	 *
-	 * @var string|null
-	 */
-	private $carrierId;
-
-	/**
-	 * Carrier pickup point id.
-	 *
-	 * @var string|null
-	 */
-	private $carrierPickupPointId;
-
-	/**
-	 * Destination country.
-	 *
-	 * @var string|null
-	 */
-	private $country;
-
-	/**
-	 * Allowed carriers.
-	 *
-	 * @var string|null
-	 */
-	private $carriers;
-
-	/**
-	 * Set true if you need Claim Assistant service.
-	 *
-	 * @var bool|null
-	 */
-	private $claimAssistant;
-
-	/**
-	 * Set true if you need new parcel consignment service.
-	 *
-	 * @var bool|null
-	 */
-	private $packetConsignment;
-
-	/**
-	 * Package weight.
-	 *
-	 * @var float|null
-	 */
-	private $weight;
-
-	/**
-	 * Set true if you need age verification.
-	 *
-	 * @var bool|null
-	 */
-	private $livePickupPoint;
-
-	/**
-	 * Expected expedition day.
-	 *
-	 * @var string|null
-	 */
-	private $expeditionDay;
-
-	/**
-	 * PickupPointValidateResponse constructor.
-	 *
-	 * @param string      $pickupPointId Pickup point id.
-	 * @param string|null $carrierId Carrier id.
-	 * @param string|null $carrierPickupPointId Carrier pickup point id.
-	 * @param string|null $country Destination country.
-	 * @param string|null $carriers Allowed carriers.
-	 * @param bool|null   $claimAssistant Set true if you need Claim Assistant service.
-	 * @param bool|null   $packetConsignment Set true if you need new parcel consignment service.
-	 * @param float|null  $weight Package weight.
-	 * @param bool|null   $livePickupPoint Set true if you need age verification.
-	 * @param string|null $expeditionDay Expected expedition day.
+	 * @param string                    $pickupPointId
+	 * @param string|null               $carrierId
+	 * @param string|null               $carrierPickupPointId
+	 * @param string|null               $country
+	 * @param bool|null                 $claimAssistant
+	 * @param bool|null                 $packetConsignment
+	 * @param float|null                $weight
+	 * @param bool|null                 $livePickupPoint
+	 * @param string|null               $expeditionDay
+	 * @param bool|null                 $cashOnDelivery
+	 * @param array<string, float>|null $maxProductDimensions
+	 * @param string[]|null             $vendorGroups
 	 */
 	public function __construct(
 		string $pickupPointId,
 		?string $carrierId,
 		?string $carrierPickupPointId,
 		?string $country,
-		?string $carriers,
 		?bool $claimAssistant,
 		?bool $packetConsignment,
 		?float $weight,
 		?bool $livePickupPoint,
-		?string $expeditionDay
+		?string $expeditionDay,
+		?bool $cashOnDelivery,
+		?array $maxProductDimensions,
+		?array $vendorGroups
 	) {
-		$this->id                   = $pickupPointId;
-		$this->carrierId            = $carrierId;
-		$this->carrierPickupPointId = $carrierPickupPointId;
-		$this->country              = $country;
-		$this->carriers             = $carriers;
-		$this->claimAssistant       = $claimAssistant;
-		$this->packetConsignment    = $packetConsignment;
-		$this->weight               = $weight;
-		$this->livePickupPoint      = $livePickupPoint;
-		$this->expeditionDay        = $expeditionDay;
+		$resolvedCarrierId = is_numeric( $carrierId ) ? $carrierId : Carrier::INTERNAL_PICKUP_POINTS_ID;
+
+		$this->options = [
+			'country'           => $country,
+			'carriers'          => $resolvedCarrierId,
+			'claimAssistant'    => $claimAssistant,
+			'packetConsignment' => $packetConsignment,
+			'weight'            => $weight,
+			'livePickupPoint'   => $livePickupPoint,
+			'expeditionDay'     => $expeditionDay,
+			'cashOnDelivery'    => $cashOnDelivery,
+		];
+		if ( $resolvedCarrierId === Carrier::INTERNAL_PICKUP_POINTS_ID && $vendorGroups !== null ) {
+			$this->options['vendors'] = [];
+			foreach ( $vendorGroups as $vendorGroup ) {
+				$vendorOptions = [
+					'carrierId' => null,
+					'country'   => $country,
+				];
+				if ( $vendorGroup !== Carrier::VENDOR_GROUP_ZPOINT ) {
+					$vendorOptions['group'] = $vendorGroup;
+				}
+				$this->options['vendors'][] = $vendorOptions;
+			}
+		}
+		if ( $maxProductDimensions !== null ) {
+			$this->options['length'] = $maxProductDimensions['length'];
+			$this->options['width']  = $maxProductDimensions['width'];
+			$this->options['depth']  = $maxProductDimensions['depth'];
+		}
+
+		$this->point = [
+			'id'                   => $carrierPickupPointId === null ? $pickupPointId : null,
+			'carrierId'            => is_numeric( $carrierId ) ? $carrierId : null,
+			'carrierPickupPointId' => $carrierPickupPointId,
+		];
 	}
 
 	/**
-	 * Gets submittable data.
-	 *
 	 * @return array<string, string|bool|float|null>
 	 */
 	public function getSubmittableData(): array {

@@ -9,7 +9,15 @@ use PHPUnit\Framework\TestCase;
 
 class PickupPointValidateResponseTest extends TestCase {
 	public function testGetters(): void {
-		$response = new PickupPointValidateResponse( false, [ 'dummyError' ] );
+		$response = new PickupPointValidateResponse(
+			false,
+			[
+				[
+					'code'        => 'dummyCode',
+					'description' => 'dummyDescription',
+				],
+			]
+		);
 		self::assertFalse( $response->isValid() );
 		self::assertCount( 1, $response->getErrors() );
 	}

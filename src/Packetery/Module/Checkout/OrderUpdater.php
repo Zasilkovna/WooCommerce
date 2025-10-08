@@ -17,6 +17,12 @@ use WC_Order;
 
 class OrderUpdater {
 
+	/** @var WpAdapter */
+	private $wpAdapter;
+
+	/** @var WcAdapter */
+	private $wcAdapter;
+
 	/**
 	 * @var Order\Repository
 	 */
@@ -31,16 +37,6 @@ class OrderUpdater {
 	 * @var CheckoutStorage
 	 */
 	private $storage;
-
-	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
 
 	/**
 	 * @var OptionsProvider
@@ -73,11 +69,11 @@ class OrderUpdater {
 	private $sizeFactory;
 
 	public function __construct(
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
 		Order\Repository $orderRepository,
 		CheckoutService $checkoutService,
 		CheckoutStorage $checkoutStorage,
-		WcAdapter $wcAdapter,
-		WpAdapter $wpAdapter,
 		OptionsProvider $optionsProvider,
 		Order\AttributeMapper $attributeMapper,
 		Carrier\EntityRepository $carrierEntityRepository,
@@ -85,11 +81,11 @@ class OrderUpdater {
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
 		SizeFactory $sizeFactory
 	) {
+		$this->wpAdapter               = $wpAdapter;
+		$this->wcAdapter               = $wcAdapter;
 		$this->orderRepository         = $orderRepository;
 		$this->checkoutService         = $checkoutService;
 		$this->storage                 = $checkoutStorage;
-		$this->wcAdapter               = $wcAdapter;
-		$this->wpAdapter               = $wpAdapter;
 		$this->optionsProvider         = $optionsProvider;
 		$this->mapper                  = $attributeMapper;
 		$this->carrierEntityRepository = $carrierEntityRepository;
@@ -181,10 +177,8 @@ class OrderUpdater {
 		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
 	}
 
-	/** @phpstan-ignore-next-line */
 	private function addPickupPointValidationError( WC_Order $wcOrder ): void {
-		// @phpstan-ignore-next-line
-		if ( PickupPointValidator::IS_ACTIVE ) {
+		if ( $this->optionsProvider->isPickupPointValidationEnabled() ) {
 			$pickupPointValidationError = $this->wcAdapter->sessionGetString( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
 			if ( $pickupPointValidationError !== null ) {
 				$wcOrder->add_order_note(

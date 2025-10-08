@@ -292,6 +292,8 @@ class DummyFactory {
 			null,
 			null,
 			null,
+			null,
+			null,
 		);
 	}
 }

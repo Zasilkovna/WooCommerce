@@ -38,6 +38,7 @@ class PickupPointValidateTest extends TestCase {
 			[
 				'isValid' => true,
 				'errors'  => [],
+				'status'  => 200,
 			]
 		);
 		$webRequestClientMock->method( 'post' )
@@ -60,7 +61,7 @@ class PickupPointValidateTest extends TestCase {
 		$validator->validate( DummyFactory::getEmptyPickupPointValidateRequest() );
 	}
 
-	private function getWebRequestClientMock(): MockObject|IWebRequestClient {
+	private function getWebRequestClientMock(): MockObject&IWebRequestClient {
 		return $this->createMock( IWebRequestClient::class );
 	}
 }

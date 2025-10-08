@@ -7,6 +7,7 @@ namespace Packetery\Module;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Exception\EmptyVendorsException;
 use Packetery\Module\Framework\WpAdapter;
 
 class WidgetOptionsBuilder {
@@ -39,6 +40,7 @@ class WidgetOptionsBuilder {
 	 * @param array|null $vendorGroups Vendor groups when checked in compound carrier settings.
 	 *
 	 * @return array
+	 * @throws EmptyVendorsException
 	 */
 	private function getWidgetVendorsParam( string $carrierId, string $country, ?array $vendorGroups ): array {
 		if ( is_numeric( $carrierId ) ) {
@@ -50,15 +52,9 @@ class WidgetOptionsBuilder {
 			];
 		}
 
-		if ( ! isset( $vendorGroups ) || count( $vendorGroups ) === 0 ) {
-			if ( $this->pickupPointsConfig->isCompoundCarrierId( $carrierId ) ) {
-				$vendorGroups = $this->pickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId );
-			} else {
-				$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
-				if ( isset( $vendorCarriers[ $carrierId ] ) ) {
-					$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
-				}
-			}
+		$vendorGroups = $this->pickupPointsConfig->getFinalVendorGroups( $vendorGroups, $carrierId );
+		if ( $vendorGroups === null ) {
+			throw new EmptyVendorsException( 'Empty vendor groups for internal carrier.' );
 		}
 
 		$vendorsParam = [];

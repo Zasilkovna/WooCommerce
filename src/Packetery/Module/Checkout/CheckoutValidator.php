@@ -12,17 +12,14 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Payment\PaymentHelper;
 use WC_REST_Exception;
 use WP_Error;
 
 class CheckoutValidator {
-
-	/**
-	 * @var PickupPointValidator
-	 */
-	private $pickupPointValidator;
 
 	/**
 	 * @var WpAdapter
@@ -64,8 +61,19 @@ class CheckoutValidator {
 	 */
 	private $carrierEntityRepository;
 
+	/** @var OptionsProvider */
+	private $optionsProvider;
+
+	/** @var PickupPointValidator */
+	private $pickupPointValidator;
+
+	/** @var PaymentHelper */
+	private $paymentHelper;
+
+	/** @var Carrier\PacketaPickupPointsConfig */
+	private $pickupPointsConfig;
+
 	public function __construct(
-		PickupPointValidator $pickupPointValidator,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
 		CheckoutService $checkoutService,
@@ -73,9 +81,12 @@ class CheckoutValidator {
 		SessionService $sessionService,
 		CheckoutStorage $storage,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		EntityRepository $carrierEntityRepository
+		EntityRepository $carrierEntityRepository,
+		OptionsProvider $optionsProvider,
+		PickupPointValidator $pickupPointValidator,
+		PaymentHelper $paymentHelper,
+		Carrier\PacketaPickupPointsConfig $packetaPickupPointsConfig
 	) {
-		$this->pickupPointValidator    = $pickupPointValidator;
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
 		$this->checkoutService         = $checkoutService;
@@ -84,6 +95,10 @@ class CheckoutValidator {
 		$this->storage                 = $storage;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->optionsProvider         = $optionsProvider;
+		$this->pickupPointValidator    = $pickupPointValidator;
+		$this->paymentHelper           = $paymentHelper;
+		$this->pickupPointsConfig      = $packetaPickupPointsConfig;
 	}
 
 	/**
@@ -143,7 +158,12 @@ class CheckoutValidator {
 		}
 
 		if ( $this->checkoutService->isPickupPointOrder() ) {
-			return $this->validatePickupPoint( $checkoutData, $carrierId, $chosenShippingMethod );
+			return $this->validatePickupPoint(
+				$checkoutData,
+				$carrierId,
+				$paymentMethod,
+				$this->pickupPointsConfig->getFinalVendorGroups( $carrierOptions->getVendorGroups(), $carrierId )
+			);
 		}
 
 		if ( $this->checkoutService->isHomeDeliveryOrder() ) {
@@ -160,7 +180,21 @@ class CheckoutValidator {
 		return null;
 	}
 
-	private function validatePickupPoint( array $checkoutData, ?string $carrierId, string $chosenShippingMethod ): ?string {
+	/**
+	 * @param array         $checkoutData
+	 * @param string|null   $carrierId
+	 * @param string|null   $paymentMethod
+	 * @param string[]|null $vendorGroups
+	 *
+	 * @return string|null
+	 * @throws ProductNotFoundException
+	 */
+	private function validatePickupPoint(
+		array $checkoutData,
+		?string $carrierId,
+		?string $paymentMethod,
+		?array $vendorGroups
+	): ?string {
 		$requiredAttributes = array_filter(
 			array_combine(
 				array_column( Order\Attribute::$pickupPointAttributes, 'name' ),
@@ -188,52 +222,58 @@ class CheckoutValidator {
 			return $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' );
 		}
 
-		// @phpstan-ignore-next-line
-		if ( PickupPointValidator::IS_ACTIVE ) {
-			$pickupPointId         = $checkoutData[ Order\Attribute::POINT_ID ];
-			$carriersForValidation = $chosenShippingMethod;
+		if ( $this->optionsProvider->isPickupPointValidationEnabled() ) {
+			$pickupPointId = $checkoutData[ Order\Attribute::POINT_ID ];
 			if ( $carrierId === '' ) {
-				$carrierId             = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
-				$carriersForValidation = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
+				$carrierId = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
 			}
 			$pickupPointValidationResponse = $this->pickupPointValidator->validate(
 				$this->createPickupPointValidateRequest(
 					$pickupPointId,
 					$carrierId,
 					( is_numeric( $carrierId ) ? $pickupPointId : null ),
-					$carriersForValidation
+					$paymentMethod,
+					$vendorGroups
 				)
 			);
 			if ( ! $pickupPointValidationResponse->isValid() ) {
-				$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' ), 'error' );
-				foreach ( $pickupPointValidationResponse->getErrors() as $validationError ) {
-					$reason = $this->pickupPointValidator->getTranslatedError()[ $validationError['code'] ];
-					// translators: %s: Reason for validation failure.
-					$this->wcAdapter->addNotice( sprintf( $this->wpAdapter->__( 'Reason: %s', 'packeta' ), $reason ), 'error' );
-				}
+				return $this->wpAdapter->__( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' );
 			}
 		}
 
 		return null;
 	}
 
+	/**
+	 * @param string        $pickupPointId
+	 * @param string|null   $carrierId
+	 * @param string|null   $pointCarrierId
+	 * @param string|null   $paymentMethod
+	 * @param string[]|null $vendorGroups
+	 *
+	 * @return PickupPointValidateRequest
+	 * @throws ProductNotFoundException
+	 */
 	private function createPickupPointValidateRequest(
 		string $pickupPointId,
 		?string $carrierId,
 		?string $pointCarrierId,
-		string $chosenShippingMethod
+		?string $paymentMethod,
+		?array $vendorGroups
 	): PickupPointValidateRequest {
 		return new PickupPointValidateRequest(
 			$pickupPointId,
 			$carrierId,
 			$pointCarrierId,
 			$this->checkoutService->getCustomerCountry(),
-			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod ),
-			false,
-			false,
+			null,
+			null,
 			$this->cartService->getCartWeightKg(),
 			$this->cartService->isAgeVerificationRequired(),
-			null
+			null,
+			( $paymentMethod !== null && $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) === true ),
+			$this->cartService->getBiggestProductSize(),
+			$vendorGroups
 		);
 	}
 
