@@ -691,12 +691,6 @@ parameters:
 			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
 
 		-
-			message: '#^Parameter \#2 \$customerCountry of method Packetery\\Module\\Carrier\\EntityRepository\:\:isValidForCountry\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
-
-		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
 			count: 2
@@ -1589,6 +1583,7 @@ parameters:
 			identifier: cast.int
 			count: 2
 			path: ../src/Packetery/Module/Options/Page.php
+
 		-
 			message: '#^Method Packetery\\Module\\Options\\Page\:\:getChosenKeys\(\) has parameter \$choiceData with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
@@ -2614,12 +2609,6 @@ parameters:
 			identifier: cast.string
 			count: 1
 			path: ../src/Packetery/Module/Views/ViewMail.php
-
-		-
-			message: '#^Argument of an invalid type array\<WC_Order\>\|stdClass supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../src/Packetery/Module/Views/WizardAssetManager.php
 
 		-
 			message: '#^Cannot cast mixed to int\.$#'

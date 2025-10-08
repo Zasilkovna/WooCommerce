@@ -15,4 +15,7 @@ class OptionNames {
 	public const PACKETERY_ACTIVATED                         = 'packetery_activated';
 	public const PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET = 'packetery_tutorial_order_detail_edit_packet';
 	public const PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET   = 'packetery_tutorial_order_grid_edit_packet';
+	public const FEATURE_FLAGS_DISABLED_DUE_ERRORS           = 'packeta_feature_flags_disabled_due_errors';
+	public const FEATURE_FLAGS_ERROR_COUNTER                 = 'packeta_feature_flags_error_counter';
+	public const FEATURE_FLAGS                               = 'packeta_feature_flags';
 }

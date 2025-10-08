@@ -131,7 +131,7 @@ class LabelPrint {
 	 * @return string
 	 */
 	public static function getBackLinkTransientName(): string {
-		return 'packetery_label_print_back_link_' . wp_get_session_token();
+		return Transients::LABEL_PRINT_BACK_LINK_PREFIX . wp_get_session_token();
 	}
 
 	/**

@@ -3,51 +3,49 @@
 namespace Packetery\Module\Views;
 
 use Packetery\Module\ContextResolver;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\Page;
 use Packetery\Module\Order\DetailCommonLogic;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
+use WC_Abstract_Order;
 
 class WizardAssetManager {
-	/**
-	 * @var WpAdapter
-	 */
+
+	/** @var WpAdapter */
 	private $wpAdapter;
 
-	/**
-	 * @var AssetManager
-	 */
+	/** @var AssetManager */
 	private $assetManager;
 
-	/**
-	 * @var Request
-	 */
+	/** @var Request */
 	private $request;
 
-	/**
-	 * @var ContextResolver
-	 */
+	/** @var ContextResolver */
 	private $contextResolver;
 
-	/**
-	 * @var DetailCommonLogic
-	 */
+	/** @var DetailCommonLogic */
 	private $detailCommonLogic;
+
+	/** @var WcAdapter  */
+	private $wcAdapter;
 
 	public function __construct(
 		AssetManager $assetManager,
 		Request $request,
 		WpAdapter $wpAdapter,
 		ContextResolver $contextResolver,
-		DetailCommonLogic $detailCommonLogic
+		DetailCommonLogic $detailCommonLogic,
+		WcAdapter $wcAdapter
 	) {
 		$this->assetManager      = $assetManager;
 		$this->request           = $request;
 		$this->wpAdapter         = $wpAdapter;
 		$this->contextResolver   = $contextResolver;
 		$this->detailCommonLogic = $detailCommonLogic;
+		$this->wcAdapter         = $wcAdapter;
 	}
 
 	public function enqueueWizardAssets(): void {
@@ -561,7 +559,7 @@ class WizardAssetManager {
 		$page  = isset( $_GET['paged'] ) ? max( 1, (int) $_GET['paged'] ) : 1;
 		$limit = get_option( 'edit_shop_order_per_page', 20 );
 
-		$orders = wc_get_orders(
+		$orders = $this->wcAdapter->getOrdersWithoutPagination(
 			[
 				'limit'   => $limit,
 				'page'    => $page,
@@ -570,10 +568,11 @@ class WizardAssetManager {
 				'order'   => 'DESC',
 			]
 		);
-
-		foreach ( $orders as $order ) {
-			if ( ShippingProvider::wcOrderHasOurMethod( $order ) ) {
-				return true;
+		if ( is_array( $orders ) ) {
+			foreach ( $orders as $order ) {
+				if ( $order instanceof WC_Abstract_Order && ShippingProvider::wcOrderHasOurMethod( $order ) ) {
+					return true;
+				}
 			}
 		}
 

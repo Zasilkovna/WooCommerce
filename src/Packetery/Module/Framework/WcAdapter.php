@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use stdClass;
 use WC_Blocks_Utils;
 use WC_Data_Store;
 use WC_Logger;
@@ -133,5 +134,26 @@ class WcAdapter {
 	 */
 	public function dataStoreLoad( string $objectType ): object {
 		return WC_Data_Store::load( $objectType );
+	}
+
+	/**
+	 * Returns WC_Abstract_Order[]
+	 *
+	 * @param array<string, mixed> $args
+	 *
+	 * @return array<mixed, mixed>
+	 */
+	public function getOrdersWithoutPagination( array $args ): array {
+		$results = wc_get_orders( $args );
+
+		if ( is_array( $results ) ) {
+			return $results;
+		}
+
+		if ( $results instanceof stdClass && isset( $results->orders ) && is_array( $results->orders ) ) {
+			return $results->orders;
+		}
+
+		return [];
 	}
 }

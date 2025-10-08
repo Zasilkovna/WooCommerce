@@ -11,6 +11,8 @@ use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
+use WC_REST_Exception;
+use WP_Error;
 
 class CheckoutValidator {
 
@@ -75,26 +77,50 @@ class CheckoutValidator {
 	}
 
 	/**
-	 * Checks if all attributes required for chosen method are set, sets an error otherwise.
+	 * Using wc_add_notice is not safe because it can be cleared by other plugins.
 	 *
-	 * @throws ProductNotFoundException Product not found.
+	 * @param array<string, string|int|string[]|bool> $data
+	 * @param WP_Error                                $wpError
+	 *
+	 * @throws ProductNotFoundException
 	 */
-	public function actionValidateCheckoutData(): void {
+	public function actionValidateCheckoutData( array $data, WP_Error $wpError ): void {
+		$error = $this->getFirstError();
+		if ( $error !== null ) {
+			$wpError->add( 'packeta_cart_validation_failed', $error );
+		}
+	}
+
+	/**
+	 * Using wc_add_notice works even for block checkout, but WC_REST_Exception is recommended.
+	 *
+	 * @throws WC_REST_Exception
+	 * @throws ProductNotFoundException
+	 */
+	public function actionValidateBlockCheckoutData(): void {
+		$error = $this->getFirstError();
+		if ( $error !== null ) {
+			throw new WC_REST_Exception( 'packeta_cart_validation_failed', $error );
+		}
+	}
+
+	/**
+	 * @throws ProductNotFoundException
+	 */
+	private function getFirstError(): ?string {
 		$chosenShippingMethod = $this->checkoutService->resolveChosenMethod();
 
 		if (
 			$chosenShippingMethod === null ||
 			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
 		) {
-			return;
+			return null;
 		}
 
 		$checkoutData = $this->storage->getPostDataIncludingStoredData( $chosenShippingMethod );
 
 		if ( $this->cartService->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->wcAdapter->cartGetCartContents() ) ) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
-
-			return;
+			return $this->wpAdapter->__( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' );
 		}
 
 		$carrierId      = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod );
@@ -102,34 +128,28 @@ class CheckoutValidator {
 		$paymentMethod  = $this->sessionService->getChosenPaymentMethod();
 
 		if ( $paymentMethod !== null && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
-
-			return;
+			return $this->wpAdapter->__( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' );
 		}
 
 		if ( $this->checkoutService->isPickupPointOrder() ) {
-			$this->validatePickupPoint( $checkoutData, $carrierId );
-
-			return;
+			return $this->validatePickupPoint( $checkoutData, $carrierId );
 		}
 
 		if ( $this->checkoutService->isHomeDeliveryOrder() ) {
-			$this->validateHomeDelivery( $checkoutData, $carrierId );
-
-			return;
+			return $this->validateHomeDelivery( $checkoutData, $carrierId );
 		}
 
 		if (
 			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] === '' ) &&
 			$this->checkoutService->isCarDeliveryOrder()
 		) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
+			return $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' );
 		}
+
+		return null;
 	}
 
-	private function validatePickupPoint( array $checkoutData, ?string $carrierId ): void {
-		$error = false;
-
+	private function validatePickupPoint( array $checkoutData, ?string $carrierId ): ?string {
 		$requiredAttributes = array_filter(
 			array_combine(
 				array_column( Order\Attribute::$pickupPointAttributes, 'name' ),
@@ -139,34 +159,23 @@ class CheckoutValidator {
 		foreach ( $requiredAttributes as $attr => $required ) {
 			$attrValue = $checkoutData[ $attr ] ?? null;
 			if ( ! $attrValue ) {
-				$error = true;
+				return $this->wpAdapter->__( 'Pickup point is not chosen.', 'packeta' );
 			}
-		}
-		if ( $error ) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Pickup point is not chosen.', 'packeta' ), 'error' );
 		}
 
 		$customerCountry = $this->checkoutService->getCustomerCountry();
-		if (
-			! $error &&
-			$customerCountry === null
-		) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Customer country could not be obtained.', 'packeta' ), 'error' );
-			$error = true;
+		if ( $customerCountry === null ) {
+			return $this->wpAdapter->__( 'Customer country could not be obtained.', 'packeta' );
 		}
 
-		if (
-			! $error &&
-			! $this->carrierEntityRepository->isValidForCountry(
-				$carrierId,
-				$customerCountry
-			)
-		) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
+		if ( ! $this->carrierEntityRepository->isValidForCountry( $carrierId, $customerCountry ) ) {
+			return $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' );
 		}
+
+		return null;
 	}
 
-	private function validateHomeDelivery( array $checkoutData, ?string $carrierId ): void {
+	private function validateHomeDelivery( array $checkoutData, ?string $carrierId ): ?string {
 		$optionId      = Carrier\OptionPrefixer::getOptionId( $carrierId );
 		$carrierOption = $this->wpAdapter->getOption( $optionId );
 
@@ -182,7 +191,9 @@ class CheckoutValidator {
 				$checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] !== '1'
 			)
 		) {
-			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
+			return $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' );
 		}
+
+		return null;
 	}
 }
