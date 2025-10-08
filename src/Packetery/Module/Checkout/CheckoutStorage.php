@@ -56,7 +56,7 @@ class CheckoutStorage {
 		$this->wpAdapter->setTransient(
 			$this->getTransientNamePacketaCheckoutData(),
 			$savedData,
-			DAY_IN_SECONDS
+			$this->getSessionExpiration()
 		);
 	}
 
@@ -210,5 +210,16 @@ class CheckoutStorage {
 		}
 
 		return true;
+	}
+
+	private function getSessionExpiration(): int {
+		$default = 2 * DAY_IN_SECONDS;
+
+		$wcSessionExpiration = $this->wpAdapter->applyFilters( 'wc_session_expiration', $default );
+		if ( is_numeric( $wcSessionExpiration ) && (int) $wcSessionExpiration > $default ) {
+			return (int) $wcSessionExpiration;
+		}
+
+		return $default;
 	}
 }

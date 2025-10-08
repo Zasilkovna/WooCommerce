@@ -13,7 +13,7 @@ use Packetery\Module\ContextResolver;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
-use WC_Order;
+use WC_Abstract_Order;
 
 class ShippingProvider {
 	/**
@@ -127,10 +127,7 @@ class ShippingProvider {
 		);
 	}
 
-	/**
-	 * Checks if provided order uses our shipping method like native has_shipping_method method.
-	 */
-	public static function wcOrderHasOurMethod( WC_Order $wcOrder ): bool {
+	public static function wcOrderHasOurMethod( WC_Abstract_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_shipping_methods() as $shippingMethod ) {
 			if ( self::isPacketaMethod( $shippingMethod->get_method_id() ) ) {
 				return true;

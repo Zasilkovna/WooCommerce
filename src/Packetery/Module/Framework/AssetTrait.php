@@ -9,6 +9,10 @@ trait AssetTrait {
 		return plugin_dir_url( $file );
 	}
 
+	public function contentUrl( string $path ): string {
+		return (string) content_url( $path );
+	}
+
 	/**
 	 * @param string       $handle
 	 * @param string       $src
