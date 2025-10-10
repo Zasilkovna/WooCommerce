@@ -30,7 +30,7 @@ class ShippingMethodGenerator {
 	public function generateClasses(): void {
 		$allCarriers = [];
 
-		$pickupPointCarriers = array_merge( $this->pickupPointConfig->getCompoundCarriers(), $this->pickupPointConfig->getVendorCarriers( true ) );
+		$pickupPointCarriers = array_merge( $this->pickupPointConfig->getCompoundCarriers(), $this->pickupPointConfig->getVendorCarriers() );
 		foreach ( $pickupPointCarriers as $pickupPointCarrier ) {
 			$allCarriers[ $pickupPointCarrier->getId() ] = $pickupPointCarrier->getName();
 		}
