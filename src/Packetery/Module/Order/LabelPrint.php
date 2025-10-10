@@ -131,7 +131,7 @@ class LabelPrint {
 	 * @return string
 	 */
 	public static function getBackLinkTransientName(): string {
-		return 'packetery_label_print_back_link_' . wp_get_session_token();
+		return Transients::LABEL_PRINT_BACK_LINK_PREFIX . wp_get_session_token();
 	}
 
 	/**
@@ -178,11 +178,11 @@ class LabelPrint {
 
 		$fallbackToPacketaLabel = false;
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam                = $this->httpRequest->getQuery( 'id' ) !== null ? (int) $this->httpRequest->getQuery( 'id' ) : null;
+		$orderIdParam           = $this->httpRequest->getQuery( 'id' ) !== null ? (int) $this->httpRequest->getQuery( 'id' ) : null;
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
-		if ( $idParam !== null && $packetIdParam !== null ) {
+		if ( $orderIdParam !== null && $packetIdParam !== null ) {
 			$fallbackToPacketaLabel = true;
-			$packetIds              = [ $idParam => $packetIdParam ];
+			$packetIds              = [ $orderIdParam => $packetIdParam ];
 		} else {
 			$orderIdsTransient = $this->getOrderIdsTransient();
 			if ( $orderIdsTransient === null ) {
@@ -216,23 +216,9 @@ class LabelPrint {
 			return;
 		}
 
-		if ( $isCarrierLabels === true ) {
-			$packetIdsWithCourierNumbers = $this->carrierLabelService->getPacketIdsWithCourierNumbers( $packetIds );
-			if ( $packetIdsWithCourierNumbers === [] ) {
-				$this->flashMessageAndRedirect(
-					$this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log.', 'packeta' ),
-					$idParam
-				);
-
-				return;
-			}
-
-			$response = $this->requestCarrierLabels( $offset, $packetIdsWithCourierNumbers );
-			if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
-				$response = $this->requestPacketaLabels( $offset, $packetIds );
-			}
-		} else {
-			$response = $this->requestPacketaLabels( $offset, $packetIds );
+		$response = $this->getResponse( $isCarrierLabels, $packetIds, $fallbackToPacketaLabel, $orderIdParam, $offset );
+		if ( $response === null ) {
+			return;
 		}
 
 		if ( $response->hasFault() ) {
@@ -256,7 +242,7 @@ class LabelPrint {
 				);
 			}
 
-			$this->flashMessageAndRedirect( $message, $idParam );
+			$this->flashMessageAndRedirect( $message, $orderIdParam );
 
 			return;
 		}
@@ -309,21 +295,43 @@ class LabelPrint {
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 
 		foreach ( $packetIds as $orderId => $packetId ) {
+			$isClaimAssistantLabel = false;
+			$order                 = $this->orderRepository->getByIdWithValidCarrier( $orderId );
+
+			if ( $order === null ) {
+				// TODO Only a temporary solution to prevent a situation where the order is null and we are unable to verify whether it is a printout from the claim assistant form.
+				// TODO Needs to be refactored - ticket PES-2896
+				$this->logLabelPrintWithoutWcOrder( $orderId, $packetId, $response, $request );
+
+				continue;
+			}
+
+			if ( $order->isPacketClaim( $packetId ) ) {
+				$isClaimAssistantLabel = true;
+			}
+
 			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_LABEL_PRINT;
+			$record->action  = $isClaimAssistantLabel ? Log\Record::ACTION_CLAIM_LABEL_PRINT : Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
-				if ( $order !== null ) {
+				if ( $isClaimAssistantLabel === false ) {
 					$order->setIsLabelPrinted( true );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = __( 'Label has been printed successfully.', 'packeta' );
+				if ( $isClaimAssistantLabel === true ) {
+					$record->title = $this->wpAdapter->__( 'Claim assistant label was printed successfully.', 'packeta' );
+				} else {
+					$record->title = $this->wpAdapter->__( 'Label was printed successfully.', 'packeta' );
+				}
 			} else {
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Label could not be printed.', 'packeta' );
+				if ( $isClaimAssistantLabel === true ) {
+					$record->title = $this->wpAdapter->__( 'Claim assistant label could not be printed.', 'packeta' );
+				} else {
+					$record->title = $this->wpAdapter->__( 'Label could not be printed.', 'packeta' );
+				}
 				$record->params = [
 					'packetId'          => $packetId,
 					'isPacketIdInvalid' => $response->hasInvalidPacketId( (string) $packetId ),
@@ -338,10 +346,8 @@ class LabelPrint {
 
 			$this->logger->add( $record );
 
-			if ( $order !== null ) {
-				$order->updateApiErrorMessage( $response->getFaultString() );
-				$this->orderRepository->save( $order );
-			}
+			$order->updateApiErrorMessage( $response->getFaultString() );
+			$this->orderRepository->save( $order );
 		}
 
 		return $response;
@@ -472,13 +478,79 @@ class LabelPrint {
 		$wcOrder->save();
 	}
 
-	public function flashMessageAndRedirect( string $message, ?int $idParam ): void {
+	/**
+	 * Logs label print operation when there is no WooCommerce order.
+	 */
+	private function logLabelPrintWithoutWcOrder( int $orderId, string $packetId, Response\PacketsLabelsPdf $response, Request\PacketsLabelsPdf $request ): void {
+		$record          = new Log\Record();
+		$record->action  = Log\Record::ACTION_LABEL_PRINT;
+		$record->orderId = $orderId;
+
+		if ( ! $response->hasFault() ) {
+			$record->status = Log\Record::STATUS_SUCCESS;
+			$record->title  = $this->wpAdapter->__( 'Label was printed successfully.', 'packeta' );
+		} else {
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = $this->wpAdapter->__( 'Label could not be printed.', 'packeta' );
+		}
+		$record->params = [
+			'packetId'          => $packetId,
+			'isPacketIdInvalid' => $response->hasInvalidPacketId( $packetId ),
+			'request'           => [
+				'packetIds' => $request->getPacketIds(),
+				'format'    => $request->getFormat(),
+				'offset'    => $request->getOffset(),
+			],
+			'errorMessage'      => $response->getFaultString(),
+		];
+		$this->logger->add( $record );
+	}
+
+	public function flashMessageAndRedirect( string $message, ?int $orderId ): void {
 		$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 		$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
-		if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $idParam !== null ) {
-			$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
+		if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $orderId !== null ) {
+			$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $orderId ) );
 		}
 		$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+	}
+
+	/**
+	 * @param bool                  $isCarrierLabels
+	 * @param array<string, string> $packetIds
+	 * @param bool                  $fallbackToPacketaLabel
+	 * @param int|null              $orderId
+	 * @param int                   $offset
+	 *
+	 * @return Response\PacketsCourierLabelsPdf|Response\PacketsLabelsPdf|null
+	 */
+	private function getResponse(
+		bool $isCarrierLabels,
+		array $packetIds,
+		bool $fallbackToPacketaLabel,
+		?int $orderId,
+		int $offset
+	) {
+		if ( $isCarrierLabels === false ) {
+			return $this->requestPacketaLabels( $offset, $packetIds );
+		}
+
+		$packetIdsWithCourierNumbers = $this->carrierLabelService->getPacketIdsWithCourierNumbers( $packetIds );
+		if ( $fallbackToPacketaLabel === false && $packetIdsWithCourierNumbers === [] ) {
+			$this->flashMessageAndRedirect(
+				(string) $this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log.', 'packeta' ),
+				$orderId
+			);
+
+			return null;
+		}
+
+		$response = $this->requestCarrierLabels( $offset, $packetIdsWithCourierNumbers );
+		if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
+			return $this->requestPacketaLabels( $offset, $packetIds );
+		}
+
+		return $response;
 	}
 }

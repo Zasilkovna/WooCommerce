@@ -7,9 +7,7 @@ namespace Tests\Module\Shipping;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ContextResolver;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
@@ -28,8 +26,6 @@ class ShippingProviderTest extends TestCase {
 		$this->shippingZoneRepository = $this->createMock( ShippingZoneRepository::class );
 
 		return new ShippingProvider(
-			$this->createMock( FeatureFlagProvider::class ),
-			$this->createMock( PacketaPickupPointsConfig::class ),
 			$this->createMock( CarDeliveryConfig::class ),
 			$this->contextResolver,
 			$this->shippingZoneRepository,

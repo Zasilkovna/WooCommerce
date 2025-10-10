@@ -20,6 +20,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
@@ -108,6 +109,11 @@ class GridExtender {
 	private $packetStatusResolver;
 
 	/**
+	 * @var Form
+	 */
+	private $orderForm;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -133,7 +139,8 @@ class GridExtender {
 		WpAdapter $wpAdapter,
 		ModuleHelper $moduleHelper,
 		SizeFactory $sizeFactory,
-		PacketStatusResolver $packetStatusResolver
+		PacketStatusResolver $packetStatusResolver,
+		Form $orderForm
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -146,16 +153,22 @@ class GridExtender {
 		$this->moduleHelper          = $moduleHelper;
 		$this->sizeFactory           = $sizeFactory;
 		$this->packetStatusResolver  = $packetStatusResolver;
+		$this->orderForm             = $orderForm;
 	}
 
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param string[] $htmlLinks Array of html links.
+	 * @param string[]|mixed $htmlLinks Array of html links.
 	 *
-	 * @return string[]
+	 * @return string[]|mixed
 	 */
-	public function addFilterLinks( array $htmlLinks ): array {
+	public function addFilterLinks( $htmlLinks ) {
+		if ( ! is_array( $htmlLinks ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
+
+			return $htmlLinks;
+		}
 		$linkConfig         = new GridLinksConfig(
 			$this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
 			$this->wpAdapter->__( 'Packeta orders to print', 'packeta' ),
@@ -341,12 +354,12 @@ class GridExtender {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
 				if ( $pickupPoint !== null ) {
-					$pointName = $pickupPoint->getName();
-					$pointId   = $pickupPoint->getId();
+					$pointPlaceOrName = $pickupPoint->getPlace() ?? $pickupPoint->getName();
+					$pointId          = $pickupPoint->getId();
 					if ( ! $order->isExternalCarrier() ) {
-						echo esc_html( "$pointName ($pointId)" );
+						echo esc_html( "$pointPlaceOrName ($pointId)" );
 					} else {
-						echo esc_html( $pointName );
+						echo esc_html( $pointPlaceOrName );
 					}
 
 					break;
@@ -419,6 +432,9 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
+				$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
+				$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
+
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
@@ -427,7 +443,8 @@ class GridExtender {
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
 						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
-						'orderWarningFields'               => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+						'orderWarningFields'               => $invalidFields,
+						'invalidFieldsMessage'             => $invalidFieldsMessage,
 						'packetSubmitUrl'                  => $packetSubmitUrl,
 						'packetCancelLink'                 => $packetCancelLink,
 						'printLink'                        => $printLink,
@@ -436,18 +453,17 @@ class GridExtender {
 						'logPurgerDatetimeModifier'        => $this->wpAdapter->getOption( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'                  => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 						'translations'                     => [
-							'printLabel'                  => __( 'Print label', 'packeta' ),
-							'setAdditionalPacketInfo'     => __( 'Set additional packet information', 'packeta' ),
-							'setStoredUntil'              => __( 'Set the pickup date extension', 'packeta' ),
-							'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-							'submitToPacketa'             => __( 'Submit to Packeta', 'packeta' ),
+							'printLabel'                => __( 'Print label', 'packeta' ),
+							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
+							'setStoredUntil'            => __( 'Set the pickup date extension', 'packeta' ),
+							'submitToPacketa'           => __( 'Submit to Packeta', 'packeta' ),
 							// translators: %s: Order number.
-							'reallyCancelPacketHeading'   => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 							// translators: %s: Packet number.
-							'reallyCancelPacket'          => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
+							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 
-							'cancelPacket'                => __( 'Cancel packet', 'packeta' ),
-							'lastErrorFromApi'            => __( 'Last error from Packeta API', 'packeta' ),
+							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
 				);
@@ -473,11 +489,17 @@ class GridExtender {
 	/**
 	 * Add order list columns.
 	 *
-	 * @param string[] $columns Order list columns.
+	 * @param string[]|mixed $columns Order list columns.
 	 *
-	 * @return string[] All columns.
+	 * @return string[]|mixed All columns.
 	 */
-	public function addOrderListColumns( array $columns ): array {
+	public function addOrderListColumns( $columns ) {
+		if ( ! is_array( $columns ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'columns', 'array', $columns );
+
+			return $columns;
+		}
+
 		$newColumns = array();
 
 		foreach ( $columns as $columnName => $columnInfo ) {

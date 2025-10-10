@@ -38,7 +38,6 @@ class ViewMail {
 		DetailCommonLogic $detailCommonLogic,
 		WpAdapter $wpAdapter
 	) {
-
 		$this->orderRepository   = $orderRepository;
 		$this->latteEngine       = $latteEngine;
 		$this->detailCommonLogic = $detailCommonLogic;

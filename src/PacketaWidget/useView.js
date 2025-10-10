@@ -158,10 +158,18 @@ export const useView = ( cart ) => {
 	let inputRequired = true;
 
 	if ( packetaPickupPointShippingRate ) {
+		const buttonPlace =
+			viewState && viewState.pickupPoint.pickupPointType === 'internal' ? viewState.pickupPoint.place : '';
+
+		const buttonInfo = viewState && viewState.pickupPoint
+			? [viewState.pickupPoint.street, `${viewState.pickupPoint.city} ${viewState.pickupPoint.zip}`].filter(Boolean).join(', ')
+			: '';
+
 		return {
 			buttonCallback: onWidgetButtonClicked,
 			buttonLabel: translations.choosePickupPoint,
-			buttonInfo: viewState && viewState.pickupPoint && viewState.pickupPoint.name,
+			buttonPlace: buttonPlace,
+			buttonInfo: buttonInfo,
 			inputValue: viewState && viewState.pickupPoint ? viewState.pickupPoint.name : '',
 			inputRequired,
 			errorMessage: getPickupPointErrorMessage( viewState ),

@@ -7,8 +7,6 @@ use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options;
-use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
@@ -19,11 +17,6 @@ class PluginHooks {
 	 * @var Request
 	 */
 	private $request;
-
-	/**
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
 
 	/**
 	 * @var Order\PacketSubmitter
@@ -57,7 +50,6 @@ class PluginHooks {
 
 	public function __construct(
 		Request $request,
-		FeatureFlagProvider $featureFlagProvider,
 		Order\PacketSubmitter $packetSubmitter,
 		Order\PacketCanceller $packetCanceller,
 		Order\PacketClaimSubmitter $packetClaimSubmitter,
@@ -65,9 +57,7 @@ class PluginHooks {
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter
 	) {
-
 		$this->request              = $request;
-		$this->featureFlagProvider  = $featureFlagProvider;
 		$this->packetSubmitter      = $packetSubmitter;
 		$this->packetCanceller      = $packetCanceller;
 		$this->packetClaimSubmitter = $packetClaimSubmitter;
@@ -172,10 +162,6 @@ class PluginHooks {
 
 		if ( $action === Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET ) {
 			$this->packetCanceller->processAction();
-		}
-
-		if ( $action === FeatureFlagNotice::ACTION_HIDE_SPLIT_MESSAGE ) {
-			$this->featureFlagProvider->dismissSplitActivationNotice();
 		}
 	}
 }

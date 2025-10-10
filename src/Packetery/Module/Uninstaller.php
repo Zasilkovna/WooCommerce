@@ -80,6 +80,7 @@ class Uninstaller {
 				Transients::MESSAGE_MANAGER_MESSAGES_PREFIX,
 				Transients::ORDER_COLLECTION_PRINT_ORDER_IDS_PREFIX,
 				Transients::LABEL_PRINT_ORDER_IDS_PREFIX,
+				Transients::LABEL_PRINT_BACK_LINK_PREFIX,
 			]
 		);
 
@@ -90,6 +91,7 @@ class Uninstaller {
 		$this->wpAdapter->deleteTransient( Transients::METABOX_NETTE_FORM_PREV_INVALID_VALUES );
 		$this->wpAdapter->deleteTransient( Transients::RUN_UPDATE_CARRIERS );
 		$this->wpAdapter->deleteTransient( Transients::CARRIER_CHANGES );
+		$this->wpAdapter->deleteTransient( Transients::SPLIT_MESSAGE_DISMISSED );
 
 		$optionNamesToDelete = $this->optionsRepository->getAllOptionNamesByPrefixes(
 			[
@@ -112,6 +114,9 @@ class Uninstaller {
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_ACTIVATED );
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET );
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET );
+		$this->wpAdapter->deleteOption( OptionNames::FEATURE_FLAGS );
+		$this->wpAdapter->deleteOption( OptionNames::FEATURE_FLAGS_ERROR_COUNTER );
+		$this->wpAdapter->deleteOption( OptionNames::FEATURE_FLAGS_DISABLED_DUE_ERRORS );
 
 		$this->wpdbAdapter->query(
 			$this->wpdbAdapter->prepare(

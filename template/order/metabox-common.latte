@@ -19,7 +19,6 @@
 </ul>
 
 <div class="packetery-metabox-overview-buttons">
-	<a n:if="$showLogsLink" class="button packetery-js-wizard-metabox-logs-link" href="{$showLogsLink}">{$translations['showLogs']}</a>
 	<div n:if="isset($packetSubmitUrl)" class="packetery-metabox-button-wrapper packetery-js-wizard-metabox-button-submit-packet">
 		<a
 				{if !$isPacketSubmissionPossible}disabled{/if}
@@ -28,8 +27,9 @@
 		>
 			<span class="packetery-dashicons-button-fix-text">{$translations['submitPacket']}</span>
 		</a>
-		<span n:if="!$isPacketSubmissionPossible" class="dashicons woocommerce-help-tip" data-tip="{$translations['packetSubmissionValidationErrorTooltip']}"></span>
+		<span n:if="!$isPacketSubmissionPossible" class="dashicons woocommerce-help-tip" data-tip="{$invalidFieldsMessage}"></span>
 	</div>
+	<a n:if="$showLogsLink" class="button packetery-js-wizard-metabox-logs-link" href="{$showLogsLink}">{$translations['showLogs']}</a>
 	<a
 			n:if="$order->getPacketId()"
 			class="button dashicons dashicons-media-default packetery-dashicons-button-fix packetery-js-wizard-metabox-print"

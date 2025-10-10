@@ -232,6 +232,7 @@ class DummyFactory {
 	public static function createPickupPoint(): PickupPoint {
 		return new PickupPoint(
 			'123456',
+			'Dummy Place',
 			'Dummy PP',
 			'Dummy city',
 			'123 45',

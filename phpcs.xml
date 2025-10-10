@@ -20,6 +20,7 @@
 	<file>tests</file>
 
 	<exclude-pattern>src/Packetery/Module/Shipping/Generated/</exclude-pattern>
+	<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 
 	<!-- Configs -->
 	<config name="minimum_supported_wp_version" value="5.5"/>
@@ -30,6 +31,7 @@
 	<rule ref="WooCommerce-Core">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="Generic.CodeAnalysis.UselessOverridingMethod"/>
+		<exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedCatch"/>
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
 		<exclude name="Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound"/>
@@ -87,6 +89,8 @@
 			<property name="spacingAfterLast" value="0" />
 		</properties>
 	</rule>
+
+	<rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace" />
 
 	<rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
 		<properties>

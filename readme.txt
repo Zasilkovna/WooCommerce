@@ -1,12 +1,12 @@
 === Packeta ===
 Contributors: packeta
 Tags: WooCommerce, shipping
-Requires at least: 5.5
+Requires at least: 6.3
 Tested up to: 6.8.2
-Stable tag: 2.1.0
-Requires PHP: 7.2
+Stable tag: 2.3.0
+Requires PHP: 7.4
 WC requires at least: 5.1
-WC tested up to: 10.0.4
+WC tested up to: 10.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
@@ -63,23 +63,28 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.1.2 =
+Fixed: Plugin no longer crashes on the orders list when a refunded order is present.
+
+= 2.1.1 =
+Fixed: Removing all transients and options upon uninstall.
+Updated: Checkout data transient lifetime raised to the default value of WooCommerce.
+Added: Backend checkout data validation when using block checkout.
+
+= 2.1 =
+Added: New Home page with plugin setup wizard.
+Added: Tutorials (setup, order detail, orders list, customs declaration).
+Added: Option to force database tables creation/update (do_action('packeta_create_tables')).
+Added: New setting option: Hide Packeta logo in widget.
+Updated: Plugin uninstall no longer deletes data and settings (removed only if PACKETERY_REMOVE_ALL_DATA=true is defined); a warning is shown on deactivation.
+Updated: Bulk printing of carrier labels – for external carriers only their labels can be generated.
+Updated: Final shipment statuses (e.g. delivered, canceled) are no longer displayed.
+Fixed: Missing widget in order detail for universal shipping zone.
+
+= 2.0.11 =
+Fixed: Correct loading of shipping methods in case of premature payment plugin queries.
+
 = 2.0.10 =
 Fixed: Introduced carrier and shipping method caching to prevent excessive memory usage and performance problems.
-
-= 2.0.9 =
-Fixed: Type error when migrating guest session to user session during order.
-
-= 2.0.8 =
-Fixed: Resolved data transfer from the checkout and pairing of the order with the plugin when registering a user in the checkout.
-
-= 2.0.7 =
-Updated: Enabled age verification for Home delivery Slovakia.
-
-= 2.0.6 =
-Fixed: Checkout no longer fails to render in case no valid tax rates are found.
-
-= 2.0.5 =
-Updated: The payment method restriction set for the carrier has been implemented in the block checkout.
-Fixed: Packeta information is added to emails even when the order status is changed in administration.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

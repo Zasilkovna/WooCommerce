@@ -15,8 +15,6 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options;
-use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Metabox;
 use Packetery\Module\Plugin;
@@ -29,16 +27,6 @@ class AssetManager {
 	 * @var ContextResolver
 	 */
 	private $contextResolver;
-
-	/**
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
-
-	/**
-	 * @var FeatureFlagNotice
-	 */
-	private $featureFlagNotice;
 
 	/**
 	 * @var Metabox
@@ -77,8 +65,6 @@ class AssetManager {
 
 	public function __construct(
 		ContextResolver $contextResolver,
-		FeatureFlagProvider $featureFlagProvider,
-		FeatureFlagNotice $featureFlagNotice,
 		Metabox $orderMetabox,
 		Request $request,
 		CheckoutSettings $checkoutSettings,
@@ -87,17 +73,14 @@ class AssetManager {
 		CheckoutService $checkoutService,
 		WidgetUrlResolver $widgetUrlResolver
 	) {
-
-		$this->contextResolver     = $contextResolver;
-		$this->featureFlagProvider = $featureFlagProvider;
-		$this->featureFlagNotice   = $featureFlagNotice;
-		$this->orderMetabox        = $orderMetabox;
-		$this->request             = $request;
-		$this->checkoutSettings    = $checkoutSettings;
-		$this->wpAdapter           = $wpAdapter;
-		$this->wcAdapter           = $wcAdapter;
-		$this->checkoutService     = $checkoutService;
-		$this->widgetUrlResolver   = $widgetUrlResolver;
+		$this->contextResolver   = $contextResolver;
+		$this->orderMetabox      = $orderMetabox;
+		$this->request           = $request;
+		$this->checkoutSettings  = $checkoutSettings;
+		$this->wpAdapter         = $wpAdapter;
+		$this->wcAdapter         = $wcAdapter;
+		$this->checkoutService   = $checkoutService;
+		$this->widgetUrlResolver = $widgetUrlResolver;
 	}
 
 	/**
@@ -137,32 +120,34 @@ class AssetManager {
 	 * Enqueues javascript files and stylesheets for checkout.
 	 */
 	public function enqueueFrontAssets(): void {
-		if ( $this->wcAdapter->isCheckout() ) {
-			if ( $this->wpAdapter->doingAjax() === false ) {
-				$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
+		if ( ! $this->wcAdapter->isCheckout() ) {
+			return;
+		}
+		if ( $this->wpAdapter->doingAjax() === false ) {
+			$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
 
-				$customFrontCssPath = WP_CONTENT_DIR . '/packeta-custom-front.css';
-				if ( file_exists( $customFrontCssPath ) ) {
-					$this->wpAdapter->enqueueStyle(
-						'packetery-custom-front-styles',
-						$customFrontCssPath,
-						[],
-						md5( (string) filemtime( $customFrontCssPath ) )
-					);
-				}
-			}
-			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
-				$this->wpAdapter->enqueueScript(
-					'packetery-widget-library',
-					$this->widgetUrlResolver->getUrl(),
+			$customFrontCssFilename = 'packeta-custom-front.css';
+			$customFrontCssPath     = WP_CONTENT_DIR . '/' . $customFrontCssFilename;
+			if ( file_exists( $customFrontCssPath ) ) {
+				$this->wpAdapter->enqueueStyle(
+					'packetery-custom-front-styles',
+					$this->wpAdapter->contentUrl( $customFrontCssFilename ),
 					[],
-					Plugin::VERSION,
-					false
+					md5( (string) filemtime( $customFrontCssPath ) )
 				);
-			} elseif ( $this->wpAdapter->doingAjax() === false ) {
-				$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
-				$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkoutSettings->createSettings() );
 			}
+		}
+		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
+			$this->wpAdapter->enqueueScript(
+				'packetery-widget-library',
+				$this->widgetUrlResolver->getUrl(),
+				[],
+				Plugin::VERSION,
+				false
+			);
+		} elseif ( $this->wpAdapter->doingAjax() === false ) {
+			$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
+			$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkoutSettings->createSettings() );
 		}
 	}
 
@@ -252,19 +237,9 @@ class AssetManager {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/css/admin.css' );
-			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
-			if ( $this->featureFlagProvider->shouldShowSplitActivationNotice() ) {
-				$this->wpAdapter->addAction( 'admin_notices', [ $this->featureFlagNotice, 'renderSplitActivationNotice' ] );
-			}
 		}
 
 		if ( $isOrderGridPage ) {
-			$orderGridPageSettings = [
-				'translations' => [
-					'hasToFillCustomsDeclaration' => $this->wpAdapter->__( 'Customs declaration has to be filled in order detail.', 'packeta' ),
-					'packetSubmissionNotPossible' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-				],
-			];
 			$this->enqueueScript(
 				'packetery-admin-grid-order-edit-js',
 				'public/js/admin-grid-order-edit.js',
@@ -277,7 +252,6 @@ class AssetManager {
 			);
 
 			$this->wpAdapter->localizeScript( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
-			$this->wpAdapter->localizeScript( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
 
 			$this->enqueueScript(
 				'packetery-admin-stored-until-modal-js',
@@ -290,7 +264,6 @@ class AssetManager {
 				]
 			);
 			$this->wpAdapter->localizeScript( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
-			$this->wpAdapter->localizeScript( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		$pickupPointPickerSettings = null;

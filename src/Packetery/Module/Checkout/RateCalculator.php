@@ -150,9 +150,9 @@ class RateCalculator {
 	 */
 	public function getCODSurcharge( array $carrierOptions, float $cartPrice ): float {
 		if ( isset( $carrierOptions['surcharge_limits'] ) ) {
-			foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
-				if ( $cartPrice <= $weightLimit['order_price'] ) {
-					return (float) $weightLimit['surcharge'];
+			foreach ( $carrierOptions['surcharge_limits'] as $surchargeLimit ) {
+				if ( $cartPrice <= $surchargeLimit['order_price'] ) {
+					return (float) $surchargeLimit['surcharge'];
 				}
 			}
 		}

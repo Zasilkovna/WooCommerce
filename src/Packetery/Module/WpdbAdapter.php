@@ -9,7 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use WC_Logger;
+use Packetery\Module\Exception\DeleteErrorException;
+use Packetery\Module\Framework\WcAdapter;
 
 /**
  * Class WpdbAdapter
@@ -89,12 +90,18 @@ class WpdbAdapter {
 	private $wpdb;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param \wpdb $wpdb Wpdb.
 	 */
-	public function __construct( \wpdb $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( \wpdb $wpdb, WcAdapter $wcAdapter ) {
+		$this->wpdb      = $wpdb;
+		$this->wcAdapter = $wcAdapter;
 	}
 
 	/**
@@ -177,12 +184,15 @@ class WpdbAdapter {
 	 * @param array<string, int|string> $where       A named array of WHERE clauses (in column => value pairs).
 	 * @param string|null               $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
 	 *
-	 * @return int|false The number of rows updated, or false on error.
+	 * @return int The number of rows deleted, throws DeleteErrorException on error.
+	 * @throws DeleteErrorException
 	 */
-	public function delete( string $table, array $where, ?string $whereFormat = null ) {
+	public function delete( string $table, array $where, ?string $whereFormat = null ): int {
 		$result = $this->wpdb->delete( $table, $where, $whereFormat );
 		if ( $result === false ) {
 			$this->handleError();
+
+			throw new DeleteErrorException( "Could not delete from table `{$table}`." );
 		}
 
 		return $result;
@@ -293,13 +303,7 @@ class WpdbAdapter {
 	 * @return void
 	 */
 	private function logError( string $errorMessage ): void {
-		/**
-		 * WC logger.
-		 *
-		 * @var WC_Logger $wcLogger
-		 */
-		$wcLogger = wc_get_logger();
-
+		$wcLogger = $this->wcAdapter->getLogger();
 		$wcLogger->error( sprintf( 'wpdb: %s', $errorMessage ), [ 'source' => 'packeta' ] );
 	}
 
@@ -395,12 +399,7 @@ class WpdbAdapter {
 		$result1 = dbDelta( $createTableQuery );
 		$result2 = dbDelta( $createTableQuery );
 
-		/**
-		 * WC logger.
-		 *
-		 * @var WC_Logger $wcLogger
-		 */
-		$wcLogger = wc_get_logger();
+		$wcLogger = $this->wcAdapter->getLogger();
 		foreach ( $result1 as $tableOrColumn => $message ) {
 			$wcLogger->info( sprintf( 'dbDelta: %s => %s', $tableOrColumn, $message ), [ 'source' => 'packeta' ] );
 		}

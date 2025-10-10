@@ -8,28 +8,16 @@ use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ContextResolver;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
-use WC_Order;
+use WC_Abstract_Order;
 
 class ShippingProvider {
 	/**
 	 * @var array<int, array<string, string>>
 	 */
 	private static $sortedMethodsCache = [];
-
-	/**
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
-
-	/**
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointConfig;
 
 	/**
 	 * @var CarDeliveryConfig
@@ -57,16 +45,12 @@ class ShippingProvider {
 	private $carrierOptionsFactory;
 
 	public function __construct(
-		FeatureFlagProvider $featureFlagProvider,
-		PacketaPickupPointsConfig $pickupPointConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		ContextResolver $contextResolver,
 		ShippingZoneRepository $shippingZoneRepository,
 		EntityRepository $carrierRepository,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->featureFlagProvider    = $featureFlagProvider;
-		$this->pickupPointConfig      = $pickupPointConfig;
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->contextResolver        = $contextResolver;
 		$this->shippingZoneRepository = $shippingZoneRepository;
@@ -102,13 +86,6 @@ class ShippingProvider {
 					continue;
 				}
 			}
-			if ( $this->featureFlagProvider->isSplitActive() === false ) {
-				$internalCountries = implode( '|', $this->pickupPointConfig->getInternalCountries() );
-				$vendorGroups      = Carrier::VENDOR_GROUP_ZPOINT . '|' . Carrier::VENDOR_GROUP_ZBOX;
-				if ( preg_match( '/^ShippingMethod_(' . $internalCountries . ')(' . $vendorGroups . ')\.php$/', $filename ) ) {
-					continue;
-				}
-			}
 			require_once $generatedClassesPath . '/' . $filename;
 		}
 	}
@@ -127,10 +104,7 @@ class ShippingProvider {
 		);
 	}
 
-	/**
-	 * Checks if provided order uses our shipping method like native has_shipping_method method.
-	 */
-	public static function wcOrderHasOurMethod( WC_Order $wcOrder ): bool {
+	public static function wcOrderHasOurMethod( WC_Abstract_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_shipping_methods() as $shippingMethod ) {
 			if ( self::isPacketaMethod( $shippingMethod->get_method_id() ) ) {
 				return true;
@@ -250,6 +224,11 @@ class ShippingProvider {
 	 * @return array<string, string>
 	 */
 	public function getSortedCachedMethods( array $originalMethods ): array {
+		$areClassesLoaded = in_array( BaseShippingMethod::class, get_declared_classes(), true );
+		if ( $areClassesLoaded === false ) {
+			return $originalMethods;
+		}
+
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$cacheKey = crc32( serialize( $originalMethods ) );
 

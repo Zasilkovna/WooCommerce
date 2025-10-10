@@ -48,6 +48,26 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 	You should definitely not upgrade by copying the new version to the original folder.
 	This could cause the original version to merge with the new one, which can cause the plugin to become completely non-functional.
 
+##### Customization
+
+###### Custom configuration for cache and log directories
+
+By default, the Packeta plugin stores its cache and log files in the `wp-content/plugins/packeta/temp` directory.
+If you need to store these files in a different location, you can configure a custom cache directory.
+
+**How to configure a custom cache directory:**
+
+1. **Add the configuration** to your WordPress `wp-config.php` file, for example:
+	```php
+	define('PACKETERY_CACHE_BASE_PATH', '/var/www/public_html/wp-content/packeta');
+	```
+
+2. **Check permissions**:
+	- The plugin uses two folders inside the main one: `cache` and `log`.
+	- If the main folder or these folders do not exist, the plugin tries to create them with permissions 0775.
+	- The web server needs write access to both the main folder and subfolders.
+	- Contact your system administrator if you're unsure about permissions.
+
 #### Filters
 
 WP Filters are used to easily alter preselected system behaviors.
@@ -202,6 +222,82 @@ add_filter( 'packeta_order_grid_links_settings', function ( \Packetery\Module\Or
 
 	return $linkConfig;
 } );
+```
+
+## Email Templates and Shortcodes
+
+The plugin provides shortcodes that can be used in WooCommerce email templates to display Packeta-related information.
+
+### Basic Shortcodes
+
+The following shortcodes are available for use in email templates:
+
+| Shortcode                      | Description                                         |
+|--------------------------------|-----------------------------------------------------|
+| `packeta_tracking_number`      | Displays the tracking number if available           |
+| `packeta_tracking_url`         | Displays the tracking URL if available              |
+| `packeta_pickup_point_id`      | Displays the pickup point ID if available           |
+| `packeta_pickup_point_place`   | Displays the pickup point place if available        |
+| `packeta_pickup_point_name`    | Displays the pickup point name if available         |
+| `packeta_pickup_point_address` | Displays the full pickup point address if available |
+| `packeta_pickup_point_street`  | Displays the pickup point street if available       |
+| `packeta_pickup_point_city`    | Displays the pickup point city if available         |
+| `packeta_pickup_point_zip`     | Displays the pickup point ZIP if available          |
+| `packeta_pickup_point_country` | Displays the pickup point country if available      |
+| `packeta_carrier_name`         | Displays the carrier name if available              |
+
+All these shortcodes require the `order_id` parameter to work.
+
+### Conditional Shortcodes
+
+You can use conditional shortcodes to display content only when certain conditions are met:
+
+#### If Submitted
+
+Use this to display content only when the order has been submitted to Packeta:
+
+```php
+/*
+* Displayed when a shipment has been submitted for the order
+*/
+echo do_shortcode('
+	[packeta_if_packet_submitted order_id="' . $order->get_id() . '"]' .
+		esc_html__( 'Packet tracking online', 'packeta' ) . ': ' .
+		'<a href=\'[packeta_tracking_url order_id="' . $order->get_id() . '"]\' rel="_blank">[packeta_tracking_number order_id="' . $order->get_id() . '"]</a>
+	[/packeta_if_packet_submitted]
+');
+```
+
+#### If Pickup Point
+
+Use this to display content only when the order uses a pickup point:
+
+```php
+/*
+ * Displayed if the order is set for pickup at a pickup point
+ */
+echo do_shortcode('
+[packeta_if_pickup_point order_id="' . $order->get_id() . '"]
+	<h3>' . esc_html__( 'Pickup Point Detail', 'packeta' ) . '</h3>
+	<p><strong>' . esc_html__( 'Name', 'packeta' ) . ':</strong> [packeta_pickup_point_name order_id="' . $order->get_id() . '"]</p>
+	<p><strong>' . esc_html__( 'Address', 'packeta' ) . ':</strong> [packeta_pickup_point_address order_id="' . $order->get_id() . '"]</p>
+[/packeta_if_pickup_point]
+');
+```
+
+#### If Carrier
+
+Use this to display content only when the order uses an external carrier:
+
+```php
+/*
+ * Displayed if the order is assigned to a carrier.
+ */
+echo do_shortcode('
+[packeta_if_carrier order_id="' . $order->get_id() . '"]
+	' . esc_html__( 'Carrier:', 'packeta' ) . ' [packeta_carrier_name order_id="' . $order->get_id() . '"]
+[/packeta_if_carrier]
+');
 ```
 
 ## Credits

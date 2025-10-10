@@ -10,6 +10,7 @@ use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order;
+use Packetery\Module\WcLogger;
 use WC_Order;
 
 use function __;
@@ -54,7 +55,6 @@ class ViewAdmin {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper
 	) {
-
 		$this->contextResolver       = $contextResolver;
 		$this->latteEngine           = $latteEngine;
 		$this->wpAdapter             = $wpAdapter;
@@ -66,9 +66,15 @@ class ViewAdmin {
 	/**
 	 * Renders delivery detail for packetery orders.
 	 *
-	 * @param WC_Order $wcOrder WordPress order.
+	 * @param WC_Order|mixed $wcOrder WordPress order.
 	 */
-	public function renderDeliveryDetail( WC_Order $wcOrder ): void {
+	public function renderDeliveryDetail( $wcOrder ): void {
+		if ( ! $wcOrder instanceof WC_Order ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
+
+			return;
+		}
+
 		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		if ( $order === null ) {
 			return;

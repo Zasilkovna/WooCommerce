@@ -13,6 +13,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
+use Packetery\Module\WcLogger;
 use WC_Cart;
 use WC_Payment_Gateway;
 
@@ -137,7 +138,13 @@ class Checkout {
 			]
 		);
 
-		$this->wpAdapter->addAction( 'woocommerce_checkout_process', [ $this->validator, 'actionValidateCheckoutData' ] );
+		$this->wpAdapter->addAction( 'woocommerce_after_checkout_validation', [ $this->validator, 'actionValidateCheckoutData' ], 10, 2 );
+		// Provides following parameters: \Automattic\WooCommerce\Admin\Overrides\Order, WP_REST_Request
+		$this->wpAdapter->addAction(
+			'woocommerce_store_api_checkout_update_order_from_request',
+			[ $this->validator, 'actionValidateBlockCheckoutData' ]
+		);
+
 		$this->wpAdapter->addAction( 'woocommerce_checkout_update_order_meta', [ $this->orderUpdater, 'actionUpdateOrderById' ] );
 		$this->wpAdapter->addAction(
 			'woocommerce_store_api_checkout_order_processed',
@@ -300,11 +307,17 @@ class Checkout {
 	/**
 	 * Filters out payment methods, that can not be used.
 	 *
-	 * @param WC_Payment_Gateway[] $availableGateways Available gateways.
+	 * @param WC_Payment_Gateway[]|mixed $availableGateways Available gateways.
 	 *
-	 * @return WC_Payment_Gateway[]
+	 * @return WC_Payment_Gateway[]|mixed
 	 */
-	public function filterPaymentGateways( array $availableGateways ): array {
+	public function filterPaymentGateways( $availableGateways ) {
+		if ( ! is_array( $availableGateways ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
+
+			return $availableGateways;
+		}
+
 		$order      = null;
 		$wpOrderPay = $this->checkoutService->getOrderPayParameter();
 		if ( is_numeric( $wpOrderPay ) ) {
@@ -329,6 +342,12 @@ class Checkout {
 
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		foreach ( $availableGateways as $key => $availableGateway ) {
+			if ( ! $availableGateway instanceof WC_Payment_Gateway ) {
+				WcLogger::logArgumentTypeError( __METHOD__, 'availableGateway', 'WC_Payment_Gateway', $availableGateway );
+
+				continue;
+			}
+
 			if (
 				$this->paymentHelper->isCodPaymentMethod( $availableGateway->id ) &&
 				! $carrier->supportsCod()
