@@ -4,624 +4,364 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Checkout;
 
+use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
-use Packetery\Module\Carrier\CarrierActivityBridge;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
+use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Checkout\RateCalculator;
 use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\Framework\WcAdapter;
-use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Product;
-use Packetery\Module\Product\ProductEntityFactory;
-use Packetery\Module\ProductCategory;
-use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
 use Packetery\Module\Shipping\BaseShippingMethod;
-use Packetery\Module\Shipping\Generated\ShippingMethod_zpointcz;
 use Packetery\Module\ShippingMethod;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 use Tests\Core\DummyFactory;
 use Tests\Module\MockFactory;
-use WC_Cart;
-use WC_Product;
 
 class ShippingRateFactoryTest extends TestCase {
+	private const DUMMY_RATE_ID = 'dummyRateId';
 
-	private WpAdapter|MockObject $wpAdapter;
-	private WcAdapter|MockObject $wcAdapter;
-	private ProductEntityFactory|MockObject $productEntityFactory;
-	private ProductCategoryEntityFactory|MockObject $productCategoryEntityFactory;
-	private CarrierOptionsFactory|MockObject $carrierOptionsFactory;
-	private WpAdapter|MockObject $currencySwitcherFacade;
-	private Carrier\EntityRepository|MockObject $carrierEntityRepository;
-	private CarDeliveryConfig|MockObject $carDeliveryConfig;
-	private OptionsProvider|MockObject $provider;
-	private CartService|MockObject $cartService;
-	private CheckoutService|MockObject $checkoutService;
-	private ShippingRateFactory $shippingRateFactory;
-	private CarrierActivityBridge|MockObject $carrierActivityBridge;
+	private CheckoutService&MockObject $checkoutServiceMock;
+	private Carrier\EntityRepository&MockObject $carrierEntityRepositoryMock;
+	private CartService&MockObject $cartServiceMock;
+	private CarrierOptionsFactory&MockObject $carrierOptionsFactoryMock;
+	private OptionsProvider&MockObject $optionsProviderMock;
 
-	/**
-	 * @return array
-	 */
-	private static function createDummyZpointCzCarrierOptions(): array {
-		return [
-			'id'                  => 'zpoint-cz',
-			'name'                => 'zpoint-cz',
-			'active'              => true,
-			'free_shipping_limit' => null,
-			'weight_limits'       =>
-				[
-					[
-						'weight' => 20.0,
-						'price'  => 234.34,
-					],
-				],
-		];
-	}
-
-	private function createShippingRateFactoryMock(): void {
-		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
-		$this->wcAdapter                    = $this->createMock( WcAdapter::class );
-		$this->productEntityFactory         = $this->createMock( ProductEntityFactory::class );
-		$this->productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
-		$this->carrierOptionsFactory        = $this->createMock( CarrierOptionsFactory::class );
-		$this->currencySwitcherFacade       = MockFactory::createCurrencySwitcherFacade( $this );
-		$this->carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
-		$this->carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
-		$this->provider                     = $this->createMock( OptionsProvider::class );
-		$this->cartService                  = $this->createMock( CartService::class );
-		$this->checkoutService              = $this->createMock( CheckoutService::class );
-		$this->carrierActivityBridge        = $this->createMock( CarrierActivityBridge::class );
-
-		$this->shippingRateFactory = new ShippingRateFactory(
-			$this->wpAdapter,
-			$this->wcAdapter,
-			$this->checkoutService,
-			$this->carrierEntityRepository,
-			$this->cartService,
-			$this->carrierOptionsFactory,
-			$this->carDeliveryConfig,
-			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
-			$this->provider,
-		);
-	}
-
-	public static function rateCreationDataProvider(): array {
-		return [
-			'configured carriers must be present in rates' =>
-				[
-					'expectedRateCount'                  => 2,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-							DummyFactory::createCarrierCzechHdRequiresSize(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								self::createDummyZpointCzCarrierOptions(),
-							'packetery_carrier_106'       =>
-								[
-									'id'                  => '106',
-									'name'                => 'hd-cz',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 5.0,
-												'price'  => 444.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							'zpoint-cz' => 'zpoint-cz',
-							106         => 'hd-cz',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 5.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'new style carrier'                            =>
-				[
-					'expectedRateCount'                  => 1,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								self::createDummyZpointCzCarrierOptions(),
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							'zpoint-cz' => 'zpoint-cz',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 5.0,
-					'shippingMethod'                     => BaseShippingMethod::PACKETA_METHOD_PREFIX . ShippingMethod_zpointcz::CARRIER_ID,
-				],
-			'new style carrier country mismatch'           =>
-				[
-					'expectedRateCount'                  => 0,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierSlovakPp(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-sk' =>
-								[
-									'id'                  => 'zpoint-sk',
-									'name'                => 'zpoint-sk',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							'zpoint-cz' => 'zpoint-cz',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 5.0,
-					'shippingMethod'                     => BaseShippingMethod::PACKETA_METHOD_PREFIX . ShippingMethod_zpointcz::CARRIER_ID,
-				],
-			'car delivery carrier must not be present in rates' =>
-				[
-					'expectedRateCount'                  => 1,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-							DummyFactory::createCarDeliveryCarrier(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								self::createDummyZpointCzCarrierOptions(),
-							'packetery_carrier_25061'     =>
-								[
-									'id'                  => '25061',
-									'name'                => 'CZ Zásilkovna do auta',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 5.0,
-												'price'  => 444.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                => null,
-					'isCarDeliveryEnabled'               => false,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'only one carrier is active'                   =>
-				[
-					'expectedRateCount'                  => 1,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-							DummyFactory::createCarrierCzechHdRequiresSize(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								self::createDummyZpointCzCarrierOptions(),
-							'packetery_carrier_106'       =>
-								[
-									'id'                  => '106',
-									'name'                => 'hd-cz',
-									'active'              => false,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 5.0,
-												'price'  => 444.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                => null,
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'carrier not supporting over-weight cart must be omitted' =>
-				[
-					'expectedRateCount'                  => 0,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'                  => 'zpoint-cz',
-									'name'                => 'zpoint-cz',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 100.0,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							'zpoint-cz' => 'zpoint-cz',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 21.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'inactive carrier must be omitted'             =>
-				[
-					'expectedRateCount'                  => 0,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'                  => 'zpoint-cz',
-									'name'                => 'zpoint-cz',
-									'active'              => false,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 100.0,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                => [],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'carrier disallowed by product must be omitted' =>
-				[
-					'expectedRateCount'                  => 0,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'     => 'zpoint-cz',
-									'name'   => 'zpoint-cz',
-									'active' => true,
-								],
-						],
-					'productDisallowedRateIds'           =>
-						[
-							0 => 'packetery_carrier_zpoint-cz',
-						],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							'zpoint-cz' => 'zpoint-cz',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'carrier disallowed by product category must be omitted' =>
-				[
-					'expectedRateCount'                  => 0,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarrierCzechPp(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'     => 'zpoint-cz',
-									'name'   => 'zpoint-cz',
-									'active' => true,
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   =>
-						[
-							0 => 'packetery_carrier_zpoint-cz',
-						],
-					'allowedCarrierNames'                =>
-						[
-							'zpoint-cz' => 'zpoint-cz',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'car delivery carriers must be supported'      =>
-				[
-					'expectedRateCount'                  => 1,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarDeliveryCarrier(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_25061' =>
-								[
-									'id'                  => '25061',
-									'name'                => 'CZ Zásilkovna do auta',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							25061 => 'CZ Zásilkovna do auta',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'carrier not supporting age verification must be omitted' =>
-				[
-					'expectedRateCount'                  => 0,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarDeliveryCarrier(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_25061' =>
-								[
-									'id'                  => '25061',
-									'name'                => 'CZ Zásilkovna do auta',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                =>
-						[
-							25061 => 'CZ Zásilkovna do auta',
-						],
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => true,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-			'allowed carrier names argument must support null' =>
-				[
-					'expectedRateCount'                  => 1,
-					'carriers'                           =>
-						[
-							DummyFactory::createCarDeliveryCarrier(),
-						],
-					'carriersOptions'                    =>
-						[
-							'packetery_carrier_25061' =>
-								[
-									'id'                  => '25061',
-									'name'                => 'CZ Zásilkovna do auta',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
-						],
-					'productDisallowedRateIds'           => [],
-					'productCategoryDisallowedRateIds'   => [],
-					'allowedCarrierNames'                => null,
-					'isCarDeliveryEnabled'               => true,
-					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeightKg'                       => 1.0,
-					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
-				],
-		];
-	}
-
-	/**
-	 * @dataProvider rateCreationDataProvider
-	 * @throws \PHPUnit\Framework\MockObject\Exception
-	 */
-	public function testCreateShippingRates(
-		int $expectedRateCount,
-		array $carriers,
-		array $carriersOptions,
-		array $productDisallowedRateIds,
-		array $productCategoryDisallowedRateIds,
-		?array $allowedCarrierNames,
-		bool $isCarDeliveryEnabled,
-		bool $isAgeVerificationRequiredByProduct,
-		float $cartWeightKg,
-		string $shippingMethod,
-	): void {
-		$this->createShippingRateFactoryMock();
-
-		$this->wpAdapter
-			->expects( self::atLeast( $expectedRateCount ) )
-			->method( 'applyFilters' );
-		$this->wpAdapter
-			->method( 'didAction' )
-			->willReturn( 1 );
-
-		$cart = $this->createMock( WC_Cart::class );
-		$cart
-			->method( 'get_coupons' )
-			->willReturn( [] );
-		$this->wcAdapter
-			->method( 'cart' )
-			->willReturn( $cart );
-
-		$wcProduct = $this->createMock( WC_Product::class );
-		$wcProduct
-			->method( 'get_price' )
-			->willReturn( '100.00' );
-		$wcProduct
-			->method( 'get_category_ids' )
-			->willReturn( [ 1 ] );
-		$this->wcAdapter
-			->method( 'productFactoryGetProduct' )
-			->willReturn( $wcProduct );
-
-		$cartItem = [
-			'product_id' => 1,
-			'quantity'   => 1.0,
-			'data'       => $wcProduct,
-		];
-		$this->wcAdapter
-			->method( 'cartGetCartContents' )
-			->willReturn( [ $cartItem ] );
-		$this->wcAdapter
-			->method( 'cartGetCartContent' )
-			->willReturn( [ $cartItem ] );
-
-		$this->checkoutService
-			->method( 'getCustomerCountry' )
-			->willReturn( 'cz' );
-		$this->wcAdapter
-			->method( 'cartGetCartContentsTotal' )
-			->willReturn( 100.0 );
-		$this->wcAdapter
-			->method( 'cartGetCartContentsTax' )
-			->willReturn( 21.0 );
-		$this->cartService
-			->method( 'getCartWeightKg' )
-			->willReturn( $cartWeightKg );
-
-		$productEntity = $this->createMock( Product\Entity::class );
-		$productEntity
-			->method( 'isPhysical' )
-			->willReturn( true );
-		$productEntity
-			->method( 'isAgeVerificationRequired' )
-			->willReturn( $isAgeVerificationRequiredByProduct );
-		$productEntity
-			->method( 'getDisallowedShippingRateIds' )
-			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedOnProduct' ) ], $productDisallowedRateIds ) );
-		$this->productEntityFactory
-			->method( 'fromPostId' )
-			->willReturn( $productEntity );
-		$this->cartService
-			->method( 'isAgeVerificationRequired' )
-			->willReturn( $isAgeVerificationRequiredByProduct );
-
-		$productCategory = $this->createMock( ProductCategory\Entity::class );
-		$productCategory
-			->method( 'getDisallowedShippingRateIds' )
-			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedByProductCategory' ) ], $productCategoryDisallowedRateIds ) );
-		$this->productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
-		$this->productCategoryEntityFactory
-			->method( 'fromTermId' )
-			->willReturn( $productCategory );
-
-		$this->carrierOptionsFactory
-			->method( 'createByOptionId' )
+	public function createShippingRateFactory(): ShippingRateFactory {
+		$wpAdapterMock = MockFactory::createWpAdapter( $this );
+		$wpAdapterMock->method( '__' )
 			->willReturnCallback(
-				function ( $optionId ) use ( $carriersOptions ) {
-					$carrierOptions = $carriersOptions[ $optionId ];
-
-					return new Carrier\Options(
-						$optionId,
-						$carrierOptions
-					);
+				function ( string $text ): string {
+					return $text;
 				}
 			);
 
-		$this->carrierEntityRepository
-			->method( 'getByCountryIncludingNonFeed' )
-			->willReturn( $carriers );
-		$this->carrierEntityRepository
-			->method( 'getAnyById' )
-			->willReturn( $carriers[0] );
+		$wcAdapterMock                     = $this->createMock( WcAdapter::class );
+		$this->checkoutServiceMock         = $this->createMock( CheckoutService::class );
+		$this->carrierEntityRepositoryMock = $this->createMock( Carrier\EntityRepository::class );
+		$this->cartServiceMock             = $this->createMock( CartService::class );
+		$this->carrierOptionsFactoryMock   = $this->createMock( CarrierOptionsFactory::class );
+		$this->optionsProviderMock         = $this->createMock( OptionsProvider::class );
 
-		$this->carDeliveryConfig
-			->method( 'isDisabled' )
-			->willReturn( ! $isCarDeliveryEnabled );
-
-		$this->carrierActivityBridge
-			->method( 'isActive' )
-			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );
-
-		$dummyInstanceId = 11;
-		$rates           = $this->shippingRateFactory->createShippingRates(
-			$allowedCarrierNames,
-			$shippingMethod,
-			$dummyInstanceId,
+		$rateCalculator = new RateCalculator(
+			$wpAdapterMock,
+			$wcAdapterMock,
+			$this->createMock( CurrencySwitcherService::class )
 		);
 
-		self::assertCount( $expectedRateCount, $rates );
+		return new ShippingRateFactory(
+			$wpAdapterMock,
+			$wcAdapterMock,
+			$this->checkoutServiceMock,
+			$this->carrierEntityRepositoryMock,
+			$this->cartServiceMock,
+			$this->carrierOptionsFactoryMock,
+			$this->createMock( CarDeliveryConfig::class ),
+			$rateCalculator,
+			$this->optionsProviderMock
+		);
+	}
+
+	public static function createShippingRateAndApplyTaxesProvider(): array {
+		return [
+			'free shipping label appended when cost zero and visibility on' => [
+				'cost'                  => 0.0,
+				'isFreeShippingShown'   => true,
+				'expectedLabel'         => 'Carrier Name: Free',
+				'arePricesTaxInclusive' => false,
+			],
+			'free shipping label not appended when cost zero and visibility off' => [
+				'cost'                  => 0.0,
+				'isFreeShippingShown'   => false,
+				'expectedLabel'         => 'Carrier Name',
+				'arePricesTaxInclusive' => false,
+			],
+			'positive cost keeps label unchanged'       => [
+				'cost'                  => 123.45,
+				'isFreeShippingShown'   => true,
+				'expectedLabel'         => 'Carrier Name',
+				'arePricesTaxInclusive' => false,
+			],
+			'apply taxes when prices are tax inclusive' => [
+				'cost'                  => 123.45,
+				'isFreeShippingShown'   => true,
+				'expectedLabel'         => 'Carrier Name',
+				'arePricesTaxInclusive' => true,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider createShippingRateAndApplyTaxesProvider
+	 */
+	public function testCreateShippingRateAndApplyTaxes(
+		float $cost,
+		bool $isFreeShippingShown,
+		string $expectedLabel,
+		bool $arePricesTaxInclusive,
+	): void {
+		$shippingRateFactory = $this->createShippingRateFactory();
+
+		$this->optionsProviderMock->method( 'isFreeShippingShown' )
+									->willReturn( $isFreeShippingShown );
+		$this->optionsProviderMock->method( 'arePricesTaxInclusive' )
+									->willReturn( $arePricesTaxInclusive );
+
+		$reflection = new ReflectionMethod( ShippingRateFactory::class, 'createShippingRateAndApplyTaxes' );
+		$reflection->setAccessible( true );
+		$resultRate = $reflection->invoke( $shippingRateFactory, 'Carrier Name', $cost, self::DUMMY_RATE_ID );
+
+		self::assertIsArray( $resultRate );
+		self::assertSame( $expectedLabel, $resultRate['label'] );
+		self::assertSame( self::DUMMY_RATE_ID, $resultRate['id'] );
+		self::assertSame( $cost, $resultRate['cost'] );
+		self::assertSame( 'per_order', $resultRate['calc_tax'] );
+	}
+
+	public static function createShippingRatesProvider(): array {
+		$carrierCzPp = DummyFactory::createCarrierCzechPp();
+		$carrierCzHd = DummyFactory::createCarrierCzechHdRequiresSize();
+		$carrierDe   = DummyFactory::createCarrierGermanPp();
+
+		$carrierOptionsCzPp = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierCzPp->getId() ),
+			[
+				'id'                  => $carrierCzPp->getId(),
+				'active'              => true,
+				'name'                => 'Carrier CZ I',
+				'weight_limits'       => [
+					[
+						'weight' => 5.0,
+						'price'  => 30.0,
+					],
+				],
+				'free_shipping_limit' => null,
+			],
+		);
+		$carrierOptionsCzHd = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierCzHd->getId() ),
+			[
+				'id'                   => $carrierCzHd->getId(),
+				'active'               => true,
+				'name'                 => 'Carrier CZ II',
+				'weight_limits'        => null,
+				'product_value_limits' => [
+					[
+						'value' => 0.0,
+						'price' => 30.0,
+					],
+					[
+						'value' => 2000.0,
+						'price' => 25.0,
+					],
+				],
+				'free_shipping_limit'  => null,
+				'pricing_type'         => 'byProductValue',
+			],
+		);
+		$carrierOptionsDe   = new Carrier\Options(
+			OptionPrefixer::getOptionId( $carrierDe->getId() ),
+			[
+				'id'                  => $carrierDe->getId(),
+				'active'              => true,
+				'name'                => 'Carrier DE',
+				'weight_limits'       => [
+					[
+						'weight' => 5.0,
+						'price'  => 30.0,
+					],
+				],
+				'free_shipping_limit' => 90.0,
+			],
+		);
+
+		return [
+			'no customer country -> empty result'        => [
+				'allowedCarrierNames'       => null,
+				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
+				'instanceId'                => 1,
+				'customerCountry'           => null,
+				'availableCarriers'         => [],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => false,
+				'disallowedRateIds'         => [],
+				'oversized'                 => false,
+				'restrictedByCategory'      => false,
+				'arePricesTaxInclusive'     => false,
+				'rateCost'                  => 10.0,
+				'expectedRateCount'         => 0,
+			],
+			'packetery method with 2 carriers in same country' => [
+				'allowedCarrierNames'       => null,
+				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
+				'instanceId'                => 1,
+				'customerCountry'           => 'cz',
+				'availableCarriers'         => [ [ $carrierCzPp, $carrierOptionsCzPp ], [ $carrierCzHd, $carrierOptionsCzHd ] ],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => false,
+				'disallowedRateIds'         => [],
+				'oversized'                 => false,
+				'restrictedByCategory'      => false,
+				'arePricesTaxInclusive'     => false,
+				'rateCost'                  => 10.0,
+				'expectedRateCount'         => 2,
+			],
+			'specific carrier method with matching country' => [
+				'allowedCarrierNames'       => null,
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
+				'instanceId'                => 7,
+				'customerCountry'           => 'de',
+				'availableCarriers'         => [ [ $carrierDe, $carrierOptionsDe ], [ $carrierCzPp, $carrierOptionsCzPp ] ],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => false,
+				'disallowedRateIds'         => [],
+				'oversized'                 => false,
+				'restrictedByCategory'      => false,
+				'arePricesTaxInclusive'     => false,
+				'rateCost'                  => 10.0,
+				'expectedRateCount'         => 1,
+			],
+			'specific carrier method with age verification not available' => [
+				'allowedCarrierNames'       => null,
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
+				'instanceId'                => 7,
+				'customerCountry'           => 'sk',
+				'availableCarriers'         => [ [ $carrierDe, $carrierOptionsDe ] ],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => true,
+				'disallowedRateIds'         => [],
+				'oversized'                 => false,
+				'restrictedByCategory'      => false,
+				'arePricesTaxInclusive'     => false,
+				'rateCost'                  => 10.0,
+				'expectedRateCount'         => 0,
+			],
+			'specific carrier method with mismatched country' => [
+				'allowedCarrierNames'       => null,
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
+				'instanceId'                => 7,
+				'customerCountry'           => 'cz',
+				'availableCarriers'         => [ [ $carrierDe, $carrierOptionsDe ] ],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => false,
+				'disallowedRateIds'         => [],
+				'oversized'                 => false,
+				'restrictedByCategory'      => false,
+				'arePricesTaxInclusive'     => false,
+				'rateCost'                  => 10.0,
+				'expectedRateCount'         => 0,
+			],
+			'allowedCarrierNames filter allows only one' => [
+				'allowedCarrierNames'       => [ $carrierCzPp->getId() => 'Custom CZ' ],
+				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
+				'instanceId'                => 1,
+				'customerCountry'           => 'cz',
+				'availableCarriers'         => [ [ $carrierCzPp, $carrierOptionsCzPp ], [ $carrierDe, $carrierOptionsDe ] ],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => false,
+				'disallowedRateIds'         => [],
+				'oversized'                 => false,
+				'restrictedByCategory'      => false,
+				'arePricesTaxInclusive'     => false,
+				'rateCost'                  => 10.0,
+				'expectedRateCount'         => 1,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider createShippingRatesProvider
+	 */
+	public function testCreateShippingRates(
+		?array $allowedCarrierNames,
+		string $methodId,
+		int $instanceId,
+		?string $customerCountry,
+		array $availableCarriers,
+		float $cartTotal,
+		float $cartWeight,
+		float $totalValue,
+		bool $isAgeVerificationRequired,
+		array $disallowedRateIds,
+		bool $oversized,
+		bool $restrictedByCategory,
+		bool $arePricesTaxInclusive,
+		float $rateCost,
+		int $expectedRateCount,
+	): void {
+		$shippingRateFactory = $this->createShippingRateFactory();
+
+		$this->checkoutServiceMock->method( 'getCustomerCountry' )->willReturn( $customerCountry );
+
+		$carrierEntities = [];
+		$optionsMap      = [];
+		foreach ( $availableCarriers as $pair ) {
+			if ( is_array( $pair ) && count( $pair ) === 2 ) {
+				/** @var array<Entity\Carrier, Carrier\Options> $pair */
+				[ $carrier, $options ] = $pair;
+
+				$carrierEntities[]                     = $carrier;
+				$optionsMap[ $options->getOptionId() ] = $options;
+			}
+		}
+
+		if ( $methodId === ShippingMethod::PACKETERY_METHOD_ID ) {
+			$this->carrierEntityRepositoryMock
+				->method( 'getByCountryIncludingNonFeed' )
+				->willReturn( $carrierEntities );
+		} else {
+			$targetCarrier = $carrierEntities[0] ?? null;
+			$this->carrierEntityRepositoryMock
+				->method( 'getAnyById' )
+				->willReturn( $targetCarrier );
+		}
+
+		$this->carrierOptionsFactoryMock
+			->method( 'createByOptionId' )
+			->willReturnCallback(
+				function ( string $optionId ) use ( $optionsMap ) {
+					return $optionsMap[ $optionId ] ?? new Carrier\Options( $optionId, [ 'active' => true ] );
+				}
+			);
+
+		$this->cartServiceMock->method( 'getCartContentsTotalIncludingTax' )->willReturn( $cartTotal );
+		$this->cartServiceMock->method( 'getCartWeightKg' )->willReturn( $cartWeight );
+		$this->cartServiceMock->method( 'getTotalCartProductValue' )->willReturn( $totalValue );
+		$this->cartServiceMock->method( 'isAgeVerificationRequired' )->willReturn( $isAgeVerificationRequired );
+		$this->cartServiceMock->method( 'getDisallowedShippingRateIds' )->willReturn( $disallowedRateIds );
+		$this->cartServiceMock->method( 'cartContainsProductOversizedForCarrier' )->willReturn( $oversized );
+		$this->cartServiceMock->method( 'isShippingRateRestrictedByProductsCategory' )->willReturn( $restrictedByCategory );
+
+		$this->optionsProviderMock->method( 'arePricesTaxInclusive' )->willReturn( $arePricesTaxInclusive );
+
+		$shippingRates = $shippingRateFactory->createShippingRates( $allowedCarrierNames, $methodId, $instanceId );
+
+		self::assertCount( $expectedRateCount, $shippingRates );
+		if ( $expectedRateCount > 0 ) {
+			$firstRate = array_key_first( $shippingRates );
+			if ( $methodId === ShippingMethod::PACKETERY_METHOD_ID ) {
+				self::assertStringStartsWith( ShippingMethod::PACKETERY_METHOD_ID . ':', $firstRate );
+			} else {
+				self::assertStringStartsWith( $methodId . ':', $firstRate );
+			}
+		}
 	}
 }
