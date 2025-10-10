@@ -18,9 +18,12 @@ use Packetery\Core\Entity\PickupPoint;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
+use Packetery\Module\Exception\DeleteErrorException;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
+use Packetery\Module\WcLogger;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
 use WP_Post;
@@ -75,6 +78,11 @@ class Repository {
 	private $customsDeclarationRepository;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Repository constructor.
 	 *
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
@@ -90,7 +98,8 @@ class Repository {
 		CoreHelper $coreHelper,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		Carrier\EntityRepository $carrierRepository,
-		CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository,
+		WcAdapter $wcAdapter
 	) {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->builder                      = $orderFactory;
@@ -98,6 +107,7 @@ class Repository {
 		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
+		$this->wcAdapter                    = $wcAdapter;
 	}
 
 	/**
@@ -398,10 +408,10 @@ class Repository {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function save( Order $order ): void {
-		$this->saveData( $this->orderToDbArray( $order ) );
+	public function save( Order $order ) {
+		return $this->saveData( $this->orderToDbArray( $order ) );
 	}
 
 	/**
@@ -409,11 +419,12 @@ class Repository {
 	 *
 	 * @param array<string, int|string|null|DateTimeImmutable> $orderData Order data.
 	 *
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function saveData( array $orderData ): void {
+	public function saveData( array $orderData ) {
 		$this->onBeforeDataInsertion( $orderData );
-		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryOrder, $orderData, null, 'REPLACE' );
+
+		return $this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryOrder, $orderData, null, 'REPLACE' );
 	}
 
 	/**
@@ -436,7 +447,7 @@ class Repository {
 			return;
 		}
 
-		$wcLogger  = wc_get_logger();
+		$wcLogger  = $this->wcAdapter->getLogger();
 		$dataToLog = [
 			'order' => $orderData,
 			'trace' => array_map(
@@ -681,22 +692,40 @@ class Repository {
 	 *
 	 * @param int $orderId Order id.
 	 *
-	 * @return void
+	 * @return bool true on success, false in case of db failure.
 	 */
-	public function delete( int $orderId ): void {
-		$this->customsDeclarationRepository->delete( (string) $orderId );
-		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryOrder, [ 'id' => $orderId ], '%d' );
+	public function delete( int $orderId ): bool {
+		try {
+			$this->customsDeclarationRepository->delete( (string) $orderId );
+			$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryOrder, [ 'id' => $orderId ], '%d' );
+
+			return true;
+		} catch ( DeleteErrorException $e ) {
+			return false;
+		}
 	}
 
 	/**
 	 * Fires after post deletion.
 	 *
-	 * @param int     $postId Post id.
-	 * @param WP_Post $post Post object.
+	 * @param int|mixed     $postId Post id.
+	 * @param WP_Post|mixed $post Post object.
 	 *
 	 * @return void
 	 */
-	public function deletedPostHook( int $postId, WP_Post $post ): void {
+	public function deletedPostHook( $postId, $post ): void {
+		if ( ! is_int( $postId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'int', $postId );
+
+			return;
+		}
+
+		if ( ! $post instanceof WP_Post ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'post', WP_Post::class, $post );
+
+			return;
+		}
+
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		if ( $post->post_type === 'shop_order' ) {
 			$this->delete( $postId );

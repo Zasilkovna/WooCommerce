@@ -1,6 +1,7 @@
 {varType \Packetery\Core\Entity\Order $order}
 {varType \Packetery\Core\Entity\Size $dimensions}
 {var $coreHelper = Packetery\Core\CoreHelper::class}
+{varType string $invalidFieldsMessage}
 
 {if $order->getPacketId()}
 	<a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
@@ -55,10 +56,11 @@
 		'hasToFillCustomsDeclaration' => $order->hasToFillCustomsDeclaration(),
 		'orderIsSubmittable' => $orderIsSubmittable,
 		'orderWarningFields' => $orderWarningFields,
+		'invalidFieldsMessage' => $invalidFieldsMessage,
 		]
 		)}"
 		data-wizard-enabled="true"
-		data-tip="{if ! $orderIsSubmittable}{$translations['packetSubmissionNotPossible']}{else}{$translations['setAdditionalPacketInfo']}{/if}"
+		data-tip="{if ! $orderIsSubmittable}{$invalidFieldsMessage}{else}{$translations['setAdditionalPacketInfo']}{/if}"
 	></a>
 	<a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable}hidden{/if}"
 		title="{$translations['submitToPacketa']}"

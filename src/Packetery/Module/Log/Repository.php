@@ -198,10 +198,10 @@ class Repository {
 	 *
 	 * @param Record $record Record.
 	 *
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function save( Record $record ): void {
+	public function save( Record $record ) {
 		$date = $record->date;
 		if ( $date === null ) {
 			$date = CoreHelper::now();
@@ -230,7 +230,7 @@ class Repository {
 			'date'     => $dateString,
 		];
 
-		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryLog, $data, null, 'REPLACE' );
+		return $this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryLog, $data, null, 'REPLACE' );
 	}
 
 	/**

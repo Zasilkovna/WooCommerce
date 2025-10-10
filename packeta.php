@@ -8,13 +8,13 @@
  *
  * Plugin Name: Packeta
  * Description: This is the official plugin, that allows you to choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in your e-shop. Furthermore, you can also submit all your orders to Packeta with just one click.
- * Version: 2.1.2
+ * Version: 2.2.0
  * Author: Zásilkovna s.r.o.
  * Author URI: https://www.zasilkovna.cz/
  * Text Domain: packeta
  * Domain Path: /languages
- * Requires at least: 5.5
- * Requires PHP: 7.2
+ * Requires at least: 6.3
+ * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  *
  * Tested up to: 6.8.2

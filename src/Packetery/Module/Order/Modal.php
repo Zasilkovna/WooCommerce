@@ -42,16 +42,10 @@ class Modal {
 		$this->wpAdapter   = $wpAdapter;
 	}
 
-	/**
-	 * Registers order modal.
-	 */
 	public function register(): void {
 		add_action( 'admin_head', [ $this, 'renderTemplate' ] );
 	}
 
-	/**
-	 * Renders template.
-	 */
 	public function renderTemplate(): void {
 		$nonce        = wp_create_nonce( 'wp_rest' );
 		$orderSaveUrl = $this->apiRouter->getSaveModalUrl();

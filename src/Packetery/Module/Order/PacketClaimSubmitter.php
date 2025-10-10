@@ -8,6 +8,7 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Log;
 use Packetery\Module;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http\Request;
@@ -59,6 +60,11 @@ class PacketClaimSubmitter {
 	 */
 	private $coreHelper;
 
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Soap\Client $soapApiClient,
 		Log\ILogger $logger,
@@ -68,7 +74,8 @@ class PacketClaimSubmitter {
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		ModuleHelper $moduleHelper,
-		CoreHelper $coreHelper
+		CoreHelper $coreHelper,
+		WpAdapter $wpAdapter
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -79,6 +86,7 @@ class PacketClaimSubmitter {
 		$this->commonLogic     = $commonLogic;
 		$this->moduleHelper    = $moduleHelper;
 		$this->coreHelper      = $coreHelper;
+		$this->wpAdapter       = $wpAdapter;
 	}
 
 	/**
@@ -173,7 +181,13 @@ class PacketClaimSubmitter {
 			$order->setPacketClaimId( $response->getId() );
 			$order->setPacketClaimTrackingUrl( $this->coreHelper->getTrackingUrl( $response->getId() ) );
 			$order->setPacketClaimPassword( $response->getPassword() );
-			$this->orderRepository->save( $order );
+			$updatedRowCount = $this->orderRepository->save( $order );
+			if ( $updatedRowCount === false ) {
+				$this->messageManager->flash_message(
+					(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+					MessageManager::TYPE_ERROR
+				);
+			}
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( $wcOrder !== null ) {

@@ -1,5 +1,5 @@
 parameters:
-	latteTempFolder: %tempDir%/cache/view
+	latteTempFolder: %cacheDir%/view
 	surveyConfig:
 		active: true
 		validTo: 2023-03-31 23:59:59
@@ -7,8 +7,6 @@ parameters:
 	carDeliveryConfig:
 		sample: false
 		enabled: false
-	featureFlagConfig:
-		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
 	trackingUrl: https://tracking.packeta.com/Z%s
 	supportEmailAddress: e-commerce.support@packeta.com
@@ -43,6 +41,7 @@ services:
 	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin
 	- Packetery\Module\Uninstaller
+	- Packetery\Module\Email\EmailShortcodes
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Options\Page(supportEmailAddress: %supportEmailAddress%)
@@ -120,9 +119,6 @@ services:
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
 	- Packetery\Module\Options\FlagManager\FeatureFlagProvider
-	- Packetery\Module\Options\FlagManager\FeatureFlagNotice
-	- Packetery\Module\Options\FlagManager\FeatureFlagDownloader(endpointUrl: %featureFlagConfig.url%)
-	- Packetery\Module\Options\FlagManager\FeatureFlagStorage
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository

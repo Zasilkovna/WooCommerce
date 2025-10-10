@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\Exception\DeleteErrorException;
 use Packetery\Module\WpdbAdapter;
 
 /**
@@ -178,101 +179,109 @@ class Repository {
 	 *
 	 * @param CustomsDeclaration $customsDeclaration Customs declaration.
 	 * @param array              $fieldsToOmit Fields to omit.
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ): void {
+	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ) {
 		if ( $customsDeclaration->getId() === null ) {
-			$this->wpdbAdapter->insertReplaceHelper(
+			$updatedRowCount = $this->wpdbAdapter->insertReplaceHelper(
 				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit )
 			);
-			$customsDeclaration->setId( $this->wpdbAdapter->getLastInsertId() );
+			if ( $updatedRowCount !== false ) {
+				$customsDeclaration->setId( $this->wpdbAdapter->getLastInsertId() );
+			}
 		} else {
-			$this->wpdbAdapter->update(
+			$updatedRowCount = $this->wpdbAdapter->update(
 				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit ),
 				[ 'id' => (int) $customsDeclaration->getId() ]
 			);
 		}
 
-		$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
-		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `invoice_file` = %s WHERE `id` = %d',
-					$customsDeclaration->getInvoiceFile(),
-					$customsDeclaration->getId()
-				)
-			);
+		if ( $customsDeclaration->getId() !== null ) {
+			$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
+			if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'invoice_file' => $customsDeclaration->getInvoiceFile() ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
+
+			if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() === false ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'invoice_file' => null ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
+
+			$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
+			if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'ead_file' => $customsDeclaration->getEadFile() ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
+
+			if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() === false ) {
+				$fileQueryResult = $this->wpdbAdapter->update(
+					$this->wpdbAdapter->packeteryCustomsDeclaration,
+					[ 'ead_file' => null ],
+					[ 'id' => (int) $customsDeclaration->getId() ]
+				);
+				if ( $fileQueryResult === false ) {
+					$updatedRowCount = false;
+				}
+			}
 		}
 
-		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() === false ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
-					$customsDeclaration->getId()
-				)
-			);
-		}
-
-		$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
-		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `ead_file` = %s WHERE `id` = %d',
-					$customsDeclaration->getEadFile(),
-					$customsDeclaration->getId()
-				)
-			);
-		}
-
-		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() === false ) {
-			$this->wpdbAdapter->query(
-				$this->wpdbAdapter->prepare(
-					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `ead_file` = NULL WHERE `id` = %d',
-					$customsDeclaration->getId()
-				)
-			);
-		}
+		return $updatedRowCount;
 	}
 
 	/**
 	 * Saves customs declaration item.
 	 *
 	 * @param CustomsDeclarationItem $customsDeclarationItem Customs declaration item.
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function saveItem( CustomsDeclarationItem $customsDeclarationItem ): void {
+	public function saveItem( CustomsDeclarationItem $customsDeclarationItem ) {
 		if ( $customsDeclarationItem->getId() === null ) {
-			$this->wpdbAdapter->insert(
+			$updatedRowCount = $this->wpdbAdapter->insert(
 				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem )
 			);
 			$customsDeclarationItem->setId( $this->wpdbAdapter->getLastInsertId() );
 		} else {
-			$this->wpdbAdapter->update(
+			$updatedRowCount = $this->wpdbAdapter->update(
 				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem ),
 				[ 'id' => (int) $customsDeclarationItem->getId() ]
 			);
 		}
+
+		return $updatedRowCount;
 	}
 
 	/**
-	 * Deletes item.
-	 *
-	 * @param int $itemId Item ID.
-	 * @return void
+	 * @throws DeleteErrorException
 	 */
 	public function deleteItem( int $itemId ): void {
 		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclarationItem, [ 'id' => $itemId ], '%d' );
 	}
 
 	/**
-	 * Deletes all items.
-	 *
-	 * @param string $customsDeclarationId Customs Declaration ID.
-	 * @return void
+	 * @throws DeleteErrorException
 	 */
 	private function deleteItems( string $customsDeclarationId ): void {
 		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
@@ -289,8 +298,7 @@ class Repository {
 	/**
 	 * Completely deletes Customs Declaration with all its items.
 	 *
-	 * @param string $orderId Order ID.
-	 * @return void
+	 * @throws DeleteErrorException
 	 */
 	public function delete( string $orderId ): void {
 		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );

@@ -25,6 +25,7 @@ use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\SubmitButton;
@@ -193,11 +194,17 @@ class Page {
 	/**
 	 * Returns menu_order with Packeta item in last position.
 	 *
-	 * @param array $menuOrder WP $menu_order.
+	 * @param array|mixed $menuOrder WP $menu_order.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function customMenuOrder( array $menuOrder ): array {
+	public function customMenuOrder( $menuOrder ) {
+		if ( ! is_array( $menuOrder ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'menuOrder', 'array', $menuOrder );
+
+			return $menuOrder;
+		}
+
 		$currentPosition = array_search( self::SLUG, $menuOrder, true );
 
 		if ( $currentPosition !== false ) {
@@ -445,7 +452,6 @@ class Page {
 	 * @return void
 	 */
 	public function onPacketStatusSyncFormSuccess( Form $form, array $values ): void {
-
 		$values['status_syncing_order_statuses']       = $this->getChosenKeys(
 			self::getOrderStatusesChoiceData(),
 			$values['status_syncing_order_statuses']
@@ -633,6 +639,12 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::HIDE_CHECKOUT_LOGO_DEFAULT );
 
+		$container->addCheckbox( 'auto_email_info_insertion', __( 'Automatically insert packet and pickup point information into emails', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::AUTO_EMAIL_INFO_INSERTION_DEFAULT )
+			->addCondition( Form::EQUAL, true )
+				->toggle( '#packetery-email-hook' );
+
 		$container->addSelect(
 			'email_hook',
 			__( 'Hook used to view information in email', 'packeta' ),
@@ -729,6 +741,9 @@ class Page {
 		 * @var Container $packeteryContainer
 		 */
 		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
+		if ( ! isset( $options['auto_email_info_insertion'] ) ) {
+			$options['auto_email_info_insertion'] = false;
+		}
 		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {
 			foreach ( $packeteryContainer->getControls() as $control ) {
@@ -952,7 +967,7 @@ class Page {
 		$latteParams['logoPacketa']                  = $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' );
 		$advancedCarrierSettingsDescription          = sprintf(
 			// translators: first %s is line break, second one is e-mail address
-			__( 'BETA: Once enabled, Packeta carriers will appear as separate shipping methods in WooCommerce - Settings - Shipping. After enabling this feature, you will need to set up shipping methods in WooCommerce again.%1$sThis is an experimental feature. If you experience any issues, please email us at %2$s with a description of the issue.', 'packeta' ),
+			__( 'When this feature is active, Packeta carriers will appear as separate shipping methods under WooCommerce → Settings → Shipping. After enabling or disabling this feature, you need to reconfigure your shipping methods in WooCommerce.%1$sIf you encounter any issues, please contact us at %2$s.', 'packeta' ),
 			'<br>',
 			'<a href="mailto:' . $this->supportEmailAddress . '">' . $this->supportEmailAddress . '</a>'
 		);
@@ -1004,6 +1019,7 @@ class Page {
 			'freeShippingTextDescription'            => __( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
+			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

@@ -13,6 +13,7 @@ use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\CronService;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
+use Packetery\Module\Email\EmailShortcodes;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
@@ -257,6 +258,11 @@ class HookRegistrar {
 	 */
 	private $dashboardPage;
 
+	/**
+	 * @var EmailShortcodes
+	 */
+	private $shortcodes;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -299,7 +305,8 @@ class HookRegistrar {
 		ShippingProvider $shippingProvider,
 		CheckoutStorage $checkoutStorage,
 		WizardAssetManager $wizardAssetManager,
-		DashboardPage $dashboardPage
+		DashboardPage $dashboardPage,
+		EmailShortcodes $shortcodes
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -343,6 +350,7 @@ class HookRegistrar {
 		$this->checkoutStorage           = $checkoutStorage;
 		$this->wizardAssetManager        = $wizardAssetManager;
 		$this->dashboardPage             = $dashboardPage;
+		$this->shortcodes                = $shortcodes;
 	}
 
 	public function register(): void {
@@ -376,7 +384,9 @@ class HookRegistrar {
 		}
 
 		$wcEmailHook = $this->optionsProvider->getEmailHook();
-		$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
+		if ( $wcEmailHook !== '' && $this->optionsProvider->isAutoEmailInfoInsertionEnabled() ) {
+			$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
+		}
 
 		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethods' ] );
 		$this->cronService->register();
@@ -385,6 +395,7 @@ class HookRegistrar {
 		$this->updateOrderHook->register();
 		$this->packetSubmitter->registerCronAction();
 		$this->packetSynchronizer->register();
+		$this->shortcodes->register();
 
 		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
 

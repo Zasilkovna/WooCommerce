@@ -73,15 +73,6 @@ class WcAdapter {
 		return wc_get_product( $theProduct );
 	}
 
-	/**
-	 * Creates new logger instance.
-	 *
-	 * @return WC_Logger
-	 */
-	public function createLogger(): WC_Logger {
-		return new WC_Logger();
-	}
-
 	public function isCheckout(): bool {
 		return is_checkout();
 	}
