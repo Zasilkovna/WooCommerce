@@ -237,6 +237,7 @@ The following shortcodes are available for use in email templates:
 | `packeta_tracking_number`      | Displays the tracking number if available           |
 | `packeta_tracking_url`         | Displays the tracking URL if available              |
 | `packeta_pickup_point_id`      | Displays the pickup point ID if available           |
+| `packeta_pickup_point_place`   | Displays the pickup point place if available        |
 | `packeta_pickup_point_name`    | Displays the pickup point name if available         |
 | `packeta_pickup_point_address` | Displays the full pickup point address if available |
 | `packeta_pickup_point_street`  | Displays the pickup point street if available       |

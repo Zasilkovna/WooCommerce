@@ -24,6 +24,7 @@ class Attribute {
 	public const POINT_PLACE  = 'packetery_point_place'; // Business name of pickup point.
 	public const CARRIER_ID   = 'packetery_carrier_id';
 	public const POINT_URL    = 'packetery_point_url';
+	public const POINT_TYPE   = 'packetery_point_type';
 
 	public const ADDRESS_IS_VALIDATED = 'packetery_address_isValidated';
 	public const ADDRESS_HOUSE_NUMBER = 'packetery_address_houseNumber';
@@ -45,36 +46,40 @@ class Attribute {
 	 * @var array<string, array<string, string|bool>>
 	 */
 	public static $pickupPointAttributes = [
-		'id'        => [
+		'id'              => [
 			'name'     => self::POINT_ID,
 			'required' => true,
 		],
-		'name'      => [
+		'name'            => [
 			'name'     => self::POINT_NAME,
 			'required' => false,
 		],
-		'city'      => [
+		'city'            => [
 			'name'     => self::POINT_CITY,
 			'required' => false,
 		],
-		'zip'       => [
+		'zip'             => [
 			'name'     => self::POINT_ZIP,
 			'required' => false,
 		],
-		'street'    => [
+		'street'          => [
 			'name'     => self::POINT_STREET,
 			'required' => false,
 		],
-		'place'     => [
+		'place'           => [
 			'name'     => self::POINT_PLACE,
 			'required' => false,
 		],
-		'carrierId' => [
+		'carrierId'       => [
 			'name'     => self::CARRIER_ID,
 			'required' => false,
 		],
-		'url'       => [
+		'url'             => [
 			'name'     => self::POINT_URL,
+			'required' => false,
+		],
+		'pickupPointType' => [
+			'name'     => self::POINT_TYPE,
 			'required' => false,
 		],
 	];

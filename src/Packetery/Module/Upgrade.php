@@ -312,6 +312,7 @@ class Upgrade {
 				$orderEntity->setPickupPoint(
 					new Core\Entity\PickupPoint(
 						$this->getMetaAsNullableString( $order, self::META_POINT_ID ),
+						null,
 						$this->getMetaAsNullableString( $order, self::META_POINT_NAME ),
 						$this->getMetaAsNullableString( $order, self::META_POINT_CITY ),
 						$this->getMetaAsNullableString( $order, self::META_POINT_ZIP ),

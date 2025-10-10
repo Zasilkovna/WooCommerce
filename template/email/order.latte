@@ -10,7 +10,11 @@
 	{if $pickupPoint && $displayPickupPointInfo}
 		<tr>
 			<th class="td">{$translations['pickupPointName']}</th>
-			<td class="td">{$pickupPoint->getName()}</td>
+			<td class="td">{$pickupPoint->getPlace() ?? $pickupPoint->getName()}</td>
+		</tr>
+		<tr>
+			<th class="td">{$translations['pickupPointAddress']}</th>
+			<td class="td">{$pickupPoint->getFullAddress()}</td>
 		</tr>
 		{if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
 			<tr>
@@ -18,10 +22,6 @@
 				<td class="td"><a href="{$pickupPoint->getUrl()}">{$translations['link']}</a></td>
 			</tr>
 		{/if}
-		<tr>
-			<th class="td">{$translations['pickupPointAddress']}</th>
-			<td class="td">{$pickupPoint->getFullAddress()}</td>
-		</tr>
 	{/if}
 
 	{if $order->isExported()}
