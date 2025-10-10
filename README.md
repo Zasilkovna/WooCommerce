@@ -226,24 +226,26 @@ add_filter( 'packeta_order_grid_links_settings', function ( \Packetery\Module\Or
 
 ## Email Templates and Shortcodes
 
-The plugin provides shortcodes that can be used in WooCommerce email templates to display Packeta-related information. All shortcodes require the `order_id` parameter to work.
+The plugin provides shortcodes that can be used in WooCommerce email templates to display Packeta-related information.
 
 ### Basic Shortcodes
 
 The following shortcodes are available for use in email templates:
 
-| Shortcode                                                                   | Description                                         |
-|-----------------------------------------------------------------------------|-----------------------------------------------------|
-| `[packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]`      | Displays the tracking number if available           |
-| `[packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]`         | Displays the tracking URL if available              |
-| `[packeta_pickup_point_id order_id="<?php echo $order->get_id(); ?>"]`      | Displays the pickup point ID if available           |
-| `[packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]`    | Displays the pickup point name if available         |
-| `[packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]` | Displays the full pickup point address if available |
-| `[packeta_pickup_point_street order_id="<?php echo $order->get_id(); ?>"]`  | Displays the pickup point street if available       |
-| `[packeta_pickup_point_city order_id="<?php echo $order->get_id(); ?>"]`    | Displays the pickup point city if available         |
-| `[packeta_pickup_point_zip order_id="<?php echo $order->get_id(); ?>"]`     | Displays the pickup point ZIP if available          |
-| `[packeta_pickup_point_country order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point country if available      |
-| `[packeta_carrier_name order_id="<?php echo $order->get_id(); ?>"]`         | Displays the carrier name if available              |
+| Shortcode                      | Description                                         |
+|--------------------------------|-----------------------------------------------------|
+| `packeta_tracking_number`      | Displays the tracking number if available           |
+| `packeta_tracking_url`         | Displays the tracking URL if available              |
+| `packeta_pickup_point_id`      | Displays the pickup point ID if available           |
+| `packeta_pickup_point_name`    | Displays the pickup point name if available         |
+| `packeta_pickup_point_address` | Displays the full pickup point address if available |
+| `packeta_pickup_point_street`  | Displays the pickup point street if available       |
+| `packeta_pickup_point_city`    | Displays the pickup point city if available         |
+| `packeta_pickup_point_zip`     | Displays the pickup point ZIP if available          |
+| `packeta_pickup_point_country` | Displays the pickup point country if available      |
+| `packeta_carrier_name`         | Displays the carrier name if available              |
+
+All these shortcodes require the `order_id` parameter to work.
 
 ### Conditional Shortcodes
 
@@ -254,10 +256,15 @@ You can use conditional shortcodes to display content only when certain conditio
 Use this to display content only when the order has been submitted to Packeta:
 
 ```php
-[packeta_if_packet_submitted order_id="<?php echo $order->get_id(); ?>"]
-	Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]
-	Track your package here: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]
-[/packeta_if_packet_submitted]
+/*
+* Displayed when a shipment has been submitted for the order
+*/
+echo do_shortcode('
+	[packeta_if_packet_submitted order_id="' . $order->get_id() . '"]' .
+		esc_html__( 'Packet tracking online', 'packeta' ) . ': ' .
+		'<a href=\'[packeta_tracking_url order_id="' . $order->get_id() . '"]\' rel="_blank">[packeta_tracking_number order_id="' . $order->get_id() . '"]</a>
+	[/packeta_if_packet_submitted]
+');
 ```
 
 #### If Pickup Point
@@ -265,10 +272,16 @@ Use this to display content only when the order has been submitted to Packeta:
 Use this to display content only when the order uses a pickup point:
 
 ```php
-[packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
-	Your pickup point is: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]
-	Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]
+/*
+ * Displayed if the order is set for pickup at a pickup point
+ */
+echo do_shortcode('
+[packeta_if_pickup_point order_id="' . $order->get_id() . '"]
+	<h3>' . esc_html__( 'Pickup Point Detail', 'packeta' ) . '</h3>
+	<p><strong>' . esc_html__( 'Name', 'packeta' ) . ':</strong> [packeta_pickup_point_name order_id="' . $order->get_id() . '"]</p>
+	<p><strong>' . esc_html__( 'Address', 'packeta' ) . ':</strong> [packeta_pickup_point_address order_id="' . $order->get_id() . '"]</p>
 [/packeta_if_pickup_point]
+');
 ```
 
 #### If Carrier
@@ -276,42 +289,15 @@ Use this to display content only when the order uses a pickup point:
 Use this to display content only when the order uses an external carrier:
 
 ```php
-[packeta_if_carrier order_id="<?php echo $order->get_id(); ?>"]
-	Your order is shipped with: [packeta_carrier_name order_id="<?php echo $order->get_id(); ?>"]
+/*
+ * Displayed if the order is assigned to a carrier.
+ */
+echo do_shortcode('
+[packeta_if_carrier order_id="' . $order->get_id() . '"]
+	' . esc_html__( 'Carrier:', 'packeta' ) . ' [packeta_carrier_name order_id="' . $order->get_id() . '"]
 [/packeta_if_carrier]
+');
 ```
-
-### Usage in Email Templates
-
-You can use these shortcodes in your WooCommerce email templates. To add them to your email templates:
-
-1. Go to WooCommerce > Settings > Emails
-2. Click on any email template you want to customize (e.g., "New Order", "Processing Order", etc.)
-3. In the "Email content" section, you can add the shortcodes to customize the email content
-
-For example:
-
-```php
-<h2>Order Details</h2>
-<p>Order <?php echo $order->get_order_number(); ?></p>
-
-[packeta_if_packet_submitted order_id="<?php echo $order->get_id(); ?>"]
-	<h3>Shipping Information</h3>
-	<p>Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]</p>
-	<p>Track your package: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]</p>
-[/packeta_if_packet_submitted]
-
-[packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
-	<h3>Pickup Point Information</h3>
-	<p>Name: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]</p>
-	<p>Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]</p>
-	<p>City: [packeta_pickup_point_city order_id="<?php echo $order->get_id(); ?>"]</p>
-	<p>ZIP: [packeta_pickup_point_zip order_id="<?php echo $order->get_id(); ?>"]</p>
-	<p>Country: [packeta_pickup_point_country order_id="<?php echo $order->get_id(); ?>"]</p>
-[/packeta_if_pickup_point]
-```
-
-Note: All shortcodes require the `order_id` parameter to work. If the order is not found or the required data is not available, the shortcodes will return empty strings.
 
 ## Credits
 
