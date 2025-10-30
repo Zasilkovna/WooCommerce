@@ -9,26 +9,36 @@ use Packetery\Module\Order\CustomsDeclarationMetabox;
 use Packetery\Module\Order\Metabox;
 use Packetery\Module\Order\MetaboxesWrapper;
 use Packetery\Module\Order\Repository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use WC_Order;
 
 class MetaboxesWrapperTest extends TestCase {
+	private Metabox|MockObject $generalMetabox;
+	private CustomsDeclarationMetabox|MockObject $customDeclarationMetabox;
+	private Repository|MockObject $orderRepository;
+
+	private function createMetaboxesWrapper(): MetaboxesWrapper {
+		$this->generalMetabox           = $this->createMock( Metabox::class );
+		$this->customDeclarationMetabox = $this->createMock( CustomsDeclarationMetabox::class );
+		$this->orderRepository          = $this->createMock( Repository::class );
+
+		return new MetaboxesWrapper( $this->generalMetabox, $this->customDeclarationMetabox, $this->orderRepository );
+	}
+
 	public function testBeforeOrderSaveProcessesOrderOnce(): void {
-		$generalMetabox           = $this->createMock( Metabox::class );
-		$customDeclarationMetabox = $this->createMock( CustomsDeclarationMetabox::class );
-		$orderRepository          = $this->createMock( Repository::class );
-		$metaboxesWrapper         = new MetaboxesWrapper( $generalMetabox, $customDeclarationMetabox, $orderRepository );
+		$metaboxesWrapper = $this->createMetaboxesWrapper();
 
 		$wcOrder = $this->createMock( WC_Order::class );
 		$wcOrder->method( 'get_id' )->willReturn( 100 );
 
 		$order = $this->createMock( Order::class );
-		$orderRepository
+		$this->orderRepository
 			->method( 'getByIdWithValidCarrier' )
 			->with( 100 )
 			->willReturn( $order );
 
-		$generalMetabox
+		$this->generalMetabox
 			->expects( $this->once() )
 			->method( 'saveFields' )
 			->with( $order, $wcOrder );
@@ -37,20 +47,17 @@ class MetaboxesWrapperTest extends TestCase {
 	}
 
 	public function testBeforeOrderSaveSkipsProcessingWhenOrderNotFound(): void {
-		$generalMetabox           = $this->createMock( Metabox::class );
-		$customDeclarationMetabox = $this->createMock( CustomsDeclarationMetabox::class );
-		$orderRepository          = $this->createMock( Repository::class );
-		$metaboxesWrapper         = new MetaboxesWrapper( $generalMetabox, $customDeclarationMetabox, $orderRepository );
+		$metaboxesWrapper = $this->createMetaboxesWrapper();
 
 		$wcOrder = $this->createMock( WC_Order::class );
 		$wcOrder->method( 'get_id' )->willReturn( 200 );
 
-		$orderRepository
+		$this->orderRepository
 			->method( 'getByIdWithValidCarrier' )
 			->with( 200 )
 			->willReturn( null );
 
-		$generalMetabox
+		$this->generalMetabox
 			->expects( $this->never() )
 			->method( 'saveFields' );
 
@@ -58,10 +65,7 @@ class MetaboxesWrapperTest extends TestCase {
 	}
 
 	public function testBeforeOrderSavePreventsDuplicateProcessing(): void {
-		$generalMetabox           = $this->createMock( Metabox::class );
-		$customDeclarationMetabox = $this->createMock( CustomsDeclarationMetabox::class );
-		$orderRepository          = $this->createMock( Repository::class );
-		$metaboxesWrapper         = new MetaboxesWrapper( $generalMetabox, $customDeclarationMetabox, $orderRepository );
+		$metaboxesWrapper = $this->createMetaboxesWrapper();
 
 		$wcOrder1 = $this->createMock( WC_Order::class );
 		$wcOrder1->method( 'get_id' )->willReturn( 300 );
@@ -70,12 +74,12 @@ class MetaboxesWrapperTest extends TestCase {
 		$wcOrder2->method( 'get_id' )->willReturn( 300 );
 
 		$order = $this->createMock( Order::class );
-		$orderRepository
+		$this->orderRepository
 			->method( 'getByIdWithValidCarrier' )
 			->with( 300 )
 			->willReturn( $order );
 
-		$generalMetabox
+		$this->generalMetabox
 			->expects( $this->once() )
 			->method( 'saveFields' );
 
@@ -84,10 +88,7 @@ class MetaboxesWrapperTest extends TestCase {
 	}
 
 	public function testBeforeOrderSaveProcessesDifferentOrders(): void {
-		$generalMetabox           = $this->createMock( Metabox::class );
-		$customDeclarationMetabox = $this->createMock( CustomsDeclarationMetabox::class );
-		$orderRepository          = $this->createMock( Repository::class );
-		$metaboxesWrapper         = new MetaboxesWrapper( $generalMetabox, $customDeclarationMetabox, $orderRepository );
+		$metaboxesWrapper = $this->createMetaboxesWrapper();
 
 		$wcOrder1 = $this->createMock( WC_Order::class );
 		$wcOrder1->method( 'get_id' )->willReturn( 400 );
@@ -98,7 +99,7 @@ class MetaboxesWrapperTest extends TestCase {
 		$order1 = $this->createMock( Order::class );
 		$order2 = $this->createMock( Order::class );
 
-		$orderRepository
+		$this->orderRepository
 			->method( 'getByIdWithValidCarrier' )
 			->willReturnMap(
 				[
@@ -107,7 +108,7 @@ class MetaboxesWrapperTest extends TestCase {
 				]
 			);
 
-		$generalMetabox
+		$this->generalMetabox
 			->expects( $this->exactly( 2 ) )
 			->method( 'saveFields' );
 
