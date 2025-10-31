@@ -14,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 use WC_Order;
 
 class MetaboxesWrapperTest extends TestCase {
-	private Metabox|MockObject $generalMetabox;
-	private CustomsDeclarationMetabox|MockObject $customDeclarationMetabox;
-	private Repository|MockObject $orderRepository;
+	private Metabox&MockObject $generalMetabox;
+	private CustomsDeclarationMetabox&MockObject $customDeclarationMetabox;
+	private Repository&MockObject $orderRepository;
 
 	private function createMetaboxesWrapper(): MetaboxesWrapper {
 		$this->generalMetabox           = $this->createMock( Metabox::class );
