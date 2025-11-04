@@ -4,7 +4,7 @@
     },
     "require-dev": {
         "composer/composer": "^2.6",
-        "editorconfig-checker/editorconfig-checker": "^10.6",
+        "editorconfig-checker/editorconfig-checker": "^10.7",
         "ergebnis/composer-normalize": "^2.47",
         "php-stubs/woocommerce-stubs": "^9.5",
         "php-stubs/wordpress-stubs": "^6.7",
