@@ -2101,6 +2101,12 @@ parameters:
 			path: ../src/Packetery/Module/Order/Metabox.php
 
 		-
+			message: '#^Offset bool\|string might not exist on non\-empty\-array\<string, float\|int\|string\|true\|null\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
 			message: '#^Only booleans are allowed in &&, float\|int\|string\|true\|null given on the left side\.$#'
 			identifier: booleanAnd.leftNotBoolean
 			count: 1
@@ -2317,13 +2323,13 @@ parameters:
 			path: ../src/Packetery/Module/Order/Repository.php
 
 		-
-			message: '#^Offset ''file'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\}\.$#'
+			message: '#^Offset ''file'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: list\<mixed\>, object\?\: object\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../src/Packetery/Module/Order/Repository.php
 
 		-
-			message: '#^Offset ''line'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\}\.$#'
+			message: '#^Offset ''line'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: list\<mixed\>, object\?\: object\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../src/Packetery/Module/Order/Repository.php
@@ -2469,12 +2475,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property object\:\:\$method_title\.$#'
 			identifier: property.notFound
-			count: 2
-			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
-
-		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
 			count: 2
 			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
 
