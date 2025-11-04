@@ -206,6 +206,9 @@ class WpAdapter {
 		);
 	}
 
+	/**
+	 * @param non-empty-string $tag
+	 */
 	public function addShortcode( string $tag, callable $callback ): void {
 		add_shortcode( $tag, $callback );
 	}
