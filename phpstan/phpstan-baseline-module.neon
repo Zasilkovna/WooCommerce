@@ -43,18 +43,6 @@ parameters:
 			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
 
 		-
-			message: '#^Path in require_once\(\) "\.//woocommerce/packages/woocommerce\-blocks/src/Integrations/IntegrationInterface\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
-			count: 1
-			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
-
-		-
-			message: '#^Path in require_once\(\) "\.//woocommerce/src/Blocks/Integrations/IntegrationInterface\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
-			count: 1
-			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
-
-		-
 			message: '#^Method Packetery\\Module\\Carrier\\CarrierActivityBridge\:\:getActiveCarrierIds\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1317,12 +1305,6 @@ parameters:
 		-
 			message: '#^Method Packetery\\Module\\ModuleHelper\:\:getOrderGridUrl\(\) has parameter \$queryVars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/ModuleHelper.php
-
-		-
-			message: '#^Path in require_once\(\) "\./wp\-admin/includes/plugin\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
 			count: 1
 			path: ../src/Packetery/Module/ModuleHelper.php
 
@@ -2757,12 +2739,6 @@ parameters:
 		-
 			message: '#^Parameter \#4 \$type of method wpdb\:\:_insert_replace_helper\(\) expects ''INSERT''\|''REPLACE'', string given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/WpdbAdapter.php
-
-		-
-			message: '#^Path in require_once\(\) "\./wp\-admin/includes/upgrade\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
 			count: 1
 			path: ../src/Packetery/Module/WpdbAdapter.php
 
