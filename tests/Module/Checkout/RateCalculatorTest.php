@@ -6,6 +6,7 @@ namespace Tests\Module\Checkout;
 
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\Checkout\RateCalculator;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -25,6 +26,7 @@ class RateCalculatorTest extends TestCase {
 			$this->wpAdapter,
 			$this->createMock( WcAdapter::class ),
 			MockFactory::createCurrencySwitcherFacade( $this ),
+			$this->createMock( DiagnosticsLogger::class )
 		);
 	}
 

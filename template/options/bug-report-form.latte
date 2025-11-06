@@ -1,0 +1,54 @@
+{varType array $translations}
+
+{form $bugReportForm}
+	<table class="form-table packetery_settings" role="presentation">
+		<tr>
+			<th scope="row">
+				<label n:name=replyTo />
+			</th>
+			<td>
+				{input replyTo}
+				{if $bugReportForm['replyTo']->hasErrors()}
+					<div class="error">
+						{$bugReportForm['replyTo']->getError()}
+					</div>
+				{/if}
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">
+				<label for="message">{$translations['message']}</label>
+			</th>
+			<td>
+				{input message, 'id' => 'packetery-js-bug-report-form-message', 'rows' => 10, 'cols' => 50}
+				{if $bugReportForm['message']->hasErrors()}
+					<div class="error">
+						{$bugReportForm['message']->getError()}
+					</div>
+				{/if}
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"></th>
+			<td>
+				{input sendCopy}
+			</td>
+		</tr>
+	</table>
+	<p>
+		{$translations['bugReportScreenshotsTitle']}
+	</p>
+	<ol>
+		<li>{$translations['bugReportScreenshotsFirstStep']|noescape}</li>
+		<li>{$translations['bugReportScreenshotsSecondStep']}</li>
+		<li>{$translations['bugReportScreenshotsThirdStep']}</li>
+	</ol>
+
+	<p>
+		{$translations['bugReportInfo']}
+	</p>
+
+	<p class="submit">
+		{input submit, 'class' => 'button button-primary'}
+	</p>
+{/form}

@@ -12,6 +12,8 @@ parameters:
 	supportEmailAddress: e-commerce.support@packeta.com
 	affiliateId: 51770072f717b057
 	widgetEnvironment: production
+	logLimitDays: 14
+	logLimitSizeBytes: 2000000
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -44,6 +46,10 @@ services:
 	- Packetery\Module\Email\EmailShortcodes
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
+	- Packetery\Module\Forms\BugReportForm
+	- Packetery\Module\Email\BugReportEmail(supportEmailAddress: %supportEmailAddress%)
+	- Packetery\Module\Email\BugReportAttachment
+	- Packetery\Module\Log\LogSizeLimiter(logLimitDays: %logLimitDays%, logLimitSizeBytes: %logLimitSizeBytes%)
 	- Packetery\Module\Options\Page(supportEmailAddress: %supportEmailAddress%)
 	optionsProvider: Packetery\Module\Options\OptionsProvider
 	- Packetery\Module\Carrier\Downloader
@@ -123,6 +129,7 @@ services:
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
+	- Packetery\Module\Forms\DiagnosticsLoggingFormFactory
 	- Packetery\Module\Order\StoredUntilModal
 	- Packetery\Module\Order\PacketSetStoredUntil
 	- Packetery\Module\Hooks\HookRegistrar
@@ -144,3 +151,4 @@ services:
 	- Packetery\Module\Carrier\CarrierUpdater
 	- Packetery\Module\Labels\CarrierLabelService
 	- Packetery\Module\Labels\LabelPrintParametersService
+	- Packetery\Module\DiagnosticsLogger\DiagnosticsLogger

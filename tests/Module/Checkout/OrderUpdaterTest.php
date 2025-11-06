@@ -10,6 +10,7 @@ use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Checkout\OrderUpdater;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -32,6 +33,7 @@ class OrderUpdaterTest extends TestCase {
 	private Carrier\EntityRepository&MockObject $carrierEntityRepositoryMock;
 	private MockObject&CartService $cartServiceMock;
 	private SizeFactory&MockObject $sizeFactoryMock;
+	private DiagnosticsLogger&MockObject $diagnosticsLogger;
 	private WpAdapter&MockObject $wpAdapterMock;
 	private WcAdapter&MockObject $wcAdapterMock;
 
@@ -46,6 +48,7 @@ class OrderUpdaterTest extends TestCase {
 		$this->carrierEntityRepositoryMock = $this->createMock( Carrier\EntityRepository::class );
 		$this->cartServiceMock             = $this->createMock( CartService::class );
 		$this->sizeFactoryMock             = $this->createMock( SizeFactory::class );
+		$this->diagnosticsLogger           = $this->createMock( DiagnosticsLogger::class );
 
 		return new OrderUpdater(
 			$this->wpAdapterMock,
@@ -59,6 +62,7 @@ class OrderUpdaterTest extends TestCase {
 			$this->cartServiceMock,
 			$this->createMock( PacketAutoSubmitter::class ),
 			$this->sizeFactoryMock,
+			$this->diagnosticsLogger,
 		);
 	}
 

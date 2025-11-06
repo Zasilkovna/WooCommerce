@@ -913,6 +913,12 @@ parameters:
 			path: ../src/Packetery/Module/DashboardWidget.php
 
 		-
+			message: '#^Call to function is_string\(\) with bool will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: ../src/Packetery/Module/Email/BugReportAttachment.php
+
+		-
 			message: '#^Parameter \#1 \$street of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -959,6 +965,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/FormValidators.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Container\:\:\$onValidate \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Forms\\BugReportForm\), ''onFormValidate''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Forms/BugReportForm.php
 
 		-
 			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:asScheduleSingleAction\(\) has parameter \$args with no value type specified in iterable type array\.$#'
