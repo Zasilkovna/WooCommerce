@@ -1,4 +1,14 @@
 == Changelog ==
+= 2.2.0 =
+Added: Error reporting form.
+Added: Optional validation of the selected pickup point using the API.
+Updated: Displaying the name of the pickup point next to its address.
+Updated: Added a specific log message for logging claim assistant label printing actions.
+Added: Support for external cache folder.
+Updated: The minimum required PHP version is now 7.4.
+Added: It is now possible to insert custom shortcodes into emails to display information about the selected pickup point or the submitted packet.
+Updated: Advanced carrier setting is now enabled by default. Removed notice about pickup point split activation.
+
 = 2.1.2 =
 Fixed: Plugin no longer crashes on the orders list when a refunded order is present.
 
