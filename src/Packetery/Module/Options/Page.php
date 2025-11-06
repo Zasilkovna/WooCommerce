@@ -39,10 +39,11 @@ use Packetery\Nette\Http;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER           = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
-	private const FORM_FIELD_FREE_SHIPPING_SHOWN  = 'free_shipping_shown';
+	private const FORM_FIELDS_CONTAINER               = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
+	private const FORM_FIELD_FREE_SHIPPING_SHOWN      = 'free_shipping_shown';
+	public const FORM_PICKUP_POINT_VALIDATION_ENABLED = 'pickup_point_validation_enabled';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -672,6 +673,10 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::PRICES_INCLUDE_TAX_DEFAULT );
 
+		$container->addCheckbox( self::FORM_PICKUP_POINT_VALIDATION_ENABLED, __( 'Validate the pickup point using the API before accepting the order', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::PICKUP_POINT_VALIDATION_ENABLED_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( OptionNames::PACKETERY ) ) {
@@ -686,7 +691,10 @@ class Page {
 	 */
 	public function admin_init(): void {
 		add_filter( 'pre_update_option_packetery', [ $this, 'validatePacketeryOptions' ] );
+
+		// Registered callback is called when the form is submitted.
 		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, [ $this, 'sanitizePacketeryOptions' ] );
+
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), function () {}, self::SLUG );
 	}
 
@@ -802,6 +810,10 @@ class Page {
 					unset( $options[ $dimension ] );
 				}
 			}
+		}
+
+		if ( $options['api_key'] === '' ) {
+			$options[ self::FORM_PICKUP_POINT_VALIDATION_ENABLED ] = false;
 		}
 
 		return $options;

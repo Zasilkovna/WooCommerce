@@ -7,12 +7,21 @@ namespace Packetery\Module\Checkout;
 use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
 use Packetery\Module\EntityFactory\SizeFactory;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
+use Packetery\Module\Order\PickupPointValidator;
 use WC_Data_Exception;
 use WC_Order;
 
 class OrderUpdater {
+
+	/** @var WpAdapter */
+	private $wpAdapter;
+
+	/** @var WcAdapter */
+	private $wcAdapter;
 
 	/**
 	 * @var Order\Repository
@@ -60,6 +69,8 @@ class OrderUpdater {
 	private $sizeFactory;
 
 	public function __construct(
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
 		Order\Repository $orderRepository,
 		CheckoutService $checkoutService,
 		CheckoutStorage $checkoutStorage,
@@ -70,6 +81,8 @@ class OrderUpdater {
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
 		SizeFactory $sizeFactory
 	) {
+		$this->wpAdapter               = $wpAdapter;
+		$this->wcAdapter               = $wcAdapter;
 		$this->orderRepository         = $orderRepository;
 		$this->checkoutService         = $checkoutService;
 		$this->storage                 = $checkoutStorage;
@@ -117,6 +130,8 @@ class OrderUpdater {
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
 		if ( $this->checkoutService->isPickupPointOrder() ) {
+			$this->addPickupPointValidationError( $wcOrder );
+
 			if ( count( $checkoutData ) === 0 ) {
 				return;
 			}
@@ -160,6 +175,22 @@ class OrderUpdater {
 		$this->storage->deleteTransient();
 		$this->orderRepository->save( $order );
 		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
+	}
+
+	private function addPickupPointValidationError( WC_Order $wcOrder ): void {
+		if ( $this->optionsProvider->isPickupPointValidationEnabled() ) {
+			$pickupPointValidationError = $this->wcAdapter->sessionGetString( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
+			if ( $pickupPointValidationError !== null ) {
+				$wcOrder->add_order_note(
+					sprintf(
+						// translators: %s: Message from downloader.
+						$this->wpAdapter->__( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ),
+						$pickupPointValidationError
+					)
+				);
+				$this->wcAdapter->sessionSet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
+			}
+		}
 	}
 
 	/**

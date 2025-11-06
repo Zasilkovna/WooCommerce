@@ -212,4 +212,27 @@ class PacketaPickupPointsConfig {
 
 		return $carrierId;
 	}
+
+	/**
+	 * @param string[]|null $vendorGroups Value from carrier options.
+	 * @param string        $carrierId
+	 *
+	 * @return string[]|null
+	 */
+	public function getFinalVendorGroups( ?array $vendorGroups, string $carrierId ): ?array {
+		if ( isset( $vendorGroups ) && count( $vendorGroups ) !== 0 ) {
+			return $vendorGroups;
+		}
+
+		if ( $this->isCompoundCarrierId( $carrierId ) ) {
+			$vendorGroups = $this->getCompoundCarrierVendorGroups( $carrierId );
+		} else {
+			$vendorCarriers = $this->getVendorCarriers();
+			if ( isset( $vendorCarriers[ $carrierId ] ) ) {
+				$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
+			}
+		}
+
+		return $vendorGroups;
+	}
 }
