@@ -19,7 +19,6 @@ use Packetery\Module\FormValidators;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
@@ -81,11 +80,6 @@ class OptionsPage {
 	private $pickupPointsConfig;
 
 	/**
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
-
-	/**
 	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
@@ -118,7 +112,6 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
@@ -132,7 +125,6 @@ class OptionsPage {
 		$this->countryListingPage    = $countryListingPage;
 		$this->messageManager        = $messageManager;
 		$this->pickupPointsConfig    = $pickupPointsConfig;
-		$this->featureFlagProvider   = $featureFlagProvider;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->moduleHelper          = $moduleHelper;
@@ -178,19 +170,17 @@ class OptionsPage {
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
 
-		$carrierOptions = get_option( $optionId );
-		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions !== false ? $carrierOptions : null ) );
-			if ( count( $vendorCheckboxes ) > 0 ) {
-				$vendorsContainer = $form->addContainer( 'vendor_groups' );
-				foreach ( $vendorCheckboxes as $checkboxConfig ) {
-					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
-					if ( $checkboxConfig['disabled'] === true ) {
-						$checkboxControl->setDisabled()->setOmitted( false );
-					}
-					if ( $checkboxConfig['default'] === true ) {
-						$checkboxControl->setDefaultValue( true );
-					}
+		$carrierOptions   = get_option( $optionId );
+		$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions !== false ? $carrierOptions : null ) );
+		if ( count( $vendorCheckboxes ) > 0 ) {
+			$vendorsContainer = $form->addContainer( 'vendor_groups' );
+			foreach ( $vendorCheckboxes as $checkboxConfig ) {
+				$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
+				if ( $checkboxConfig['disabled'] === true ) {
+					$checkboxControl->setDisabled()->setOmitted( false );
+				}
+				if ( $checkboxConfig['default'] === true ) {
+					$checkboxControl->setDefaultValue( true );
 				}
 			}
 		}
@@ -442,17 +432,15 @@ class OptionsPage {
 
 		$options = $form->getValues( 'array' );
 
-		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$checkedVendors = $this->getCheckedVendors( $options );
-			if (
-				isset( $options['vendor_groups'] ) &&
-				count( $options['vendor_groups'] ) >= self::MINIMUM_CHECKED_VENDORS &&
-				count( $checkedVendors ) < self::MINIMUM_CHECKED_VENDORS
-			) {
-				$vendorMessage = __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' );
-				add_settings_error( 'vendor_groups', 'vendor_groups', esc_attr( $vendorMessage ) );
-				$form->addError( $vendorMessage );
-			}
+		$checkedVendors = $this->getCheckedVendors( $options );
+		if (
+			isset( $options['vendor_groups'] ) &&
+			count( $options['vendor_groups'] ) >= self::MINIMUM_CHECKED_VENDORS &&
+			count( $checkedVendors ) < self::MINIMUM_CHECKED_VENDORS
+		) {
+			$vendorMessage = __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' );
+			add_settings_error( 'vendor_groups', 'vendor_groups', esc_attr( $vendorMessage ) );
+			$form->addError( $vendorMessage );
 		}
 
 		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {

@@ -19,6 +19,9 @@
 .packetery-widget-button-wrapper .packeta-widget-info-success {
   color: green;
 }
+.packetery-widget-button-wrapper .packeta-widget-info {
+  margin: 0;
+}
 .packetery-widget-button-wrapper p {
   margin-bottom: 0;
 }

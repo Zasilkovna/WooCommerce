@@ -5,6 +5,7 @@ export const PacketaWidget = ( {
 	logoSrc,
 	logoAlt,
 	info,
+	place,
 	onClick,
 	loading,
 	placeholderText,
@@ -34,6 +35,7 @@ export const PacketaWidget = ( {
 						</a>
 					</div>
 					{ children }
+					{ place && <p className="packeta-widget-place">{ place }</p> }
 					{ info && <p className="packeta-widget-info">{ info }</p> }
 				</div>
 			) }

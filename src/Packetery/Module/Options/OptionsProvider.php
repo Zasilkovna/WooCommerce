@@ -35,6 +35,7 @@ class OptionsProvider {
 	public const PRICES_INCLUDE_TAX_DEFAULT                = false;
 	public const HIDE_CHECKOUT_LOGO_DEFAULT                = false;
 	public const AUTO_EMAIL_INFO_INSERTION_DEFAULT         = true;
+	public const PICKUP_POINT_VALIDATION_ENABLED_DEFAULT   = false;
 
 	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
 	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
@@ -772,5 +773,14 @@ class OptionsProvider {
 	 */
 	public function sanitizePaymentGatewayId( string $id ): string {
 		return preg_replace( '/\W/', '_', $id );
+	}
+
+	public function isPickupPointValidationEnabled(): bool {
+		$isEnabled = $this->get( Page::FORM_PICKUP_POINT_VALIDATION_ENABLED );
+		if ( $isEnabled === null ) {
+			return self::PICKUP_POINT_VALIDATION_ENABLED_DEFAULT;
+		}
+
+		return (bool) $isEnabled;
 	}
 }

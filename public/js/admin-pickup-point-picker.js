@@ -41,6 +41,7 @@
 				$widgetDiv.find( '[name=' + attr.name + ']' ).val( point[ attrKey ] || '' );
 			}
 
+			$widgetDiv.find( '[data-packetery-widget-place]' ).html( point.place );
 			$widgetDiv.find( '[data-packetery-widget-info]' ).html( point.name );
 		}, settings.widgetOptions );
 	} );

@@ -199,6 +199,7 @@ class Builder {
 		if ( $result->point_id !== null ) {
 			$pickUpPoint = new PickupPoint(
 				$result->point_id,
+				$result->point_place,
 				$result->point_name,
 				$result->point_city,
 				$result->point_zip,

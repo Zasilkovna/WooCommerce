@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Checkout;
 
 use Packetery\Module\Carrier;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use WC_Cart;
@@ -37,14 +38,21 @@ class RateCalculator {
 	 */
 	private $wcAdapter;
 
+	/**
+	 * @var DiagnosticsLogger
+	 */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		CurrencySwitcherService $currencySwitcherService
+		CurrencySwitcherService $currencySwitcherService,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
 		$this->currencySwitcherService = $currencySwitcherService;
+		$this->diagnosticsLogger       = $diagnosticsLogger;
 	}
 
 	/**
@@ -107,7 +115,18 @@ class RateCalculator {
 				}
 			}
 		}
-
+		$this->diagnosticsLogger->log(
+			'Rate calculator',
+			[
+				'cost'                        => $cost,
+				'options'                     => $options,
+				'cartPrice'                   => $cartPrice,
+				'totalCartProductValue'       => $totalCartProductValue,
+				'cartWeight'                  => $cartWeight,
+				'isFreeShippingCouponApplied' => $isFreeShippingCouponApplied,
+				'carrierOptions'              => $carrierOptions,
+			]
+		);
 		if ( $cost === null ) {
 			return null;
 		}
@@ -115,12 +134,25 @@ class RateCalculator {
 		$freeShippingLimit = null;
 		if ( $carrierOptions['free_shipping_limit'] ) {
 			$freeShippingLimit = $this->currencySwitcherService->getConvertedPrice( $carrierOptions['free_shipping_limit'] );
+			$this->diagnosticsLogger->log(
+				'Rate calculator - free shipping limit',
+				[
+					'freeShippingLimit' => $freeShippingLimit,
+				]
+			);
 			if ( $cartPrice >= $freeShippingLimit ) {
 				$cost = 0;
 			}
 		}
 
-		if ( $cost !== 0 && $isFreeShippingCouponApplied && $options->hasCouponFreeShippingActive() ) {
+		$hasCouponFreeShippingActive = $options->hasCouponFreeShippingActive();
+		$this->diagnosticsLogger->log(
+			'Rate calculator - coupon free shipping',
+			[
+				'hasCouponFreeShippingActive' => $hasCouponFreeShippingActive,
+			]
+		);
+		if ( $cost !== 0 && $isFreeShippingCouponApplied === true && $hasCouponFreeShippingActive === true ) {
 			$cost = 0;
 		}
 
@@ -131,6 +163,14 @@ class RateCalculator {
 			Carrier\OptionsPage::FORM_FIELD_WEIGHT_LIMITS => $carrierOptions[ Carrier\OptionsPage::FORM_FIELD_WEIGHT_LIMITS ],
 			Carrier\OptionsPage::FORM_FIELD_PRODUCT_VALUE_LIMITS => $carrierOptions[ Carrier\OptionsPage::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ?? [],
 		];
+
+		$this->diagnosticsLogger->log(
+			'Rate calculator - cost and filter parameters',
+			[
+				'filterParameters' => $filterParameters,
+				'cost'             => $cost,
+			]
+		);
 
 		/**
 		 * Filter shipping rate cost in checkout
@@ -150,9 +190,9 @@ class RateCalculator {
 	 */
 	public function getCODSurcharge( array $carrierOptions, float $cartPrice ): float {
 		if ( isset( $carrierOptions['surcharge_limits'] ) ) {
-			foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
-				if ( $cartPrice <= $weightLimit['order_price'] ) {
-					return (float) $weightLimit['surcharge'];
+			foreach ( $carrierOptions['surcharge_limits'] as $surchargeLimit ) {
+				if ( $cartPrice <= $surchargeLimit['order_price'] ) {
+					return (float) $surchargeLimit['surcharge'];
 				}
 			}
 		}

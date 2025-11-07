@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Core;
 
+use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Entity\Carrier;
@@ -232,6 +233,7 @@ class DummyFactory {
 	public static function createPickupPoint(): PickupPoint {
 		return new PickupPoint(
 			'123456',
+			'Dummy Place',
 			'Dummy PP',
 			'Dummy city',
 			'123 45',
@@ -275,6 +277,23 @@ class DummyFactory {
 			1,
 			'de',
 			1.25,
+		);
+	}
+
+	public static function getEmptyPickupPointValidateRequest(): PickupPointValidateRequest {
+		return new PickupPointValidateRequest(
+			'dummyPointId',
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 		);
 	}
 }

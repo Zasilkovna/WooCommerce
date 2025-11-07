@@ -9,7 +9,7 @@
 			{$translations['packeta']} - {$translations['pickupPointDetail']}
 		</h3>
 
-		<p><strong>{$translations['name']}</strong>: {$pickupPoint->getName()}</p>
+		<p><strong>{$translations['name']}</strong>: {$pickupPoint->getPlace() ?? $pickupPoint->getName()}</p>
 		<p><strong>{$translations['address']}</strong>: {$pickupPoint->getFullAddress()}</p>
 		{if $pickupPoint->getUrl() && !$isExternalCarrier}
 			<p><a class="button" target="_blank"

@@ -11,7 +11,7 @@
 			<tr>
 				<th scope="row">{$translations['pickupPointName']}</th>
 				<td>
-					{$pickupPoint->getName()}
+					{$pickupPoint->getPlace() ?? $pickupPoint->getName()}
 					{if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
 						<br>
 						<a class="button" target="_blank"

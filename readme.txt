@@ -6,7 +6,7 @@ Tested up to: 6.8.2
 Stable tag: 2.2.0
 Requires PHP: 7.4
 WC requires at least: 5.1
-WC tested up to: 10.1.2
+WC tested up to: 10.3.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
@@ -52,7 +52,7 @@ Yes. All functions of our plugin are completely free. No need to purchase any pr
 
 = What are the minimum required versions of WordPress and PHP? =
 
-In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.5+ and PHP 7.2 - 8.4.
+In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 6.3+ and PHP 7.4 - 8.4.
 
 = I'm missing a feature I would like to see, what should I do? =
 
@@ -63,6 +63,16 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.2.0 =
+Added: Optional validation of the selected pickup point using the API.
+Added: Extended logging for diagnostics.
+Updated: Displaying the name of the pickup point next to its address.
+Updated: Added a specific log message for logging claim assistant label printing actions.
+Added: Support for external cache folder.
+Updated: The minimum required PHP version is now 7.4.
+Added: It is now possible to insert custom shortcodes into emails to display information about the selected pickup point or the submitted packet.
+Updated: Advanced carrier setting is now enabled by default. Removed notice about pickup point split activation.
+
 = 2.1.2 =
 Fixed: Plugin no longer crashes on the orders list when a refunded order is present.
 
@@ -70,21 +80,5 @@ Fixed: Plugin no longer crashes on the orders list when a refunded order is pres
 Fixed: Removing all transients and options upon uninstall.
 Updated: Checkout data transient lifetime raised to the default value of WooCommerce.
 Added: Backend checkout data validation when using block checkout.
-
-= 2.1 =
-Added: New Home page with plugin setup wizard.
-Added: Tutorials (setup, order detail, orders list, customs declaration).
-Added: Option to force database tables creation/update (do_action('packeta_create_tables')).
-Added: New setting option: Hide Packeta logo in widget.
-Updated: Plugin uninstall no longer deletes data and settings (removed only if PACKETERY_REMOVE_ALL_DATA=true is defined); a warning is shown on deactivation.
-Updated: Bulk printing of carrier labels – for external carriers only their labels can be generated.
-Updated: Final shipment statuses (e.g. delivered, canceled) are no longer displayed.
-Fixed: Missing widget in order detail for universal shipping zone.
-
-= 2.0.11 =
-Fixed: Correct loading of shipping methods in case of premature payment plugin queries.
-
-= 2.0.10 =
-Fixed: Introduced carrier and shipping method caching to prevent excessive memory usage and performance problems.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

@@ -42,6 +42,10 @@ class AttributeMapper {
 					$pickupPoint->setId( $attrValue );
 
 					break;
+				case Attribute::POINT_PLACE:
+					$pickupPoint->setPlace( (string) $attrValue );
+
+					break;
 				case Attribute::POINT_NAME:
 					$pickupPoint->setName( $attrValue );
 

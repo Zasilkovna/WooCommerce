@@ -12,7 +12,6 @@ use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\WidgetOptionsBuilder;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
@@ -26,7 +25,6 @@ class WidgetOptionsBuilderTest extends TestCase {
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
 				'expectedCountry'    => 'cz',
-				'splitActive'        => true,
 				'adultContent'       => true,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'livePickupPoint', 'vendors' ],
 				'existingVendorKeys' => [ 'selected', 'country', 'group' ],
@@ -36,7 +34,6 @@ class WidgetOptionsBuilderTest extends TestCase {
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
 				'expectedCountry'    => 'cz',
-				'splitActive'        => true,
 				'adultContent'       => false,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors' ],
 				'existingVendorKeys' => [ 'selected', 'country', 'group' ],
@@ -46,7 +43,6 @@ class WidgetOptionsBuilderTest extends TestCase {
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierCzechHdRequiresSize() ),
 				'expectedCountry'    => 'cz',
-				'splitActive'        => true,
 				'adultContent'       => false,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors' ],
 				'existingVendorKeys' => [ 'selected', 'carrierId' ],
@@ -56,7 +52,6 @@ class WidgetOptionsBuilderTest extends TestCase {
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierGermanHd() ),
 				'expectedCountry'    => 'de',
-				'splitActive'        => true,
 				'adultContent'       => false,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors' ],
 				'existingVendorKeys' => [ 'selected', 'carrierId' ],
@@ -66,56 +61,11 @@ class WidgetOptionsBuilderTest extends TestCase {
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierGermanHd() ),
 				'expectedCountry'    => 'de',
-				'splitActive'        => true,
 				'adultContent'       => true,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors', 'livePickupPoint' ],
 				'existingVendorKeys' => [ 'selected', 'carrierId' ],
 				'vendorsSize'        => 1,
 				'notExistingKeys'    => [ 'carriers' ],
-			],
-			[
-				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
-				'expectedCountry'        => 'cz',
-				'splitActive'            => false,
-				'adultContent'           => true,
-				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers', 'livePickupPoint' ],
-				'existingVendorKeys'     => [],
-				'vendorsSize'            => 0,
-				'notExistingKeys'        => [ 'vendors' ],
-				'carriersValueValidator' => 'is_string',
-			],
-			[
-				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
-				'expectedCountry'        => 'cz',
-				'splitActive'            => false,
-				'adultContent'           => false,
-				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers' ],
-				'existingVendorKeys'     => [],
-				'vendorsSize'            => 0,
-				'notExistingKeys'        => [ 'vendors', 'livePickupPoint' ],
-				'carriersValueValidator' => 'is_string',
-			],
-			[
-				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierGermanPp() ),
-				'expectedCountry'        => 'de',
-				'splitActive'            => false,
-				'adultContent'           => false,
-				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers' ],
-				'existingVendorKeys'     => [],
-				'vendorsSize'            => 0,
-				'notExistingKeys'        => [ 'vendors', 'livePickupPoint' ],
-				'carriersValueValidator' => 'is_numeric',
-			],
-			[
-				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierCzechHdRequiresSize() ),
-				'expectedCountry'        => 'cz',
-				'splitActive'            => false,
-				'adultContent'           => false,
-				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers' ],
-				'existingVendorKeys'     => [],
-				'vendorsSize'            => 0,
-				'notExistingKeys'        => [ 'vendors', 'livePickupPoint' ],
-				'carriersValueValidator' => 'is_null',
 			],
 		];
 	}
@@ -126,7 +76,6 @@ class WidgetOptionsBuilderTest extends TestCase {
 	public function testPickupPointForAdmin(
 		Order $order,
 		string $expectedCountry,
-		bool $splitActive,
 		bool $adultContent,
 		array $existingKeys,
 		array $existingVendorKeys,
@@ -134,24 +83,17 @@ class WidgetOptionsBuilderTest extends TestCase {
 		array $notExistingKeys,
 		?string $carriersValueValidator = null
 	): void {
-		$wpAdapterMock           = $this->createMock( WpAdapter::class );
-		$featureFlagProviderMock = $this->createMock( FeatureFlagProvider::class );
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
 
 		$config = new PacketaPickupPointsConfig(
 			new CompoundCarrierCollectionFactory(),
-			new VendorCollectionFactory(),
-			$featureFlagProviderMock
+			new VendorCollectionFactory()
 		);
 
 		$builder = new WidgetOptionsBuilder(
 			$config,
-			$featureFlagProviderMock,
 			$wpAdapterMock
 		);
-
-		$featureFlagProviderMock
-			->method( 'isSplitActive' )
-			->willReturn( $splitActive );
 
 		$order->setShippingCountry( $order->getCarrier()->getCountry() );
 		$order->setAdultContent( $adultContent );
@@ -242,18 +184,15 @@ class WidgetOptionsBuilderTest extends TestCase {
 		array $expectedKeys,
 		array $nonExistingKeys
 	): void {
-		$wpAdapterMock           = $this->createMock( WpAdapter::class );
-		$featureFlagProviderMock = $this->createMock( FeatureFlagProvider::class );
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
 
 		$config = new PacketaPickupPointsConfig(
 			new CompoundCarrierCollectionFactory(),
-			new VendorCollectionFactory(),
-			$featureFlagProviderMock
+			new VendorCollectionFactory()
 		);
 
 		$builder = new WidgetOptionsBuilder(
 			$config,
-			$featureFlagProviderMock,
 			$wpAdapterMock
 		);
 
@@ -280,47 +219,23 @@ class WidgetOptionsBuilderTest extends TestCase {
 		return [
 			[
 				'carrier'           => DummyFactory::createCarrierCzechHdRequiresSize(),
-				'splitActive'       => true,
-				'expectedKeys'      => array_merge( $alwaysPresentKeys, [ 'address_validation' ] ),
-				'nonExistingKeys'   => [ 'vendors', 'carriers' ],
-				'addressValidation' => 'optional',
-			],
-			[
-				'carrier'           => DummyFactory::createCarrierCzechHdRequiresSize(),
-				'splitActive'       => false,
 				'expectedKeys'      => array_merge( $alwaysPresentKeys, [ 'address_validation' ] ),
 				'nonExistingKeys'   => [ 'vendors', 'carriers' ],
 				'addressValidation' => 'optional',
 			],
 			[
 				'carrier'           => DummyFactory::createCarrierGermanHd(),
-				'splitActive'       => true,
-				'expectedKeys'      => array_merge( $alwaysPresentKeys, [ 'address_validation' ] ),
-				'nonExistingKeys'   => [ 'vendors', 'carriers' ],
-				'addressValidation' => 'none',
-			],
-			[
-				'carrier'           => DummyFactory::createCarrierGermanHd(),
-				'splitActive'       => false,
 				'expectedKeys'      => array_merge( $alwaysPresentKeys, [ 'address_validation' ] ),
 				'nonExistingKeys'   => [ 'vendors', 'carriers' ],
 				'addressValidation' => 'none',
 			],
 			[
 				'carrier'         => DummyFactory::createCarrierZpointcz(),
-				'splitActive'     => true,
 				'expectedKeys'    => array_merge( $alwaysPresentKeys, [ 'vendors' ] ),
 				'nonExistingKeys' => [ 'address_validation', 'carriers' ],
 			],
 			[
-				'carrier'         => DummyFactory::createCarrierZpointcz(),
-				'splitActive'     => false,
-				'expectedKeys'    => array_merge( $alwaysPresentKeys, [ 'carriers' ] ),
-				'nonExistingKeys' => [ 'address_validation', 'vendors' ],
-			],
-			[
 				'carrier'         => DummyFactory::createCarrierCzzpoint(),
-				'splitActive'     => true,
 				'expectedKeys'    => array_merge( $alwaysPresentKeys, [ 'vendors' ] ),
 				'nonExistingKeys' => [ 'address_validation', 'carriers' ],
 			],
@@ -332,23 +247,19 @@ class WidgetOptionsBuilderTest extends TestCase {
 	 */
 	public function testGetCarrierForCheckout(
 		Carrier $carrier,
-		bool $splitActive,
 		array $expectedKeys,
 		array $nonExistingKeys,
 		?string $addressValidation = null
 	): void {
-		$wpAdapterMock           = $this->createMock( WpAdapter::class );
-		$featureFlagProviderMock = $this->createMock( FeatureFlagProvider::class );
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
 
 		$config = new PacketaPickupPointsConfig(
 			new CompoundCarrierCollectionFactory(),
 			new VendorCollectionFactory(),
-			$featureFlagProviderMock
 		);
 
 		$builder = new WidgetOptionsBuilder(
 			$config,
-			$featureFlagProviderMock,
 			$wpAdapterMock
 		);
 
@@ -360,10 +271,6 @@ class WidgetOptionsBuilderTest extends TestCase {
 					'address_validation' => $addressValidation,
 				]
 			);
-
-		$featureFlagProviderMock
-			->method( 'isSplitActive' )
-			->willReturn( $splitActive );
 
 		$result = $builder->getCarrierForCheckout(
 			$carrier,

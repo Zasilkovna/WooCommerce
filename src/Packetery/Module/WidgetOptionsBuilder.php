@@ -1,9 +1,4 @@
 <?php
-/**
- * Class WidgetOptionsBuilder
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
@@ -12,14 +7,9 @@ namespace Packetery\Module;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Exception\EmptyVendorsException;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 
-/**
- * Class WidgetOptionsBuilder
- *
- * @package Packetery
- */
 class WidgetOptionsBuilder {
 
 	/**
@@ -30,25 +20,16 @@ class WidgetOptionsBuilder {
 	private $pickupPointsConfig;
 
 	/**
-	 * Feature flag.
-	 *
-	 * @var FeatureFlagProvider
-	 */
-	private $featureFlagProvider;
-
-	/**
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
 
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagProvider $featureFlagProvider,
 		WpAdapter $wpAdapter
 	) {
-		$this->pickupPointsConfig  = $pickupPointsConfig;
-		$this->featureFlagProvider = $featureFlagProvider;
-		$this->wpAdapter           = $wpAdapter;
+		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->wpAdapter          = $wpAdapter;
 	}
 
 	/**
@@ -59,6 +40,7 @@ class WidgetOptionsBuilder {
 	 * @param array|null $vendorGroups Vendor groups when checked in compound carrier settings.
 	 *
 	 * @return array
+	 * @throws EmptyVendorsException
 	 */
 	private function getWidgetVendorsParam( string $carrierId, string $country, ?array $vendorGroups ): array {
 		if ( is_numeric( $carrierId ) ) {
@@ -70,15 +52,9 @@ class WidgetOptionsBuilder {
 			];
 		}
 
-		if ( ! isset( $vendorGroups ) || count( $vendorGroups ) === 0 ) {
-			if ( $this->pickupPointsConfig->isCompoundCarrierId( $carrierId ) ) {
-				$vendorGroups = $this->pickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId );
-			} else {
-				$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
-				if ( isset( $vendorCarriers[ $carrierId ] ) ) {
-					$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
-				}
-			}
+		$vendorGroups = $this->pickupPointsConfig->getFinalVendorGroups( $vendorGroups, $carrierId );
+		if ( $vendorGroups === null ) {
+			throw new EmptyVendorsException( 'Empty vendor groups for internal carrier.' );
 		}
 
 		$vendorsParam = [];
@@ -97,22 +73,6 @@ class WidgetOptionsBuilder {
 	}
 
 	/**
-	 * Gets widget carriers param.
-	 *
-	 * @param bool   $isPickupPoints Is context pickup point related.
-	 * @param string $carrierId      Carrier id.
-	 *
-	 * @return string|null
-	 */
-	private function getCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
-		if ( $isPickupPoints ) {
-			return ( is_numeric( $carrierId ) ? $carrierId : Entity\Carrier::INTERNAL_PICKUP_POINTS_ID );
-		}
-
-		return null;
-	}
-
-	/**
 	 * Gets carrier configuration for widgets in frontend.
 	 *
 	 * @param Entity\Carrier $carrier         Carrier configuration.
@@ -128,15 +88,11 @@ class WidgetOptionsBuilder {
 
 		$carrierOption = $this->wpAdapter->getOption( $optionId );
 		if ( $carrier->hasPickupPoints() ) {
-			if ( $this->featureFlagProvider->isSplitActive() ) {
-				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
-					$carrier->getId(),
-					$carrier->getCountry(),
-					( ( ( $carrierOption !== null && $carrierOption !== false ) && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
-				);
-			} else {
-				$carrierConfigForWidget['carriers'] = $this->getCarriersParam( true, $carrier->getId() );
-			}
+			$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
+				$carrier->getId(),
+				$carrier->getCountry(),
+				( ( ( $carrierOption !== null && $carrierOption !== false ) && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
+			);
 		}
 
 		if ( ! $carrier->hasPickupPoints() ) {
@@ -166,17 +122,13 @@ class WidgetOptionsBuilder {
 			'weight'      => $order->getFinalWeight(),
 		];
 
-		if ( $this->featureFlagProvider->isSplitActive() ) {
-			// In backend, we want all pickup points in that country for Packeta carrier.
-			if ( $order->getCarrier()->getId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
-				$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
-					$order->getCarrier()->getId(),
-					$order->getShippingCountry(),
-					null
-				);
-			}
-		} else {
-			$widgetOptions['carriers'] = $this->getCarriersParam( $order->isPickupPointDelivery(), $order->getCarrier()->getId() );
+		// In backend, we want all pickup points in that country for Packeta carrier.
+		if ( $order->getCarrier()->getId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+			$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
+				$order->getCarrier()->getId(),
+				$order->getShippingCountry(),
+				null
+			);
 		}
 
 		if ( $order->containsAdultContent() === true ) {
