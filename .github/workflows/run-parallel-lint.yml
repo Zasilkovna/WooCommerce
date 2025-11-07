@@ -32,4 +32,4 @@ jobs:
                 run: composer create-project php-parallel-lint/php-parallel-lint ./temp/php-parallel-lint --no-dev
 
             -   name: Run PHP parallel lint
-                run: ./temp/php-parallel-lint/parallel-lint . --exclude ./tests
+                run: ./temp/php-parallel-lint/parallel-lint . --exclude ./tests --exclude ./cli/graph-coverage

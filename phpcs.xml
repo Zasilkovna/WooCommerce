@@ -19,6 +19,7 @@
 	<file>uninstall.php</file>
 	<file>tests</file>
 
+	<exclude-pattern>cli/graph-coverage/</exclude-pattern>
 	<exclude-pattern>src/Packetery/Module/Shipping/Generated/</exclude-pattern>
 	<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 
