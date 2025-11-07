@@ -4,12 +4,14 @@
 {varType string $exportLink}
 {varType null|string $lastExport}
 
-<h3>{$translations['bugReportTitle']}</h3>
-<p>{$translations['bugReportDescription']}</p>
+{if $bugReportFormEnabled === true}
+	<h3>{$translations['bugReportTitle']}</h3>
+	<p>{$translations['bugReportDescription']}</p>
 
-{include '../bug-report-form.latte'}
+	{include '../bug-report-form.latte'}
 
-<hr class="packetery-section-divider">
+	<hr class="packetery-section-divider">
+{/if}
 
 <h3>{$translations['diagnosticsLoggingTitle']}</h3>
 <p>

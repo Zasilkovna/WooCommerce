@@ -64,8 +64,8 @@ Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
 = 2.2.0 =
-Added: Error reporting form.
 Added: Optional validation of the selected pickup point using the API.
+Added: Extended logging for diagnostics.
 Updated: Displaying the name of the pickup point next to its address.
 Updated: Added a specific log message for logging claim assistant label printing actions.
 Added: Support for external cache folder.
