@@ -32,11 +32,11 @@ class DiagnosticsLoggingFormFactory {
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
 		$form->addCheckbox( 'enabled', __( 'Enable logging', 'packeta' ) );
-		$form->addSubmit( 'save', __( 'Save', 'packeta' ) );
+		$form->addSubmit( 'saveDiagnosticsLog', __( 'Save', 'packeta' ) );
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
-		if ( $form['save'] instanceof SubmitButton &&
-			$form['save']->isSubmittedBy() === false
+		if ( $form['saveDiagnosticsLog'] instanceof SubmitButton &&
+			$form['saveDiagnosticsLog']->isSubmittedBy() === false
 		) {
 			$form->setValues(
 				[
