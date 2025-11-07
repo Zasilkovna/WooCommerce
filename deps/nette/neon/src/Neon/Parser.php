@@ -188,7 +188,7 @@ final class Parser
         }
         $arr[$k] = \true;
     }
-    private function injectPos(Node $node, int $start = null, int $end = null) : Node
+    private function injectPos(Node $node, ?int $start = null, ?int $end = null) : Node
     {
         $node->startTokenPos = $start ?? $this->tokens->getPos();
         $node->startLine = $this->posToLine[$node->startTokenPos];

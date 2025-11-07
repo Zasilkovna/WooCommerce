@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc565d9f804ece6eb62e4821ef4e6957c
+class ComposerStaticInit71b11fa8e15fc52e1a5947e405993484
 {
     public static $files = array (
         'packeteryd507e002f7fce7f0c6dbf1f22edcb902' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/functions.php',
@@ -302,7 +302,7 @@ class ComposerStaticInitc565d9f804ece6eb62e4821ef4e6957c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInitc565d9f804ece6eb62e4821ef4e6957c::$classMap;
+            $loader->classMap = ComposerStaticInit71b11fa8e15fc52e1a5947e405993484::$classMap;
 
         }, null, ClassLoader::class);
     }
