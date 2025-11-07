@@ -969,6 +969,7 @@ class Page {
 			$latteParams = [ 'form' => $this->create_form() ];
 		} elseif ( $activeTab === self::TAB_SUPPORT ) {
 			$latteParams = [
+				'bugReportFormEnabled'   => false,
 				'bugReportForm'          => $this->bugReportForm->createForm(),
 				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
 				'hasPacketaLog'          => is_file( $this->diagnosticsLogger->getPacketaLogPath() ),
@@ -1092,7 +1093,7 @@ class Page {
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
-			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. After enabling it, please repeat the action that is not working as expected. The log will then record important function calls, passed parameters, and their results. Once you have reproduced the issue, disable diagnostic logging again. This information can help developers troubleshoot the problem.', 'packeta' ),
+			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. After enabling it, please repeat the action that is not working as expected. The log will then record important function calls, passed parameters, and their results. Once you have reproduced the issue, disable diagnostic logging again. This information can help developers troubleshoot the problem. You can find the log in the packeta.log file, which is stored by default in wp-content/plugins/packeta/log.', 'packeta' ),
 			'diagnosticsLoggingLink'                 => $this->wpAdapter->__( 'Delete log', 'packeta' ),
 			'bugReportScreenshotsTitle'              => $this->wpAdapter->__( 'If possible, please provide screenshots showing the problem. You can do it this way:', 'packeta' ),
 			'bugReportScreenshotsFirstStep'          => sprintf(
