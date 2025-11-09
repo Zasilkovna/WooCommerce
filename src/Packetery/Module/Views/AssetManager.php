@@ -214,6 +214,29 @@ class AssetManager {
 					'packetery-select2',
 				]
 			);
+
+			$this->wpAdapter->localizeScript(
+				'packetery-admin-options',
+				'translationsAdminOptions',
+				[
+					'confirmLogDeletion' => $this->wpAdapter->__(
+						'Are you sure you want to delete the log file?',
+						'packeta'
+					),
+				]
+			);
+
+			$this->wpAdapter->enqueueEditor();
+			$this->wpAdapter->enqueueScript( 'editor' );
+			$this->enqueueScript(
+				'packetery-bug-report-editor',
+				'public/js/bug-report-editor.js',
+				true,
+				[
+					'jquery',
+					'editor',
+				]
+			);
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();

@@ -118,25 +118,25 @@
   font-weight: bold;
 }
 
-#packetery-options-page {
+#packetery-options-page, .packetery_settings {
   padding-right: 1em;
 }
-#packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page select {
+#packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page input[type=email], #packetery-options-page select, .packetery_settings input[type=text], .packetery_settings input[type=number], .packetery_settings input[type=email], .packetery_settings select {
   width: 500px;
   max-width: none;
 }
-#packetery-options-page .fieldset {
+#packetery-options-page .fieldset, .packetery_settings .fieldset {
   border: 1px solid #ddd;
   padding: 10px;
   margin-top: 30px;
 }
-#packetery-options-page .fieldset legend {
+#packetery-options-page .fieldset legend, .packetery_settings .fieldset legend {
   font-weight: 600;
   color: #1d2327;
   font-size: 1.3em;
   padding: 0 0.5em;
 }
-#packetery-options-page .notice {
+#packetery-options-page .notice, .packetery_settings .notice {
   margin: 10px 0;
 }
 
@@ -440,6 +440,7 @@ tbody .packetery-log-column-note {
 .packeta_page .select2 .select2-selection,
 .packeta_page input[type=text],
 .packeta_page input[type=number],
+.packeta_page input[type=email],
 .packeta_page select,
 .packeta_page textarea {
   border-radius: 0;
@@ -452,6 +453,7 @@ tbody .packetery-log-column-note {
 }
 .packeta_page input[type=text]:focus,
 .packeta_page input[type=number]:focus,
+.packeta_page input[type=email],
 .packeta_page select:focus,
 .packeta_page textarea:focus {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
@@ -766,6 +768,10 @@ tbody .packetery-log-column-note {
 
 .packetery-carrier-status-inactive {
   color: #ba1b02;
+}
+
+.packetery-section-divider {
+  margin: 30px 0;
 }
 
 .packetery-flex-container {

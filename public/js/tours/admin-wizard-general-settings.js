@@ -146,6 +146,13 @@
 						}
 					},
 					{
+						element: '.packetery-js-wizard-pickup-point-validation-enabled',
+						popover: {
+							title: wizardTourConfig.translations.pickupPointValidationEnabled.title,
+							description: wizardTourConfig.translations.pickupPointValidationEnabled.description
+						}
+					},
+					{
 						element: '.packetery-js-wizard-settings-save-button',
 						popover: {
 							title: wizardTourConfig.translations.settingsSaveButton.title,

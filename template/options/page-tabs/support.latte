@@ -1,3 +1,36 @@
+{varType array $translations}
+{varType bool $hasPacketaLog}
+{varType string $deleteDiagnosticsLogsLink}
+{varType string $exportLink}
+{varType null|string $lastExport}
+
+{if $bugReportFormEnabled === true}
+	<h3>{$translations['bugReportTitle']}</h3>
+	<p>{$translations['bugReportDescription']}</p>
+
+	{include '../bug-report-form.latte'}
+
+	<hr class="packetery-section-divider">
+{/if}
+
+<h3>{$translations['diagnosticsLoggingTitle']}</h3>
+<p>
+	{$translations['diagnosticsLoggingDescription']}
+</p>
+{form $diagnosticsLoggingForm}
+<p>{input enabled}</p>
+
+	<p class="submit">
+		{input save, 'class' => 'button button-primary'}
+	</p>
+{/form}
+
+{if $hasPacketaLog === true}
+	<p><a href="{$deleteDiagnosticsLogsLink}" class="button js-packetery-delete-log">{$translations['diagnosticsLoggingLink']}</a></p>
+{/if}
+<hr class="packetery-section-divider">
+
+<h3>{$translations['exportSettingsTitle']}</h3>
 <p>
 	{$translations['optionsExportInfo1']}
 	<a href="https://client.packeta.com/support/">https://client.packeta.com/support/</a>

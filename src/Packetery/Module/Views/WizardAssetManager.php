@@ -153,14 +153,14 @@ class WizardAssetManager {
 	 */
 	private function createGeneralSettingsTour( array $basicTranslations ): void {
 		$translations = [
-			'apiPassword'          => [
+			'apiPassword'                  => [
 				'title'       => $this->wpAdapter->__( 'API password', 'packeta' ),
 				'description' => sprintf(
 					$this->wpAdapter->__( 'API password can be found at %s', 'packeta' ),
 					'<a href="https://client.packeta.com/support" target="_blank">https://client.packeta.com/support<a/>'
 				),
 			],
-			'apiSender'            => [
+			'apiSender'                    => [
 				'title'       => $this->wpAdapter->__( 'Sender', 'packeta' ),
 				'description' => sprintf(
 				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
@@ -171,69 +171,73 @@ class WizardAssetManager {
 					'</a>'
 				),
 			],
-			'packetaLabelFormat'   => [
+			'packetaLabelFormat'           => [
 				'title'       => $this->wpAdapter->__( 'Packeta Label Format', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Select the label print format for Packeta according to your printer.', 'packeta' ),
 			],
-			'carrierLabelFormat'   => [
+			'carrierLabelFormat'           => [
 				'title'       => $this->wpAdapter->__( 'Carrier Label Format', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Select the label print format for the carrier according to your printer.', 'packeta' ),
 			],
-			'cod'                  => [
+			'cod'                          => [
 				'title'       => $this->wpAdapter->__( 'Payment methods that represent cash on delivery', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Select the payment method that will be set as cash on delivery. This information will be passed to the carrier to calculate surcharges.', 'packeta' ),
 			],
-			'packagingWeight'      => [
+			'packagingWeight'              => [
 				'title'       => $this->wpAdapter->__( 'Weight of packaging material', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. It is also taken into account when evaluating weight rules in the cart.', 'packeta' ),
 			],
-			'defaultWeightEnabled' => [
+			'defaultWeightEnabled'         => [
 				'title'       => $this->wpAdapter->__( 'Enable default weight', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If no weight is set for the products in order, this value will be used.', 'packeta' ),
 			],
-			'dimensionsUnit'       => [
+			'dimensionsUnit'               => [
 				'title'       => $this->wpAdapter->__( 'Units used for dimensions', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Units used for package dimensions, such as centimeters (cm) or millimeters (mm).', 'packeta' ),
 			],
-			'dimensionsEnabled'    => [
+			'dimensionsEnabled'            => [
 				'title'       => $this->wpAdapter->__( 'Enable default dimensions', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'When enabled, these values will be automatically used for any order that contains products with zero dimensions.', 'packeta' ),
 			],
-			'pickupPointAddress'   => [
+			'pickupPointAddress'           => [
 				'title'       => $this->wpAdapter->__( 'Replace shipping address with pickup point address', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If this option is enabled, the customers shipping address will automatically be replaced with the selected pickup point address.', 'packeta' ),
 			],
-			'checkoutDetection'    => [
+			'checkoutDetection'            => [
 				'title'       => $this->wpAdapter->__( 'Force checkout type', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If you have trouble displaying the widget button in the checkout, you can set what type of checkout you are using.', 'packeta' ),
 			],
-			'widgetButtonLocation' => [
+			'widgetButtonLocation'         => [
 				'title'       => $this->wpAdapter->__( 'Widget button location in checkout', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Determines where the pickup point selection button will appear at checkout.', 'packeta' ),
 			],
-			'hideLogo'             => [
+			'hideLogo'                     => [
 				'title'       => $this->wpAdapter->__( 'Hide Packeta checkout logo', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Hides the Packeta logo at checkout.', 'packeta' ),
 			],
-			'emailHook'            => [
+			'emailHook'                    => [
 				'title'       => $this->wpAdapter->__( 'Hook used to view information in email', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'This option determines where the pickup point information will be displayed in the e-mail. Choose the appropriate option based on the structure of e-mails in your e-shop.', 'packeta' ),
 			],
-			'forcePacketCancel'    => [
+			'forcePacketCancel'            => [
 				'title'       => $this->wpAdapter->__( 'Force order cancellation', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Cancel the packet for an order even if the cancellation in the Packeta system will not be successful.', 'packeta' ),
 			],
-			'widgetAutoOpen'       => [
+			'widgetAutoOpen'               => [
 				'title'       => $this->wpAdapter->__( 'Automatically open widget when shipping was selected', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout.', 'packeta' ),
 			],
-			'freeShippingShown'    => [
+			'freeShippingShown'            => [
 				'title'       => $this->wpAdapter->__( 'Display the FREE shipping text in checkout', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
 			],
-			'pricesIncludeTax'     => [
+			'pricesIncludeTax'             => [
 				'title'       => $this->wpAdapter->__( 'Prices include tax', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If enabled, VAT will not be added to shipping prices and surcharges.', 'packeta' ),
+			],
+			'pickupPointValidationEnabled' => [
+				'title'       => $this->wpAdapter->__( 'Validate the pickup point using the API before accepting the order', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'If enabled, selected pickup point will be validated using the API to prevent bypassing widget restrictions.', 'packeta' ),
 			],
 		];
 

@@ -474,4 +474,8 @@ class WpdbAdapter {
 	public function escLike( string $text ): string {
 		return $this->wpdb->esc_like( $text );
 	}
+
+	public function dbServerInfo(): string {
+		return $this->wpdb->db_server_info();
+	}
 }

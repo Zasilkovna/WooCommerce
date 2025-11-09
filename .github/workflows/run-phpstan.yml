@@ -30,5 +30,5 @@ jobs:
             -   name: Install Composer dependencies
                 run: composer install
 
-            -   name: Run PHPStan with PHP version 7.2 - 8.3
+            -   name: Run PHPStan with PHP version 7.4 - 8.4
                 run: composer run phpstan:all

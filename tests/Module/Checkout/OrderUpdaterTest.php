@@ -10,7 +10,10 @@ use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Checkout\OrderUpdater;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\EntityFactory\SizeFactory;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Attribute;
@@ -30,8 +33,13 @@ class OrderUpdaterTest extends TestCase {
 	private Carrier\EntityRepository&MockObject $carrierEntityRepositoryMock;
 	private MockObject&CartService $cartServiceMock;
 	private SizeFactory&MockObject $sizeFactoryMock;
+	private DiagnosticsLogger&MockObject $diagnosticsLogger;
+	private WpAdapter&MockObject $wpAdapterMock;
+	private WcAdapter&MockObject $wcAdapterMock;
 
 	private function createOrderUpdater(): OrderUpdater {
+		$this->wpAdapterMock               = $this->createMock( WpAdapter::class );
+		$this->wcAdapterMock               = $this->createMock( WcAdapter::class );
 		$this->orderRepositoryMock         = $this->createMock( Order\Repository::class );
 		$this->checkoutServiceMock         = $this->createMock( CheckoutService::class );
 		$this->checkoutStorageMock         = $this->createMock( CheckoutStorage::class );
@@ -40,8 +48,11 @@ class OrderUpdaterTest extends TestCase {
 		$this->carrierEntityRepositoryMock = $this->createMock( Carrier\EntityRepository::class );
 		$this->cartServiceMock             = $this->createMock( CartService::class );
 		$this->sizeFactoryMock             = $this->createMock( SizeFactory::class );
+		$this->diagnosticsLogger           = $this->createMock( DiagnosticsLogger::class );
 
 		return new OrderUpdater(
+			$this->wpAdapterMock,
+			$this->wcAdapterMock,
 			$this->orderRepositoryMock,
 			$this->checkoutServiceMock,
 			$this->checkoutStorageMock,
@@ -50,7 +61,8 @@ class OrderUpdaterTest extends TestCase {
 			$this->carrierEntityRepositoryMock,
 			$this->cartServiceMock,
 			$this->createMock( PacketAutoSubmitter::class ),
-			$this->sizeFactoryMock
+			$this->sizeFactoryMock,
+			$this->diagnosticsLogger,
 		);
 	}
 

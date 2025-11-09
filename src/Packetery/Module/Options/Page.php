@@ -17,7 +17,10 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Forms\BugReportForm;
+use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -39,10 +42,11 @@ use Packetery\Nette\Http;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER           = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
-	private const FORM_FIELD_FREE_SHIPPING_SHOWN  = 'free_shipping_shown';
+	private const FORM_FIELDS_CONTAINER               = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
+	private const FORM_FIELD_FREE_SHIPPING_SHOWN      = 'free_shipping_shown';
+	public const FORM_PICKUP_POINT_VALIDATION_ENABLED = 'pickup_point_validation_enabled';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -130,6 +134,19 @@ class Page {
 	 */
 	private $supportEmailAddress;
 
+	/**
+	 * @var BugReportForm
+	 */
+	private $bugReportForm;
+
+	/**
+	 * @var DiagnosticsLoggingFormFactory
+	 */
+	private $diagnosticsLoggingFormFactory;
+
+	/** @var DiagnosticsLogger  */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -142,20 +159,26 @@ class Page {
 		UrlBuilder $urlBuilder,
 		PacketSynchronizer $packetSynchronizer,
 		WpAdapter $wpAdapter,
-		string $supportEmailAddress
+		string $supportEmailAddress,
+		BugReportForm $bugReportForm,
+		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
-		$this->latteEngine         = $latteEngine;
-		$this->optionsProvider     = $optionsProvider;
-		$this->formFactory         = $formFactory;
-		$this->packetaClient       = $packetaClient;
-		$this->logger              = $logger;
-		$this->messageManager      = $messageManager;
-		$this->httpRequest         = $httpRequest;
-		$this->moduleHelper        = $moduleHelper;
-		$this->urlBuilder          = $urlBuilder;
-		$this->packetSynchronizer  = $packetSynchronizer;
-		$this->supportEmailAddress = $supportEmailAddress;
-		$this->wpAdapter           = $wpAdapter;
+		$this->latteEngine                   = $latteEngine;
+		$this->optionsProvider               = $optionsProvider;
+		$this->formFactory                   = $formFactory;
+		$this->packetaClient                 = $packetaClient;
+		$this->logger                        = $logger;
+		$this->messageManager                = $messageManager;
+		$this->httpRequest                   = $httpRequest;
+		$this->moduleHelper                  = $moduleHelper;
+		$this->urlBuilder                    = $urlBuilder;
+		$this->packetSynchronizer            = $packetSynchronizer;
+		$this->supportEmailAddress           = $supportEmailAddress;
+		$this->wpAdapter                     = $wpAdapter;
+		$this->bugReportForm                 = $bugReportForm;
+		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
+		$this->diagnosticsLogger             = $diagnosticsLogger;
 	}
 
 	public function register(): void {
@@ -672,6 +695,10 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::PRICES_INCLUDE_TAX_DEFAULT );
 
+		$container->addCheckbox( self::FORM_PICKUP_POINT_VALIDATION_ENABLED, __( 'Validate the pickup point using the API before accepting the order', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::PICKUP_POINT_VALIDATION_ENABLED_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( OptionNames::PACKETERY ) ) {
@@ -686,7 +713,10 @@ class Page {
 	 */
 	public function admin_init(): void {
 		add_filter( 'pre_update_option_packetery', [ $this, 'validatePacketeryOptions' ] );
+
+		// Registered callback is called when the form is submitted.
 		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, [ $this, 'sanitizePacketeryOptions' ] );
+
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), function () {}, self::SLUG );
 	}
 
@@ -804,6 +834,10 @@ class Page {
 			}
 		}
 
+		if ( $options['api_key'] === '' ) {
+			$options[ self::FORM_PICKUP_POINT_VALIDATION_ENABLED ] = false;
+		}
+
 		return $options;
 	}
 
@@ -898,6 +932,24 @@ class Page {
 		) {
 			$advancedForm->fireEvents();
 		}
+
+		$bugReportForm = $this->bugReportForm->createForm();
+		if (
+			$bugReportForm['submit'] instanceof SubmitButton &&
+			$bugReportForm['submit']->isSubmittedBy() &&
+			$bugReportForm->isSuccess()
+		) {
+			$bugReportForm->fireEvents();
+		}
+
+		$diagnosticsLoggingForm = $this->diagnosticsLoggingFormFactory->createForm();
+		if (
+			$diagnosticsLoggingForm['save'] instanceof SubmitButton &&
+			$diagnosticsLoggingForm['save']->isSubmittedBy() &&
+			$diagnosticsLoggingForm->isSuccess()
+		) {
+			$diagnosticsLoggingForm->fireEvents();
+		}
 	}
 
 	/**
@@ -915,6 +967,13 @@ class Page {
 			$latteParams = [ 'form' => $this->createAdvancedForm() ];
 		} elseif ( $activeTab === self::TAB_GENERAL ) {
 			$latteParams = [ 'form' => $this->create_form() ];
+		} elseif ( $activeTab === self::TAB_SUPPORT ) {
+			$latteParams = [
+				'bugReportFormEnabled'   => false,
+				'bugReportForm'          => $this->bugReportForm->createForm(),
+				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
+				'hasPacketaLog'          => is_file( $this->diagnosticsLogger->getPacketaLogPath() ),
+			];
 		}
 
 		if ( ! extension_loaded( 'soap' ) ) {
@@ -927,6 +986,15 @@ class Page {
 			[
 				'page'   => self::SLUG,
 				'action' => Exporter::ACTION_EXPORT_SETTINGS,
+			],
+			get_admin_url( null, 'admin.php' )
+		);
+
+		$latteParams['deleteDiagnosticsLogsLink'] = add_query_arg(
+			[
+				'page'   => self::SLUG,
+				'action' => DiagnosticsLogger::ACTION_DELETE_PACKETA_LOG,
+				'tab'    => self::TAB_SUPPORT,
 			],
 			get_admin_url( null, 'admin.php' )
 		);
@@ -995,6 +1063,11 @@ class Page {
 			'exportPluginSettings'                   => __( 'Export the plugin settings', 'packeta' ),
 			'settingsExportDatetime'                 => __( 'Date and time of the last export of settings', 'packeta' ),
 			'settingsNotYetExported'                 => __( 'The settings have not been exported yet.', 'packeta' ),
+			'bugReportTitle'                         => $this->wpAdapter->__( 'Report a bug', 'packeta' ),
+			'bugReportDescription'                   => $this->wpAdapter->__( 'If you encounter any issues with the Packeta plugin, please use this form to report them. Your message will be sent to our technical support team along with system information.', 'packeta' ),
+			'bugReportInfo'                          => $this->wpAdapter->__( 'We will also zip the following files and attach them to the email, if available: WooCommerce Log, Diagnostics Log, Tracy Log, Wordpress Debug Log, WooCommerce System Status Log, Packeta plugin settings export.', 'packeta' ),
+			'exportSettingsTitle'                    => $this->wpAdapter->__( 'Export settings', 'packeta' ),
+			'diagnosticsLoggingTitle'                => $this->wpAdapter->__( 'Diagnostics logging', 'packeta' ),
 			'senderDescription'                      => sprintf(
 				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
@@ -1020,6 +1093,18 @@ class Page {
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
+			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. After enabling it, please repeat the action that is not working as expected. The log will then record important function calls, passed parameters, and their results. Once you have reproduced the issue, disable diagnostic logging again. This information can help developers troubleshoot the problem. You can find the log in the packeta.log file, which is stored by default in wp-content/plugins/packeta/log.', 'packeta' ),
+			'diagnosticsLoggingLink'                 => $this->wpAdapter->__( 'Delete log', 'packeta' ),
+			'bugReportScreenshotsTitle'              => $this->wpAdapter->__( 'If possible, please provide screenshots showing the problem. You can do it this way:', 'packeta' ),
+			'bugReportScreenshotsFirstStep'          => sprintf(
+			/* translators: 1: ImgBB link start 2: ImgBB link end */
+				$this->wpAdapter->__( 'Go to %1$sImgBB%2$s and upload your screenshots.', 'packeta' ),
+				'<a href="https://imgbb.com/" target="_blank">',
+				'</a>'
+			),
+			'bugReportScreenshotsSecondStep'         => $this->wpAdapter->__( 'Copy the link(s) generated after uploading', 'packeta' ),
+			'bugReportScreenshotsThirdStep'          => $this->wpAdapter->__( 'Paste the link(s) into your message.', 'packeta' ),
+			'message'                                => $this->wpAdapter->__( 'Message', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

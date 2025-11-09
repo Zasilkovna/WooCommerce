@@ -13,6 +13,7 @@ use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\CronService;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
+use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Email\EmailShortcodes;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
@@ -263,6 +264,11 @@ class HookRegistrar {
 	 */
 	private $shortcodes;
 
+	/**
+	 * @var DiagnosticsLogger
+	 */
+	private $diagnosticsLogger;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -306,7 +312,8 @@ class HookRegistrar {
 		CheckoutStorage $checkoutStorage,
 		WizardAssetManager $wizardAssetManager,
 		DashboardPage $dashboardPage,
-		EmailShortcodes $shortcodes
+		EmailShortcodes $shortcodes,
+		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -351,6 +358,7 @@ class HookRegistrar {
 		$this->wizardAssetManager        = $wizardAssetManager;
 		$this->dashboardPage             = $dashboardPage;
 		$this->shortcodes                = $shortcodes;
+		$this->diagnosticsLogger         = $diagnosticsLogger;
 	}
 
 	public function register(): void {
@@ -542,6 +550,7 @@ class HookRegistrar {
 			$this->wpAdapter->addAction( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 			$this->wpAdapter->addAction( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
+			$this->wpAdapter->addAction( 'admin_init', [ $this->diagnosticsLogger, 'deletePacketaLog' ] );
 			$this->wpAdapter->addAction( 'admin_init', [ $this->pluginHooks, 'handleActions' ] );
 
 			$this->wpAdapter->addAction( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );

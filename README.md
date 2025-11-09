@@ -14,8 +14,8 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 
 #### Supported versions
 
-- PHP: 7.2 - 8.4
-- WordPress 5.5+
+- PHP: 7.4 - 8.4
+- WordPress 6.3+
 - WooCommerce 5.1+
 
 #### Functions provided
