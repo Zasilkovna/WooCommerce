@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e7d06366207643a7d6a99c5d6b8fbd5d",
+    "content-hash": "b55c7334e70a196b9e3c67e705795bdb",
     "packages": [],
     "packages-dev": [
         {
@@ -8186,16 +8186,16 @@
         },
         {
             "name": "wpify/scoper",
-            "version": "3.2.13",
+            "version": "3.2.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wpify/scoper.git",
-                "reference": "6f8ab7091235eca9ed49c1f57d0c205dca013a14"
+                "reference": "b00d52321d244beb6668d8d07c3b431e0a713b70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wpify/scoper/zipball/6f8ab7091235eca9ed49c1f57d0c205dca013a14",
-                "reference": "6f8ab7091235eca9ed49c1f57d0c205dca013a14",
+                "url": "https://api.github.com/repos/wpify/scoper/zipball/b00d52321d244beb6668d8d07c3b431e0a713b70",
+                "reference": "b00d52321d244beb6668d8d07c3b431e0a713b70",
                 "shasum": ""
             },
             "require": {
@@ -8205,12 +8205,13 @@
                 "wpify/php-scoper": "^0.18"
             },
             "require-dev": {
-                "jetbrains/phpstorm-stubs": "^v2023.3",
-                "johnpbloch/wordpress": "^6.4",
-                "nikic/php-parser": "^v4.17",
-                "woocommerce/action-scheduler": "^3.7.2",
-                "wpackagist-plugin/woocommerce": "^8.6",
-                "yahnis-elsts/plugin-update-checker": "^v5.4"
+                "jetbrains/phpstorm-stubs": "*",
+                "johnpbloch/wordpress": "*",
+                "nikic/php-parser": "^v5.3.1",
+                "woocommerce/action-scheduler": "*",
+                "wp-cli/wp-cli": "*",
+                "wpackagist-plugin/woocommerce": "*",
+                "yahnis-elsts/plugin-update-checker": "*"
             },
             "bin": [
                 "bin/wpify-scoper"
@@ -8249,9 +8250,9 @@
             "description": "Composer plugin that scopes WordPress and WooCommerce dependencies for usage in WordPress plugins and themes.",
             "support": {
                 "issues": "https://github.com/wpify/scoper/issues",
-                "source": "https://github.com/wpify/scoper/tree/3.2.13"
+                "source": "https://github.com/wpify/scoper/tree/3.2.21"
             },
-            "time": "2024-04-22T17:02:29+00:00"
+            "time": "2025-05-07T08:14:33+00:00"
         }
     ],
     "aliases": [],
