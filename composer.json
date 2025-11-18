@@ -63,7 +63,8 @@
             "@check:phpcs",
             "@composer:normalize:check",
             "@phpstan:all",
-            "@tests:unit"
+            "@tests:unit",
+            "echo \"\n➤  Don't forget to run and update integration tests if needed!\n\""
         ],
         "check:ec": "vendor/bin/ec .",
         "check:phpcs": "vendor/bin/phpcs",
