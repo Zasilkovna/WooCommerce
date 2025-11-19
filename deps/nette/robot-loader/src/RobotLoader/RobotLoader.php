@@ -23,7 +23,7 @@ use SplFileInfo;
 class RobotLoader
 {
     use \Packetery\Nette\SmartObject;
-    private const RETRY_LIMIT = 3;
+    private const RetryLimit = 3;
     /** @var string[] */
     public $ignoreDirs = ['.*', '*.old', '*.bak', '*.tmp', 'temp'];
     /** @var string[] */
@@ -77,7 +77,7 @@ class RobotLoader
     {
         $this->loadCache();
         $missing = $this->missingClasses[$type] ?? null;
-        if ($missing >= self::RETRY_LIMIT) {
+        if ($missing >= self::RetryLimit) {
             return;
         }
         [$file, $mtime] = $this->classes[$type] ?? null;
@@ -95,7 +95,7 @@ class RobotLoader
             }
             if (!$file || !\is_file($file)) {
                 $this->missingClasses[$type] = ++$missing;
-                $this->needSave = $this->needSave || $file || $missing <= self::RETRY_LIMIT;
+                $this->needSave = $this->needSave || $file || $missing <= self::RetryLimit;
                 unset($this->classes[$type]);
                 $file = null;
             }
@@ -200,7 +200,7 @@ class RobotLoader
                 // prevents the error when adding the same file twice
                 foreach ($foundClasses as $class) {
                     if (isset($this->classes[$class])) {
-                        throw new \Packetery\Nette\InvalidStateException("Ambiguous class {$class} resolution; defined in {$this->classes[$class][0]} and in {$file}.");
+                        throw new \Packetery\Nette\InvalidStateException(\sprintf('Ambiguous class %s resolution; defined in %s and in %s.', $class, $this->classes[$class][0], $file));
                     }
                     $this->classes[$class] = [$file, $mtime];
                     unset($this->missingClasses[$class]);
@@ -215,7 +215,7 @@ class RobotLoader
     private function createFileIterator(string $dir) : \Packetery\Nette\Utils\Finder
     {
         if (!\is_dir($dir)) {
-            throw new \Packetery\Nette\IOException("File or directory '{$dir}' not found.");
+            throw new \Packetery\Nette\IOException(\sprintf("File or directory '%s' not found.", $dir));
         }
         $dir = \realpath($dir) ?: $dir;
         // realpath does not work in phar
@@ -233,9 +233,9 @@ class RobotLoader
             \trigger_error(self::class . ': $acceptFiles must be an array.', \E_USER_WARNING);
             $acceptFiles = \preg_split('#[,\\s]+#', $acceptFiles);
         }
-        $iterator = \Packetery\Nette\Utils\Finder::findFiles($acceptFiles)->filter(function (SplFileInfo $file) use(&$disallow) {
+        $iterator = \Packetery\Nette\Utils\Finder::findFiles(...$acceptFiles)->filter(function (SplFileInfo $file) use(&$disallow) {
             return $file->getRealPath() === \false ? \true : !isset($disallow[\str_replace('\\', '/', $file->getRealPath())]);
-        })->from($dir)->exclude($ignoreDirs)->filter($filter = function (SplFileInfo $dir) use(&$disallow) {
+        })->from($dir)->exclude(...$ignoreDirs)->filter($filter = function (SplFileInfo $dir) use(&$disallow) {
             if ($dir->getRealPath() === \false) {
                 return \true;
             }
@@ -268,7 +268,7 @@ class RobotLoader
                 [$prevFile] = $this->classes[$class] ?? null;
             }
             if (isset($prevFile)) {
-                throw new \Packetery\Nette\InvalidStateException("Ambiguous class {$class} resolution; defined in {$prevFile} and in {$file}.");
+                throw new \Packetery\Nette\InvalidStateException(\sprintf('Ambiguous class %s resolution; defined in %s and in %s.', $class, $prevFile, $file));
             }
             $this->classes[$class] = [$file, \filemtime($file)];
         }
@@ -312,6 +312,7 @@ class RobotLoader
                     case \T_CLASS:
                     case \T_INTERFACE:
                     case \T_TRAIT:
+                    case \PHP_VERSION_ID < 80100 ? \T_CLASS : \T_ENUM:
                         $expected = $token[0];
                         $name = '';
                         continue 2;
@@ -321,17 +322,11 @@ class RobotLoader
                 }
             }
             if ($expected) {
-                switch ($expected) {
-                    case \T_CLASS:
-                    case \T_INTERFACE:
-                    case \T_TRAIT:
-                        if ($name && $level === $minLevel) {
-                            $classes[] = $namespace . $name;
-                        }
-                        break;
-                    case \T_NAMESPACE:
-                        $namespace = $name ? $name . '\\' : '';
-                        $minLevel = $token === '{' ? 1 : 0;
+                if ($expected === \T_NAMESPACE) {
+                    $namespace = $name ? $name . '\\' : '';
+                    $minLevel = $token === '{' ? 1 : 0;
+                } elseif ($name && $level === $minLevel) {
+                    $classes[] = $namespace . $name;
                 }
                 $expected = null;
             }
@@ -370,7 +365,7 @@ class RobotLoader
             return;
         }
         $this->cacheLoaded = \true;
-        $file = $this->getCacheFile();
+        $file = $this->generateCacheFileName();
         // Solving atomicity to work everywhere is really pain in the ass.
         // 1) We want to do as little as possible IO calls on production and also directory and file can be not writable (#19)
         // so on Linux we include the file directly without shared lock, therefore, the file must be created atomically by renaming.
@@ -397,8 +392,8 @@ class RobotLoader
         $this->classes = $this->missingClasses = $this->emptyFiles = [];
         $this->refreshClasses();
         $this->saveCache($lock);
-        // On Windows concurrent creation and deletion of a file can cause a error 'permission denied',
-        // therefore, we will not delete the lock file. Windows is peace of shit.
+        // On Windows concurrent creation and deletion of a file can cause a 'permission denied' error,
+        // therefore, we will not delete the lock file. Windows is really annoying.
     }
     /**
      * Writes class list to cache.
@@ -409,13 +404,13 @@ class RobotLoader
         // we have to acquire a lock to be able safely rename file
         // on Linux: that another thread does not rename the same named file earlier
         // on Windows: that the file is not read by another thread
-        $file = $this->getCacheFile();
+        $file = $this->generateCacheFileName();
         $lock = $lock ?: $this->acquireLock("{$file}.lock", \LOCK_EX);
         $code = "<?php\nreturn " . \var_export([$this->classes, $this->missingClasses, $this->emptyFiles], \true) . ";\n";
         if (\file_put_contents("{$file}.tmp", $code) !== \strlen($code) || !\rename("{$file}.tmp", $file)) {
             @\unlink("{$file}.tmp");
             // @ file may not exist
-            throw new \RuntimeException("Unable to create '{$file}'.");
+            throw new \RuntimeException(\sprintf("Unable to create '%s'.", $file));
         }
         if (\function_exists('opcache_invalidate')) {
             @\opcache_invalidate($file, \true);
@@ -428,14 +423,14 @@ class RobotLoader
         $handle = @\fopen($file, 'w');
         // @ is escalated to exception
         if (!$handle) {
-            throw new \RuntimeException("Unable to create file '{$file}'. " . \error_get_last()['message']);
+            throw new \RuntimeException(\sprintf("Unable to create file '%s'. %s", $file, \error_get_last()['message']));
         } elseif (!@\flock($handle, $mode)) {
             // @ is escalated to exception
-            throw new \RuntimeException('Unable to acquire ' . ($mode & \LOCK_EX ? 'exclusive' : 'shared') . " lock on file '{$file}'. " . \error_get_last()['message']);
+            throw new \RuntimeException(\sprintf("Unable to acquire %s lock on file '%s'. %s", $mode & \LOCK_EX ? 'exclusive' : 'shared', $file, \error_get_last()['message']));
         }
         return $handle;
     }
-    private function getCacheFile() : string
+    private function generateCacheFileName() : string
     {
         if (!$this->tempDirectory) {
             throw new \LogicException('Set path to temporary directory using setTempDirectory().');
