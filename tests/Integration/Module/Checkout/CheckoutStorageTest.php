@@ -86,6 +86,7 @@ class CheckoutStorageTest extends AbstractIntegrationTestCase {
 						Attr::POINT_PLACE  => 'Business XYZ',
 						Attr::CARRIER_ID   => 'carrier_1',
 						Attr::POINT_URL    => 'dummyUrl',
+						Attr::POINT_TYPE   => 'dummyType',
 					],
 				],
 				'rateId'         => $ratePp,
