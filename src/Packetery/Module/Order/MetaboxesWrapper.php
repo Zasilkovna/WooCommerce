@@ -73,12 +73,20 @@ class MetaboxesWrapper {
 	 * @return void
 	 */
 	public function beforeOrderSave( WC_Order $wcOrder ): void {
-		$order = $this->orderRepository->getByIdWithValidCarrier( $wcOrder->get_id() );
+		static $processedOrders = [];
+
+		$orderId = (int) $wcOrder->get_id();
+		if ( isset( $processedOrders[ $orderId ] ) ) {
+			return;
+		}
+
+		$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 		if ( $order === null ) {
 			return;
 		}
 
 		$this->generalMetabox->saveFields( $order, $wcOrder );
+		$processedOrders[ $orderId ] = true;
 	}
 
 	/**
