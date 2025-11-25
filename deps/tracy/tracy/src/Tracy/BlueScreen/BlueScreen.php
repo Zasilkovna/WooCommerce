@@ -192,14 +192,15 @@ class BlueScreen
         }
         if (\preg_match('# ([\'"])(\\w{3,}(?:\\\\\\w{3,})+)\\1#i', $ex->getMessage(), $m)) {
             $class = $m[2];
-            if (!\class_exists($class, \false) && !\interface_exists($class, \false) && !\trait_exists($class, \false) && ($file = Helpers::guessClassFile($class)) && !\is_file($file)) {
+            if (!\class_exists($class, \false) && !\interface_exists($class, \false) && !\trait_exists($class, \false) && ($file = Helpers::guessClassFile($class)) && !@\is_file($file)) {
                 [$content, $line] = $this->generateNewFileContents($file, $class);
                 $actions[] = ['link' => Helpers::editorUri($file, $line, 'create', '', $content), 'label' => 'create class'];
             }
         }
         if (\preg_match('# ([\'"])((?:/|[a-z]:[/\\\\])\\w[^\'"]+\\.\\w{2,5})\\1#i', $ex->getMessage(), $m)) {
             $file = $m[2];
-            if (\is_file($file)) {
+            if (@\is_file($file)) {
+                // @ - may trigger error
                 $label = 'open';
                 $content = '';
                 $line = 1;
@@ -251,7 +252,7 @@ class BlueScreen
         // <code><span color=highlight.html>
         $source = \str_replace('<br />', "\n", $source[1]);
         $out .= static::highlightLine($source, $line, $lines, $column);
-        $out = \str_replace('&nbsp;', ' ', $out);
+        $out = \str_replace('&nbsp;', ' ', $out) . '</code>';
         return "<pre class='tracy-code'><div>{$out}</div></pre>";
     }
     /**
@@ -290,7 +291,7 @@ class BlueScreen
                 $out .= \sprintf("<span class='tracy-line'>%{$numWidth}s:</span>    %s\n", $n, $s);
             }
         }
-        $out .= \str_repeat('</span>', $spans) . '</code>';
+        $out .= \str_repeat('</span>', $spans);
         return $out;
     }
     /**

@@ -54,6 +54,7 @@ class CheckoutControllerTest extends AbstractIntegrationTestCase {
 				Attribute::POINT_PLACE  => 'Business XYZ',
 				Attribute::CARRIER_ID   => 'carrier_1',
 				Attribute::POINT_URL    => 'dummyUrl',
+				Attribute::POINT_TYPE   => 'dummyType',
 			]
 		);
 	}
