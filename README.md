@@ -1,5 +1,6 @@
 # Module for WordPress/WooCommerce
 
+Just a test.
 This is the official plugin, that allows you to choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in your e-shop. Furthermore, you can also submit all your orders to Packeta with just one click.
 
 ### Download module
