@@ -7,61 +7,34 @@ on:
 
 jobs:
   phpunit:
+    name: PHPUnit (with coverage on PR)
     runs-on: ubuntu-24.04
-    continue-on-error: true
-
-    strategy:
-      matrix:
-        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: '8.1'
           extensions: mbstring, intl
-          coverage: no
+          coverage: ${{ github.event_name == 'pull_request' && 'xdebug' || 'none' }}
 
       - name: php version
         run: php -v
 
       - name: Install Composer dependencies
-        run: composer install
+        run: composer install --no-interaction --no-progress --prefer-dist
 
-      - name: Run PHPUnit
-        run: composer run tests:unit
-
-  # job for code coverage
-  code-coverage:
-    runs-on: ubuntu-24.04
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.1
-          extensions: mbstring, intl
-          coverage: yes
-
-      - name: php version
-        run: php -v
-
-      - name: Install Composer dependencies
-        run: composer install
-
-      - name: Run PHPUnit with code coverage
+      - name: Run PHPUnit with coverage
+        if: github.event_name == 'pull_request'
         run: |
           composer run tests:coverage
           cat tests-coverage/coverage.txt > tests-coverage/coverage-summary.txt
 
       - name: Post coverage report as comment in PR
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           script: |
@@ -97,12 +70,14 @@ jobs:
             }
 
       - name: Upload test results
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: junit-results
           path: ./tests-coverage/log/junit.xml
 
       - name: Upload coverage report
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
