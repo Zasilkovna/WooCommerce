@@ -98,7 +98,7 @@ class CheckoutRenderer {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
-				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-logo.svg' ),
 				'showLogo'     => $this->optionsProvider->isCheckoutLogoShown(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
@@ -121,7 +121,7 @@ class CheckoutRenderer {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
-				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-logo.svg' ),
 				'showLogo'     => $this->optionsProvider->isCheckoutLogoShown(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
