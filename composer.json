@@ -4,10 +4,10 @@
     },
     "require-dev": {
         "composer/composer": "^2.6",
-        "editorconfig-checker/editorconfig-checker": "^10.6",
+        "editorconfig-checker/editorconfig-checker": "^10.7",
         "ergebnis/composer-normalize": "^2.47",
-        "php-stubs/woocommerce-stubs": "^9.5",
-        "php-stubs/wordpress-stubs": "^6.7",
+        "php-stubs/woocommerce-stubs": "^10.3",
+        "php-stubs/wordpress-stubs": "^6.8",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-nette": "^2.0",
@@ -17,8 +17,8 @@
         "squizlabs/php_codesniffer": "^3.11",
         "szepeviktor/phpstan-wordpress": "^2.0",
         "woocommerce/woocommerce-sniffs": "^1.0",
-        "wp-cli/wp-cli-bundle": "^2.11",
-        "wpify/scoper": "3.2.13"
+        "wp-cli/wp-cli-bundle": "2.11",
+        "wpify/scoper": "3.2.21"
     },
     "autoload": {
         "psr-4": {
@@ -63,7 +63,8 @@
             "@check:phpcs",
             "@composer:normalize:check",
             "@phpstan:all",
-            "@tests:unit"
+            "@tests:unit",
+            "echo \"\n➤  Don't forget to run and update integration tests if needed!\n\""
         ],
         "check:ec": "vendor/bin/ec .",
         "check:phpcs": "vendor/bin/phpcs",
@@ -80,6 +81,7 @@
         "tests:coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit -c phpunit.xml.dist --log-junit ./tests-coverage/log/junit.xml --testsuite unit --coverage-clover tests-coverage/clover.xml --coverage-html ./tests-coverage --coverage-cobertura tests-coverage/cobertura.xml --coverage-text=./tests-coverage/coverage.txt",
         "tests:integration": "vendor/bin/phpunit --testsuite integration",
         "tests:integration-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit -c phpunit.xml.dist --log-junit ./tests-coverage/integration/log/junit.xml --testsuite integration --coverage-clover tests-coverage/integration/clover.xml --coverage-html ./tests-coverage/integration --coverage-cobertura tests-coverage/integration/cobertura.xml --coverage-text=./tests-coverage/integration/coverage.txt",
-        "tests:unit": "vendor/bin/phpunit --testsuite unit"
+        "tests:unit": "vendor/bin/phpunit --testsuite unit",
+        "wpify-scoper": "wpify-scoper"
     }
 }

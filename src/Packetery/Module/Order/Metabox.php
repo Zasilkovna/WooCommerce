@@ -443,7 +443,7 @@ class Metabox {
 				'isCodPayment'               => $order->hasCod(),
 				'allowsAdultContent'         => $order->allowsAdultContent(),
 				'requiresSizeDimensions'     => $order->getCarrier()->requiresSize(),
-				'logo'                       => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/images/packeta-symbol.png',
+				'logo'                       => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/images/packeta-logo.svg',
 				'showLogsLink'               => $showLogsLink,
 				'hasOrderManualWeight'       => $order->hasManualWeight(),
 				'hasOrderManualCod'          => $order->hasManualCod(),
