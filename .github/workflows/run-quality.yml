@@ -1,0 +1,40 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, intl
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run sniffer
+        run: composer run check:phpcs
+
+      - name: EditorConfig check
+        run: composer check:ec
+
+      - name: Composer Normalize (dry-run)
+        run: composer run-script composer:normalize:check
+
+      - name: Composer security audit (root)
+        run: composer audit
