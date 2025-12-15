@@ -229,8 +229,10 @@ class ShippingProvider {
 			return $originalMethods;
 		}
 
+		$zoneId = $this->contextResolver->getShippingZoneId();
+
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-		$cacheKey = crc32( serialize( $originalMethods ) );
+		$cacheKey = crc32( serialize( $originalMethods ) . '_zone_' . ( $zoneId ?? 'null' ) );
 
 		if ( ! isset( self::$sortedMethodsCache[ $cacheKey ] ) ) {
 			$unsortedMethods                       = $this->addMethods( $originalMethods );
