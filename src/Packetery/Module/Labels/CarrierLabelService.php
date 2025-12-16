@@ -7,9 +7,11 @@ namespace Packetery\Module\Labels;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
+use Packetery\Core\Entity\Order;
 use Packetery\Core\Log;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Labels\LabelPrintPacketData;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\Repository;
 
@@ -57,14 +59,18 @@ class CarrierLabelService {
 	/**
 	 * Gets carrier packet numbers from API.
 	 *
-	 * @param string[] $packetIds
+	 * @param LabelPrintPacketData $labelPrintPacketData
 	 *
 	 * @return array<int, array{packetId: string, courierNumber: string}>
 	 */
-	public function getPacketIdsWithCourierNumbers( array $packetIds ): array {
+	public function getPacketaPacketIdsWithCourierNumbers( LabelPrintPacketData $labelPrintPacketData ): array {
 		$pairs = [];
-		foreach ( $packetIds as $orderId => $packetId ) {
-			$existingCarrierNumber = $this->getExistingCarrierNumber( (int) $orderId, $packetId );
+		foreach ( $labelPrintPacketData->getItems() as $item ) {
+			$order    = $item->getOrder();
+			$packetId = $item->getPacketId();
+			$orderId  = (int) $order->getNumber();
+
+			$existingCarrierNumber = $this->getExistingCarrierNumber( $order, $packetId );
 			if ( $existingCarrierNumber !== null ) {
 				$pairs[ $orderId ] = $existingCarrierNumber;
 
@@ -74,7 +80,7 @@ class CarrierLabelService {
 			$request  = new Request\PacketCourierNumber( $packetId );
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
-				$continueProcessing = $this->handleApiError( $request, $response, (int) $orderId, $packetId );
+				$continueProcessing = $this->handleApiError( $request, $response, $orderId, $packetId );
 				if ( $continueProcessing === false ) {
 					return [];
 				}
@@ -82,7 +88,7 @@ class CarrierLabelService {
 				continue;
 			}
 
-			$pairs[ $orderId ] = $this->handleApiSuccess( $response, (int) $orderId, $packetId );
+			$pairs[ $orderId ] = $this->handleApiSuccess( $response, $orderId, $packetId );
 		}
 
 		return $pairs;
@@ -91,9 +97,8 @@ class CarrierLabelService {
 	/**
 	 * @return array{packetId: string, courierNumber: string}|null
 	 */
-	private function getExistingCarrierNumber( int $orderId, string $packetId ): ?array {
-		$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
-		if ( $order !== null && $order->getCarrierNumber() !== null ) {
+	private function getExistingCarrierNumber( Order $order, string $packetId ): ?array {
+		if ( $order->getCarrierNumber() !== null ) {
 			return [
 				'packetId'      => $packetId,
 				'courierNumber' => $order->getCarrierNumber(),

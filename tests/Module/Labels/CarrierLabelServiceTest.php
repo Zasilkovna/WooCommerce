@@ -7,16 +7,19 @@ namespace Tests\Packetery\Module\Labels;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
+use Packetery\Core\Entity\Order;
 use Packetery\Core\Log;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Labels\CarrierLabelService;
+use Packetery\Module\Labels\LabelPrintPacketData;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\Repository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
+use WC_Order;
 
 class CarrierLabelServiceTest extends TestCase {
 
@@ -164,16 +167,12 @@ class CarrierLabelServiceTest extends TestCase {
 	): void {
 		$this->createCarrierLabelService();
 
-		$orderRepositoryMap = [];
+		$ordersWithCarrierNumbers = [];
 		foreach ( $existingOrders as $orderId => $orderData ) {
-			$order = $this->createMock( \Packetery\Core\Entity\Order::class );
+			$order = $this->createMock( Order::class );
+			$order->method( 'getNumber' )->willReturn( (string) $orderId );
 			$order->method( 'getCarrierNumber' )->willReturn( $orderData['carrierNumber'] ?? null );
-			$orderRepositoryMap[] = [ (int) $orderId, $order ];
-		}
-
-		if ( ! empty( $orderRepositoryMap ) ) {
-			$this->orderRepository->method( 'getByIdWithValidCarrier' )
-				->willReturnMap( $orderRepositoryMap );
+			$ordersWithCarrierNumbers[ $orderId ] = $order;
 		}
 
 		$apiResponses = [];
@@ -219,23 +218,24 @@ class CarrierLabelServiceTest extends TestCase {
 				}
 			);
 
-		if ( ! empty( $apiResponses ) ) {
-			$wcOrder = $this->createMock( \WC_Order::class );
-			$wcOrder->method( 'add_order_note' )->willReturn( true );
-			$wcOrder->method( 'save' )->willReturn( true );
-			$this->orderRepository->method( 'getWcOrderById' )->willReturn( $wcOrder );
-
-			$order = $this->createMock( \Packetery\Core\Entity\Order::class );
-			$this->orderRepository->method( 'getByWcOrderWithValidCarrier' )->willReturn( $order );
+		$labelPrintPacketData = new LabelPrintPacketData();
+		foreach ( $packetIds as $orderId => $packetId ) {
+			if ( isset( $ordersWithCarrierNumbers[ $orderId ] ) ) {
+				$order = $ordersWithCarrierNumbers[ $orderId ];
+			} else {
+				$order = $this->createMock( Order::class );
+				$order->method( 'getNumber' )->willReturn( (string) $orderId );
+				$order->method( 'getCarrierNumber' )->willReturn( null );
+			}
+			$labelPrintPacketData->addItem( $order, $packetId );
 		}
 
-		$result = $this->carrierLabelService->getPacketIdsWithCourierNumbers( $packetIds );
+		$result = $this->carrierLabelService->getPacketaPacketIdsWithCourierNumbers( $labelPrintPacketData );
 		$this->assertEquals( $expectedResult, $result );
 	}
 
 	/**
 	 * @return array<string, array{
-	 *     hasOrder: bool,
 	 *     carrierNumber: ?string,
 	 *     expectedResult: ?array{packetId: string, courierNumber: string}
 	 * }>
@@ -243,7 +243,6 @@ class CarrierLabelServiceTest extends TestCase {
 	public static function provideDataForGetExistingCarrierNumber(): array {
 		return [
 			'order_with_carrier_number'    => [
-				'hasOrder'       => true,
 				'carrierNumber'  => 'CN123',
 				'expectedResult' => [
 					'packetId'      => 'P123',
@@ -251,12 +250,6 @@ class CarrierLabelServiceTest extends TestCase {
 				],
 			],
 			'order_without_carrier_number' => [
-				'hasOrder'       => true,
-				'carrierNumber'  => null,
-				'expectedResult' => null,
-			],
-			'no_order'                     => [
-				'hasOrder'       => false,
 				'carrierNumber'  => null,
 				'expectedResult' => null,
 			],
@@ -265,26 +258,19 @@ class CarrierLabelServiceTest extends TestCase {
 
 	#[DataProvider( 'provideDataForGetExistingCarrierNumber' )]
 	public function testGetExistingCarrierNumber(
-		bool $hasOrder,
 		?string $carrierNumber,
 		?array $expectedResult
 	): void {
 		$this->createCarrierLabelService();
 
-		$order = null;
-		if ( $hasOrder ) {
-			$order = $this->createMock( \Packetery\Core\Entity\Order::class );
-			$order->method( 'getCarrierNumber' )
-				->willReturn( $carrierNumber );
-		}
-
-		$this->orderRepository->method( 'getByIdWithValidCarrier' )
-			->willReturn( $order );
+		$order = $this->createMock( Order::class );
+		$order->method( 'getCarrierNumber' )
+			->willReturn( $carrierNumber );
 
 		$method = new ReflectionMethod( CarrierLabelService::class, 'getExistingCarrierNumber' );
 		$method->setAccessible( true );
 
-		$result = $method->invoke( $this->carrierLabelService, 123, 'P123' );
+		$result = $method->invoke( $this->carrierLabelService, $order, 'P123' );
 		$this->assertEquals( $expectedResult, $result );
 	}
 
@@ -341,14 +327,14 @@ class CarrierLabelServiceTest extends TestCase {
 
 		$wcOrder = null;
 		if ( $hasWcOrder ) {
-			$wcOrder = $this->createMock( \WC_Order::class );
+			$wcOrder = $this->createMock( WC_Order::class );
 			$wcOrder->method( 'add_order_note' )->willReturn( true );
 			$wcOrder->method( 'save' )->willReturn( true );
 		}
 
 		$order = null;
 		if ( $hasOrder ) {
-			$order = $this->createMock( \Packetery\Core\Entity\Order::class );
+			$order = $this->createMock( Order::class );
 			$order->expects( $this->once() )->method( 'updateApiErrorMessage' );
 		}
 
@@ -474,7 +460,7 @@ class CarrierLabelServiceTest extends TestCase {
 
 		$wcOrder = null;
 		if ( $hasWcOrder ) {
-			$wcOrder = $this->createMock( \WC_Order::class );
+			$wcOrder = $this->createMock( WC_Order::class );
 			$wcOrder->expects( $this->once() )
 				->method( 'add_order_note' );
 			$wcOrder->expects( $this->once() )
@@ -483,7 +469,7 @@ class CarrierLabelServiceTest extends TestCase {
 
 		$order = null;
 		if ( $hasOrder ) {
-			$order = $this->createMock( \Packetery\Core\Entity\Order::class );
+			$order = $this->createMock( Order::class );
 			$order->expects( $this->once() )
 				->method( 'setCarrierNumber' )
 				->with( $responseNumber );
