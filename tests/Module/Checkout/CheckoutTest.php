@@ -19,6 +19,7 @@ use Packetery\Module\Checkout\SessionService;
 use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\Repository;
 use Packetery\Module\Payment\PaymentHelper;
@@ -82,7 +83,8 @@ class CheckoutTest extends TestCase {
 			$this->sessionServiceMock,
 			$checkoutValidatorMock,
 			$orderUpdaterMock,
-			$this->createMock( DiagnosticsLogger::class )
+			$this->createMock( DiagnosticsLogger::class ),
+			$this->createMock( ArgumentTypeErrorLogger::class )
 		);
 	}
 

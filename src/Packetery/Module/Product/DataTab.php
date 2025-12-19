@@ -15,8 +15,8 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Product;
-use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -64,26 +64,34 @@ class DataTab {
 	private $productEntityFactory;
 
 	/**
+	 * @var ArgumentTypeErrorLogger
+	 */
+	private $argumentTypeErrorLogger;
+
+	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory          $formFactory          Factory engine.
-	 * @param Engine               $latteEngine          Latte engine.
-	 * @param EntityRepository     $carrierRepository    Carrier repository.
-	 * @param CarDeliveryConfig    $carDeliveryConfig    Car Delivery config.
-	 * @param ProductEntityFactory $productEntityFactory Product entity factory.
+	 * @param FormFactory             $formFactory          Factory engine.
+	 * @param Engine                  $latteEngine          Latte engine.
+	 * @param EntityRepository        $carrierRepository    Carrier repository.
+	 * @param CarDeliveryConfig       $carDeliveryConfig    Car Delivery config.
+	 * @param ProductEntityFactory    $productEntityFactory Product entity factory.
+	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
 	 */
 	public function __construct(
 		FormFactory $formFactory,
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		ProductEntityFactory $productEntityFactory
+		ProductEntityFactory $productEntityFactory,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->formFactory          = $formFactory;
-		$this->latteEngine          = $latteEngine;
-		$this->carrierRepository    = $carrierRepository;
-		$this->carDeliveryConfig    = $carDeliveryConfig;
-		$this->productEntityFactory = $productEntityFactory;
+		$this->formFactory             = $formFactory;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->productEntityFactory    = $productEntityFactory;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -106,7 +114,7 @@ class DataTab {
 	 */
 	public function registerTab( $tabs ) {
 		if ( ! is_array( $tabs ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'tabs', 'array', $tabs );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'tabs', 'array', $tabs );
 
 			return $tabs;
 		}

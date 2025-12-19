@@ -22,13 +22,13 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\BugReportForm;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
-use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\SubmitButton;
@@ -147,6 +147,11 @@ class Page {
 	/** @var DiagnosticsLogger  */
 	private $diagnosticsLogger;
 
+	/**
+	 * @var ArgumentTypeErrorLogger
+	 */
+	private $argumentTypeErrorLogger;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -162,7 +167,8 @@ class Page {
 		string $supportEmailAddress,
 		BugReportForm $bugReportForm,
 		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
-		DiagnosticsLogger $diagnosticsLogger
+		DiagnosticsLogger $diagnosticsLogger,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->optionsProvider               = $optionsProvider;
@@ -179,6 +185,7 @@ class Page {
 		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
 		$this->diagnosticsLogger             = $diagnosticsLogger;
+		$this->argumentTypeErrorLogger       = $argumentTypeErrorLogger;
 	}
 
 	public function register(): void {
@@ -223,7 +230,7 @@ class Page {
 	 */
 	public function customMenuOrder( $menuOrder ) {
 		if ( ! is_array( $menuOrder ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'menuOrder', 'array', $menuOrder );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'menuOrder', 'array', $menuOrder );
 
 			return $menuOrder;
 		}

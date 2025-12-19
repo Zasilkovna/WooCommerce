@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -38,16 +39,23 @@ class QueryProcessor {
 	private $contextResolver;
 
 	/**
+	 * @var ArgumentTypeErrorLogger
+	 */
+	private $argumentTypeErrorLogger;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Request          $httpRequest     HTTP request.
-	 * @param Order\Repository $orderRepository Order repository.
-	 * @param ContextResolver  $contextResolver Context resolver.
+	 * @param Request                 $httpRequest            HTTP request.
+	 * @param Order\Repository        $orderRepository        Order repository.
+	 * @param ContextResolver         $contextResolver        Context resolver.
+	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
 	 */
-	public function __construct( Request $httpRequest, Order\Repository $orderRepository, ContextResolver $contextResolver ) {
-		$this->httpRequest     = $httpRequest;
-		$this->orderRepository = $orderRepository;
-		$this->contextResolver = $contextResolver;
+	public function __construct( Request $httpRequest, Order\Repository $orderRepository, ContextResolver $contextResolver, ArgumentTypeErrorLogger $argumentTypeErrorLogger ) {
+		$this->httpRequest             = $httpRequest;
+		$this->orderRepository         = $orderRepository;
+		$this->contextResolver         = $contextResolver;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -84,13 +92,13 @@ class QueryProcessor {
 				ARRAY_FILTER_USE_BOTH
 			) !== $clauses
 		) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'clauses', 'array', $clauses );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'clauses', 'array', $clauses );
 
 			return $clauses;
 		}
 
 		if ( ! $queryObject instanceof \WP_Query ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'queryObject', \WP_Query::class, $queryObject );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'queryObject', \WP_Query::class, $queryObject );
 
 			return $clauses;
 		}

@@ -11,10 +11,10 @@ use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
-use Packetery\Module\WcLogger;
 use WC_Cart;
 use WC_Payment_Gateway;
 
@@ -100,6 +100,11 @@ class Checkout {
 	 */
 	private $diagnosticsLogger;
 
+	/**
+	 * @var ArgumentTypeErrorLogger
+	 */
+	private $argumentTypeErrorLogger;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
@@ -116,7 +121,8 @@ class Checkout {
 		SessionService $sessionService,
 		CheckoutValidator $validator,
 		OrderUpdater $orderUpdater,
-		DiagnosticsLogger $diagnosticsLogger
+		DiagnosticsLogger $diagnosticsLogger,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
@@ -134,6 +140,7 @@ class Checkout {
 		$this->validator               = $validator;
 		$this->orderUpdater            = $orderUpdater;
 		$this->diagnosticsLogger       = $diagnosticsLogger;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	public function registerHooks(): void {
@@ -385,7 +392,7 @@ class Checkout {
 			]
 		);
 		if ( ! is_array( $availableGateways ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'availableGateways', 'array', $availableGateways );
 
 			return $availableGateways;
 		}
@@ -437,7 +444,7 @@ class Checkout {
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if ( ! $availableGateway instanceof WC_Payment_Gateway ) {
-				WcLogger::logArgumentTypeError( __METHOD__, 'availableGateway', 'WC_Payment_Gateway', $availableGateway );
+				$this->argumentTypeErrorLogger->log( __METHOD__, 'availableGateway', 'WC_Payment_Gateway', $availableGateway );
 
 				continue;
 			}
