@@ -9,7 +9,6 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\LabelPrint;
-use Packetery\Module\Order\Repository;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 
@@ -35,23 +34,16 @@ class LabelPrintParametersService {
 	 */
 	private $httpRequest;
 
-	/**
-	 * @var Repository
-	 */
-	private $orderRepository;
-
 	public function __construct(
 		WpAdapter $wpAdapter,
 		OptionsProvider $optionsProvider,
 		FormFactory $formFactory,
-		Http\Request $httpRequest,
-		Repository $orderRepository
+		Http\Request $httpRequest
 	) {
 		$this->wpAdapter       = $wpAdapter;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
 		$this->httpRequest     = $httpRequest;
-		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -101,19 +93,20 @@ class LabelPrintParametersService {
 		return null;
 	}
 
-	public function removeExternalCarrierPacketIds( array $packetIds, bool $isCarrierLabels, bool $fallbackToPacketaLabel ): array {
+	public function removeExternalCarriers( LabelPrintPacketData $labelPrintPacketData, bool $isCarrierLabels, bool $fallbackToPacketaLabel ): LabelPrintPacketData {
 		if ( $isCarrierLabels === true || $fallbackToPacketaLabel === true ) {
-			return $packetIds;
+			return $labelPrintPacketData;
 		}
 
-		foreach ( $packetIds as $orderId => $packetId ) {
-			$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
-			if ( $order !== null && $order->isExternalCarrier() ) {
-				unset( $packetIds[ $orderId ] );
+		$result = new LabelPrintPacketData();
+		foreach ( $labelPrintPacketData->getItems() as $item ) {
+			$order = $item->getOrder();
+			if ( ! $order->isExternalCarrier() ) {
+				$result->addItem( $order, $item->getPacketId() );
 			}
 		}
 
-		return $packetIds;
+		return $result;
 	}
 
 	/**
