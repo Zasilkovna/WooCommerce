@@ -37,20 +37,8 @@ class QueryProcessor {
 	 * @var ContextResolver
 	 */
 	private $contextResolver;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Request                 $httpRequest            HTTP request.
-	 * @param Order\Repository        $orderRepository        Order repository.
-	 * @param ContextResolver         $contextResolver        Context resolver.
-	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
-	 */
 	public function __construct( Request $httpRequest, Order\Repository $orderRepository, ContextResolver $contextResolver, ArgumentTypeErrorLogger $argumentTypeErrorLogger ) {
 		$this->httpRequest             = $httpRequest;
 		$this->orderRepository         = $orderRepository;

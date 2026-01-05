@@ -41,11 +41,7 @@ class CheckoutRenderer {
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		Engine $latteEngine,

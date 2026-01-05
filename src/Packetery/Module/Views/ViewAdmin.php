@@ -46,11 +46,7 @@ class ViewAdmin {
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		ContextResolver $contextResolver,

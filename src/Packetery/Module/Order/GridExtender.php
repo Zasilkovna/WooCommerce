@@ -112,28 +112,23 @@ class GridExtender {
 	 * @var Form
 	 */
 	private $orderForm;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param CoreHelper              $coreHelper            CoreHelper.
-	 * @param Engine                  $latteEngine           Latte Engine.
-	 * @param Request                 $httpRequest           Http Request.
-	 * @param Repository              $orderRepository       Order repository.
-	 * @param OrderValidatorFactory   $orderValidatorFactory Order validator.
-	 * @param ContextResolver         $contextResolver       Context resolver.
-	 * @param CarrierOptionsFactory   $carrierOptionsFactory Carrier options factory.
-	 * @param WpAdapter               $wpAdapter             WordPress adapter.
-	 * @param ModuleHelper            $moduleHelper          Module helper.
-	 * @param SizeFactory             $sizeFactory           Size factory.
-	 * @param PacketStatusResolver    $packetStatusResolver  Packet status resolver.
-	 * @param Form                    $orderForm             Order form.
-	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
+	 * @param CoreHelper            $coreHelper            CoreHelper.
+	 * @param Engine                $latteEngine           Latte Engine.
+	 * @param Request               $httpRequest           Http Request.
+	 * @param Repository            $orderRepository       Order repository.
+	 * @param OrderValidatorFactory $orderValidatorFactory Order validator.
+	 * @param ContextResolver       $contextResolver       Context resolver.
+	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
+	 * @param WpAdapter             $wpAdapter             WordPress adapter.
+	 * @param ModuleHelper          $moduleHelper          Module helper.
+	 * @param SizeFactory           $sizeFactory           Size factory.
+	 * @param PacketStatusResolver  $packetStatusResolver  Packet status resolver.
+	 * @param Form                  $orderForm             Order form.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,

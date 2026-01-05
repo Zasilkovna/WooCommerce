@@ -81,11 +81,7 @@ class Repository {
 	 * @var WcAdapter
 	 */
 	private $wcAdapter;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * Repository constructor.
@@ -97,7 +93,6 @@ class Repository {
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param WcAdapter                     $wcAdapter                    WC adapter.
-	 * @param ArgumentTypeErrorLogger       $argumentTypeErrorLogger      Argument type error logger.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,

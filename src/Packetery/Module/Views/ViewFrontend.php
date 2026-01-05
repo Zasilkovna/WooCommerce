@@ -32,11 +32,7 @@ class ViewFrontend {
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		Repository $orderRepository,

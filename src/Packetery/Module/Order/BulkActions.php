@@ -39,11 +39,7 @@ class BulkActions {
 	 * @var Repository
 	 */
 	private $orderRepository;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		Engine $latteEngine,

@@ -47,20 +47,8 @@ class PacketAutoSubmitter {
 	 * @var Repository
 	 */
 	private $orderRepository;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param OptionsProvider         $optionsProvider         Options provider.
-	 * @param PacketSubmitter         $packetSubmitter        Packet submitter.
-	 * @param Repository              $orderRepository         Order repository.
-	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
-	 */
 	public function __construct(
 		OptionsProvider $optionsProvider,
 		PacketSubmitter $packetSubmitter,

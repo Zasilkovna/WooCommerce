@@ -146,11 +146,7 @@ class Page {
 
 	/** @var DiagnosticsLogger  */
 	private $diagnosticsLogger;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		Engine $latteEngine,

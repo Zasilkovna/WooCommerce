@@ -142,11 +142,11 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 			->method( 'log' )
 			->with(
 				$this->anything(),
-				$this->stringContains( 'boolean' ),
+				$this->stringContains( 'string' ),
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'bool', 'boolean' );
+		$logger->log( 'testMethod', 'testParam', 'bool', 'string' );
 	}
 
 	public function testLogHandlesFloatValue(): void {

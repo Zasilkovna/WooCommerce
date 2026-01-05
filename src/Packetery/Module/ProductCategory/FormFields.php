@@ -59,11 +59,7 @@ class FormFields {
 	 * @var ProductCategoryEntityFactory
 	 */
 	private $productCategoryEntityFactory;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * Tab constructor.
@@ -73,7 +69,6 @@ class FormFields {
 	 * @param EntityRepository             $carrierRepository Carrier repository.
 	 * @param CarDeliveryConfig            $carDeliveryConfig Car delivery config.
 	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory Product category entity factory.
-	 * @param ArgumentTypeErrorLogger      $argumentTypeErrorLogger Argument type error logger.
 	 */
 	public function __construct(
 		FormFactory $formFactory,

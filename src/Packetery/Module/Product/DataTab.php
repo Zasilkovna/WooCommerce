@@ -62,21 +62,16 @@ class DataTab {
 	 * @var ProductEntityFactory
 	 */
 	private $productEntityFactory;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory             $formFactory          Factory engine.
-	 * @param Engine                  $latteEngine          Latte engine.
-	 * @param EntityRepository        $carrierRepository    Carrier repository.
-	 * @param CarDeliveryConfig       $carDeliveryConfig    Car Delivery config.
-	 * @param ProductEntityFactory    $productEntityFactory Product entity factory.
-	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
+	 * @param FormFactory          $formFactory          Factory engine.
+	 * @param Engine               $latteEngine          Latte engine.
+	 * @param EntityRepository     $carrierRepository    Carrier repository.
+	 * @param CarDeliveryConfig    $carDeliveryConfig    Car Delivery config.
+	 * @param ProductEntityFactory $productEntityFactory Product entity factory.
 	 */
 	public function __construct(
 		FormFactory $formFactory,
