@@ -45,15 +45,6 @@ class BulkActions {
 	 */
 	private $argumentTypeErrorLogger;
 
-	/**
-	 * BulkActions constructor.
-	 *
-	 * @param Engine                  $latteEngine            Latte engine.
-	 * @param Request                 $httpRequest            HTTP request.
-	 * @param PacketSubmitter         $packetSubmitter       Order API Client.
-	 * @param Repository              $orderRepository       Order repository.
-	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
-	 */
 	public function __construct(
 		Engine $latteEngine,
 		Request $httpRequest,

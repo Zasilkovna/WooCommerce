@@ -5,7 +5,6 @@ namespace Packetery\Module\Log;
 
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Tracy\Logger;
 
 class ArgumentTypeErrorLogger {
 
@@ -19,12 +18,12 @@ class ArgumentTypeErrorLogger {
 		$this->wpAdapter = $wpAdapter;
 	}
 
-	private function write( string $message, string $level ): void {
+	private function write( string $message ): void {
 		$wcLogger = $this->wcAdapter->getLogger();
 
 		$wcLogger->log(
-			$level,
-			Logger::formatMessage( $message ),
+			self::LEVEL_ERROR,
+			$message,
 			[ 'source' => 'packeta' ]
 		);
 	}
@@ -47,12 +46,12 @@ class ArgumentTypeErrorLogger {
 		);
 
 		if ( $this->wpAdapter->didAction( 'woocommerce_init' ) > 0 ) {
-			$this->write( $message, self::LEVEL_ERROR );
+			$this->write( $message );
 		} else {
 			$this->wpAdapter->addAction(
 				'woocommerce_init',
 				function () use ( $message ): void {
-					$this->write( $message, self::LEVEL_ERROR );
+					$this->write( $message );
 				}
 			);
 		}

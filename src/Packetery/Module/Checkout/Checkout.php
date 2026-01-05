@@ -20,90 +20,23 @@ use WC_Payment_Gateway;
 
 class Checkout {
 
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
-
-	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
-
-	/**
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
-	 * @var OptionsProvider
-	 */
-	private $optionsProvider;
-
-	/**
-	 * @var Order\Repository
-	 */
-	private $orderRepository;
-
-	/**
-	 * @var CurrencySwitcherService
-	 */
-	private $currencySwitcherService;
-
-	/**
-	 * @var RateCalculator
-	 */
-	private $rateCalculator;
-
-	/**
-	 * @var Carrier\EntityRepository
-	 */
-	private $carrierEntityRepository;
-
-	/**
-	 * @var PaymentHelper
-	 */
-	private $paymentHelper;
-
-	/**
-	 * @var CheckoutService
-	 */
-	private $checkoutService;
-
-	/**
-	 * @var CheckoutRenderer
-	 */
-	private $renderer;
-
-	/**
-	 * @var CartService
-	 */
-	private $cartService;
-
-	/**
-	 * @var SessionService
-	 */
-	private $sessionService;
-
-	/**
-	 * @var CheckoutValidator
-	 */
-	private $validator;
-
-	/**
-	 * @var OrderUpdater
-	 */
-	private $orderUpdater;
-
-	/**
-	 * @var DiagnosticsLogger
-	 */
-	private $diagnosticsLogger;
-
-	/**
-	 * @var ArgumentTypeErrorLogger
-	 */
-	private $argumentTypeErrorLogger;
+	private WpAdapter $wpAdapter;
+	private WcAdapter $wcAdapter;
+	private CarrierOptionsFactory $carrierOptionsFactory;
+	private OptionsProvider $optionsProvider;
+	private Order\Repository $orderRepository;
+	private CurrencySwitcherService $currencySwitcherService;
+	private RateCalculator $rateCalculator;
+	private Carrier\EntityRepository $carrierEntityRepository;
+	private PaymentHelper $paymentHelper;
+	private CheckoutService $checkoutService;
+	private CheckoutRenderer $renderer;
+	private CartService $cartService;
+	private SessionService $sessionService;
+	private CheckoutValidator $validator;
+	private OrderUpdater $orderUpdater;
+	private DiagnosticsLogger $diagnosticsLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		WpAdapter $wpAdapter,
