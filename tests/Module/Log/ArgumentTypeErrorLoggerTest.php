@@ -71,6 +71,7 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 
 	public function testLogHandlesObjectType(): void {
 		$logger = $this->createArgumentTypeErrorLogger();
+		$object = new \stdClass();
 
 		$this->wpAdapterMock
 			->method( 'didAction' )
@@ -82,11 +83,11 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 			->method( 'log' )
 			->with(
 				$this->anything(),
-				$this->stringContains( 'string' ),
+				$this->stringContains( 'stdClass' ),
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'object', 'string' );
+		$logger->log( 'testMethod', 'testParam', 'object', $object );
 	}
 
 	public function testLogHandlesArrayType(): void {
@@ -102,11 +103,11 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 			->method( 'log' )
 			->with(
 				$this->anything(),
-				$this->stringContains( 'string' ),
+				$this->stringContains( 'array' ),
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'array', 'string' );
+		$logger->log( 'testMethod', 'testParam', 'array', [] );
 	}
 
 	public function testLogHandlesNullValue(): void {
@@ -142,11 +143,11 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 			->method( 'log' )
 			->with(
 				$this->anything(),
-				$this->stringContains( 'string' ),
+				$this->stringContains( 'boolean' ),
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'bool', 'string' );
+		$logger->log( 'testMethod', 'testParam', 'bool', true );
 	}
 
 	public function testLogHandlesFloatValue(): void {
@@ -162,11 +163,11 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 			->method( 'log' )
 			->with(
 				$this->anything(),
-				$this->stringContains( 'string' ),
+				$this->stringContains( 'double' ),
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'float', 'string' );
+		$logger->log( 'testMethod', 'testParam', 'float', 1.5 );
 	}
 
 	public function testLogCallsWriteWhenWooCommerceInitAlreadyFired(): void {
