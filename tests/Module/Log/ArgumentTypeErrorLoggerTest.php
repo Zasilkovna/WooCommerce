@@ -87,7 +87,7 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'object', $object );
+		$logger->log( 'testMethod', 'testParam', 'string', $object );
 	}
 
 	public function testLogHandlesArrayType(): void {
@@ -107,7 +107,7 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'array', [] );
+		$logger->log( 'testMethod', 'testParam', 'string', [] );
 	}
 
 	public function testLogHandlesNullValue(): void {
@@ -147,7 +147,7 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'bool', true );
+		$logger->log( 'testMethod', 'testParam', 'string', true );
 	}
 
 	public function testLogHandlesFloatValue(): void {
@@ -167,7 +167,7 @@ class ArgumentTypeErrorLoggerTest extends TestCase {
 				$this->anything()
 			);
 
-		$logger->log( 'testMethod', 'testParam', 'float', 1.5 );
+		$logger->log( 'testMethod', 'testParam', 'string', 1.5 );
 	}
 
 	public function testLogCallsWriteWhenWooCommerceInitAlreadyFired(): void {
