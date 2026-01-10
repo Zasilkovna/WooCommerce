@@ -6,9 +6,9 @@ namespace Packetery\Module\Views;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Order\DetailCommonLogic;
 use Packetery\Module\Order\Repository;
-use Packetery\Module\WcLogger;
 use WC_Order;
 
 class ViewFrontend {
@@ -32,17 +32,20 @@ class ViewFrontend {
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		Repository $orderRepository,
 		Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->orderRepository   = $orderRepository;
-		$this->latteEngine       = $latteEngine;
-		$this->detailCommonLogic = $detailCommonLogic;
-		$this->wpAdapter         = $wpAdapter;
+		$this->orderRepository         = $orderRepository;
+		$this->latteEngine             = $latteEngine;
+		$this->detailCommonLogic       = $detailCommonLogic;
+		$this->wpAdapter               = $wpAdapter;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -52,7 +55,7 @@ class ViewFrontend {
 	 */
 	public function renderOrderDetail( $wcOrder ): void {
 		if ( ! $wcOrder instanceof WC_Order ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
 
 			return;
 		}

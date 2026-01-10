@@ -11,94 +11,32 @@ use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
-use Packetery\Module\WcLogger;
 use WC_Cart;
 use WC_Payment_Gateway;
 
 class Checkout {
 
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
-
-	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
-
-	/**
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
-	 * @var OptionsProvider
-	 */
-	private $optionsProvider;
-
-	/**
-	 * @var Order\Repository
-	 */
-	private $orderRepository;
-
-	/**
-	 * @var CurrencySwitcherService
-	 */
-	private $currencySwitcherService;
-
-	/**
-	 * @var RateCalculator
-	 */
-	private $rateCalculator;
-
-	/**
-	 * @var Carrier\EntityRepository
-	 */
-	private $carrierEntityRepository;
-
-	/**
-	 * @var PaymentHelper
-	 */
-	private $paymentHelper;
-
-	/**
-	 * @var CheckoutService
-	 */
-	private $checkoutService;
-
-	/**
-	 * @var CheckoutRenderer
-	 */
-	private $renderer;
-
-	/**
-	 * @var CartService
-	 */
-	private $cartService;
-
-	/**
-	 * @var SessionService
-	 */
-	private $sessionService;
-
-	/**
-	 * @var CheckoutValidator
-	 */
-	private $validator;
-
-	/**
-	 * @var OrderUpdater
-	 */
-	private $orderUpdater;
-
-	/**
-	 * @var DiagnosticsLogger
-	 */
-	private $diagnosticsLogger;
+	private WpAdapter $wpAdapter;
+	private WcAdapter $wcAdapter;
+	private CarrierOptionsFactory $carrierOptionsFactory;
+	private OptionsProvider $optionsProvider;
+	private Order\Repository $orderRepository;
+	private CurrencySwitcherService $currencySwitcherService;
+	private RateCalculator $rateCalculator;
+	private Carrier\EntityRepository $carrierEntityRepository;
+	private PaymentHelper $paymentHelper;
+	private CheckoutService $checkoutService;
+	private CheckoutRenderer $renderer;
+	private CartService $cartService;
+	private SessionService $sessionService;
+	private CheckoutValidator $validator;
+	private OrderUpdater $orderUpdater;
+	private DiagnosticsLogger $diagnosticsLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		WpAdapter $wpAdapter,
@@ -116,7 +54,8 @@ class Checkout {
 		SessionService $sessionService,
 		CheckoutValidator $validator,
 		OrderUpdater $orderUpdater,
-		DiagnosticsLogger $diagnosticsLogger
+		DiagnosticsLogger $diagnosticsLogger,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
@@ -134,6 +73,7 @@ class Checkout {
 		$this->validator               = $validator;
 		$this->orderUpdater            = $orderUpdater;
 		$this->diagnosticsLogger       = $diagnosticsLogger;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	public function registerHooks(): void {
@@ -385,7 +325,7 @@ class Checkout {
 			]
 		);
 		if ( ! is_array( $availableGateways ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'availableGateways', 'array', $availableGateways );
 
 			return $availableGateways;
 		}
@@ -437,7 +377,7 @@ class Checkout {
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if ( ! $availableGateway instanceof WC_Payment_Gateway ) {
-				WcLogger::logArgumentTypeError( __METHOD__, 'availableGateway', 'WC_Payment_Gateway', $availableGateway );
+				$this->argumentTypeErrorLogger->log( __METHOD__, 'availableGateway', 'WC_Payment_Gateway', $availableGateway );
 
 				continue;
 			}

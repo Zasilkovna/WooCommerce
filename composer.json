@@ -3,7 +3,7 @@
         "php": "~8.1.0"
     },
     "require-dev": {
-        "composer/composer": "^2.6",
+        "composer/composer": "^2.9.3",
         "editorconfig-checker/editorconfig-checker": "^10.7",
         "ergebnis/composer-normalize": "^2.47",
         "php-stubs/woocommerce-stubs": "^10.3",

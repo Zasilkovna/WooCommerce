@@ -9,9 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\PaymentGatewayHelper;
-use Packetery\Module\WcLogger;
 use WC_Payment_Gateway;
 
 /**
@@ -47,22 +47,18 @@ class PacketAutoSubmitter {
 	 * @var Repository
 	 */
 	private $orderRepository;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param OptionsProvider $optionsProvider Options provider.
-	 * @param PacketSubmitter $packetSubmitter Packet submitter.
-	 * @param Repository      $orderRepository Order repository.
-	 */
 	public function __construct(
 		OptionsProvider $optionsProvider,
 		PacketSubmitter $packetSubmitter,
-		Repository $orderRepository
+		Repository $orderRepository,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->optionsProvider = $optionsProvider;
-		$this->packetSubmitter = $packetSubmitter;
-		$this->orderRepository = $orderRepository;
+		$this->optionsProvider         = $optionsProvider;
+		$this->packetSubmitter         = $packetSubmitter;
+		$this->orderRepository         = $orderRepository;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -84,7 +80,7 @@ class PacketAutoSubmitter {
 					'woocommerce_order_status_completed',
 					function ( $orderId ): void {
 						if ( ! is_int( $orderId ) ) {
-							WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+							$this->argumentTypeErrorLogger->log( __METHOD__, 'orderId', 'int', $orderId );
 
 							return;
 						}
@@ -101,7 +97,7 @@ class PacketAutoSubmitter {
 					'woocommerce_order_status_processing',
 					function ( $orderId ): void {
 						if ( ! is_int( $orderId ) ) {
-							WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+							$this->argumentTypeErrorLogger->log( __METHOD__, 'orderId', 'int', $orderId );
 
 							return;
 						}
@@ -126,13 +122,13 @@ class PacketAutoSubmitter {
 		}
 
 		if ( ! is_string( $event ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'event', 'string', $event );
 
 			return;
 		}
 
 		if ( ! is_int( $orderId ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'orderId', 'int', $orderId );
 
 			return;
 		}
