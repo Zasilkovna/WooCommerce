@@ -17,10 +17,10 @@ use Packetery\Module\ContextResolver;
 use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Log\Purger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
-use Packetery\Module\WcLogger;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
@@ -112,6 +112,7 @@ class GridExtender {
 	 * @var Form
 	 */
 	private $orderForm;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * GridExtender constructor.
@@ -127,6 +128,7 @@ class GridExtender {
 	 * @param ModuleHelper          $moduleHelper          Module helper.
 	 * @param SizeFactory           $sizeFactory           Size factory.
 	 * @param PacketStatusResolver  $packetStatusResolver  Packet status resolver.
+	 * @param Form                  $orderForm             Order form.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -140,20 +142,22 @@ class GridExtender {
 		ModuleHelper $moduleHelper,
 		SizeFactory $sizeFactory,
 		PacketStatusResolver $packetStatusResolver,
-		Form $orderForm
+		Form $orderForm,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->coreHelper            = $coreHelper;
-		$this->latteEngine           = $latteEngine;
-		$this->httpRequest           = $httpRequest;
-		$this->orderRepository       = $orderRepository;
-		$this->orderValidator        = $orderValidatorFactory->create();
-		$this->contextResolver       = $contextResolver;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->wpAdapter             = $wpAdapter;
-		$this->moduleHelper          = $moduleHelper;
-		$this->sizeFactory           = $sizeFactory;
-		$this->packetStatusResolver  = $packetStatusResolver;
-		$this->orderForm             = $orderForm;
+		$this->coreHelper              = $coreHelper;
+		$this->latteEngine             = $latteEngine;
+		$this->httpRequest             = $httpRequest;
+		$this->orderRepository         = $orderRepository;
+		$this->orderValidator          = $orderValidatorFactory->create();
+		$this->contextResolver         = $contextResolver;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->wpAdapter               = $wpAdapter;
+		$this->moduleHelper            = $moduleHelper;
+		$this->sizeFactory             = $sizeFactory;
+		$this->packetStatusResolver    = $packetStatusResolver;
+		$this->orderForm               = $orderForm;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -165,7 +169,7 @@ class GridExtender {
 	 */
 	public function addFilterLinks( $htmlLinks ) {
 		if ( ! is_array( $htmlLinks ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
 
 			return $htmlLinks;
 		}
@@ -495,7 +499,7 @@ class GridExtender {
 	 */
 	public function addOrderListColumns( $columns ) {
 		if ( ! is_array( $columns ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'columns', 'array', $columns );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'columns', 'array', $columns );
 
 			return $columns;
 		}

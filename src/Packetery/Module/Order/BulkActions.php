@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Latte\Engine;
-use Packetery\Module\WcLogger;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
@@ -39,25 +39,20 @@ class BulkActions {
 	 * @var Repository
 	 */
 	private $orderRepository;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
-	/**
-	 * BulkActions constructor.
-	 *
-	 * @param Engine          $latteEngine     Latte engine.
-	 * @param Request         $httpRequest     HTTP request.
-	 * @param PacketSubmitter $packetSubmitter Order API Client.
-	 * @param Repository      $orderRepository Order repository.
-	 */
 	public function __construct(
 		Engine $latteEngine,
 		Request $httpRequest,
 		PacketSubmitter $packetSubmitter,
-		Repository $orderRepository
+		Repository $orderRepository,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->latteEngine     = $latteEngine;
-		$this->httpRequest     = $httpRequest;
-		$this->packetSubmitter = $packetSubmitter;
-		$this->orderRepository = $orderRepository;
+		$this->latteEngine             = $latteEngine;
+		$this->httpRequest             = $httpRequest;
+		$this->packetSubmitter         = $packetSubmitter;
+		$this->orderRepository         = $orderRepository;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -69,7 +64,7 @@ class BulkActions {
 	 */
 	public function addActions( $actions ) {
 		if ( ! is_array( $actions ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'actions', 'array', $actions );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'actions', 'array', $actions );
 
 			return $actions;
 		}
@@ -93,19 +88,19 @@ class BulkActions {
 	 */
 	public function handleActions( $redirectTo, $action, $postIds ) {
 		if ( ! is_string( $redirectTo ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'redirectTo', 'string', $redirectTo );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'redirectTo', 'string', $redirectTo );
 
 			return $redirectTo;
 		}
 
 		if ( ! is_string( $action ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'action', 'string', $action );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'action', 'string', $action );
 
 			return $redirectTo;
 		}
 
 		if ( ! is_array( $postIds ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'postIds', 'array', $postIds );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'postIds', 'array', $postIds );
 
 			return $redirectTo;
 		}
@@ -138,7 +133,7 @@ class BulkActions {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
 				if ( ! is_numeric( $postId ) ) {
-					WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'is_numeric', $postId );
+					$this->argumentTypeErrorLogger->log( __METHOD__, 'postId', 'is_numeric', $postId );
 
 					continue;
 				}
@@ -146,7 +141,7 @@ class BulkActions {
 				$wcOrder = $this->orderRepository->getWcOrderById( (int) $postId );
 
 				if ( ! $wcOrder instanceof WC_Order ) {
-					WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', 'WC_Order', $wcOrder );
+					$this->argumentTypeErrorLogger->log( __METHOD__, 'wcOrder', 'WC_Order', $wcOrder );
 
 					continue;
 				}

@@ -14,8 +14,8 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\ProductCategory;
-use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -59,6 +59,7 @@ class FormFields {
 	 * @var ProductCategoryEntityFactory
 	 */
 	private $productCategoryEntityFactory;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * Tab constructor.
@@ -74,13 +75,15 @@ class FormFields {
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		ProductCategoryEntityFactory $productCategoryEntityFactory
+		ProductCategoryEntityFactory $productCategoryEntityFactory,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
 		$this->formFactory                  = $formFactory;
 		$this->latteEngine                  = $latteEngine;
 		$this->carrierRepository            = $carrierRepository;
 		$this->carDeliveryConfig            = $carDeliveryConfig;
 		$this->productCategoryEntityFactory = $productCategoryEntityFactory;
+		$this->argumentTypeErrorLogger      = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -156,19 +159,19 @@ class FormFields {
 	 */
 	public function saveData( $termId, $termTaxonomyId, $taxonomy = '' ): void {
 		if ( ! is_int( $termId ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'termId', 'int', $termId );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'termId', 'int', $termId );
 
 			return;
 		}
 
 		if ( ! is_int( $termTaxonomyId ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'termTaxonomyId', 'int', $termTaxonomyId );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'termTaxonomyId', 'int', $termTaxonomyId );
 
 			return;
 		}
 
 		if ( ! is_string( $taxonomy ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'taxonomy', 'string', $taxonomy );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'taxonomy', 'string', $taxonomy );
 
 			return;
 		}

@@ -6,10 +6,10 @@ namespace Packetery\Module\Checkout;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Views\UrlBuilder;
-use Packetery\Module\WcLogger;
 use WC_Shipping_Rate;
 
 class CheckoutRenderer {
@@ -41,19 +41,22 @@ class CheckoutRenderer {
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		Engine $latteEngine,
 		UrlBuilder $urlBuilder,
 		CheckoutService $checkoutService,
 		WpAdapter $wpAdapter,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->latteEngine     = $latteEngine;
-		$this->urlBuilder      = $urlBuilder;
-		$this->checkoutService = $checkoutService;
-		$this->wpAdapter       = $wpAdapter;
-		$this->optionsProvider = $optionsProvider;
+		$this->latteEngine             = $latteEngine;
+		$this->urlBuilder              = $urlBuilder;
+		$this->checkoutService         = $checkoutService;
+		$this->wpAdapter               = $wpAdapter;
+		$this->optionsProvider         = $optionsProvider;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -85,7 +88,7 @@ class CheckoutRenderer {
 		}
 
 		if ( ! $shippingRate instanceof WC_Shipping_Rate ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'shippingRate', WC_Shipping_Rate::class, $shippingRate );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'shippingRate', WC_Shipping_Rate::class, $shippingRate );
 
 			return;
 		}

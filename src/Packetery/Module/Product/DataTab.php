@@ -15,8 +15,8 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Product;
-use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -62,6 +62,7 @@ class DataTab {
 	 * @var ProductEntityFactory
 	 */
 	private $productEntityFactory;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * Tab constructor.
@@ -77,13 +78,15 @@ class DataTab {
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		ProductEntityFactory $productEntityFactory
+		ProductEntityFactory $productEntityFactory,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->formFactory          = $formFactory;
-		$this->latteEngine          = $latteEngine;
-		$this->carrierRepository    = $carrierRepository;
-		$this->carDeliveryConfig    = $carDeliveryConfig;
-		$this->productEntityFactory = $productEntityFactory;
+		$this->formFactory             = $formFactory;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->productEntityFactory    = $productEntityFactory;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -106,7 +109,7 @@ class DataTab {
 	 */
 	public function registerTab( $tabs ) {
 		if ( ! is_array( $tabs ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'tabs', 'array', $tabs );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'tabs', 'array', $tabs );
 
 			return $tabs;
 		}

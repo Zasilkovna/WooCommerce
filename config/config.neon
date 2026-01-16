@@ -30,6 +30,7 @@ services:
 	- Packetery\Module\Log\Purger
 	- Packetery\Module\Log\Repository
 	- Packetery\Module\Log\DbLogger
+	- Packetery\Module\Log\ArgumentTypeErrorLogger
 	- Packetery\Module\Log\Page
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab

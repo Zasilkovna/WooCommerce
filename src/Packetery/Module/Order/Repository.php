@@ -21,9 +21,9 @@ use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\DeleteErrorException;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
-use Packetery\Module\WcLogger;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
 use WP_Post;
@@ -81,6 +81,7 @@ class Repository {
 	 * @var WcAdapter
 	 */
 	private $wcAdapter;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	/**
 	 * Repository constructor.
@@ -91,6 +92,7 @@ class Repository {
 	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param WcAdapter                     $wcAdapter                    WC adapter.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
@@ -99,7 +101,8 @@ class Repository {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		Carrier\EntityRepository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		WcAdapter $wcAdapter
+		WcAdapter $wcAdapter,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->builder                      = $orderFactory;
@@ -108,6 +111,7 @@ class Repository {
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->wcAdapter                    = $wcAdapter;
+		$this->argumentTypeErrorLogger      = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -717,13 +721,13 @@ class Repository {
 	 */
 	public function deletedPostHook( $postId, $post ): void {
 		if ( ! is_int( $postId ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'int', $postId );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'postId', 'int', $postId );
 
 			return;
 		}
 
 		if ( ! $post instanceof WP_Post ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'post', WP_Post::class, $post );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'post', WP_Post::class, $post );
 
 			return;
 		}
