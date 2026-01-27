@@ -121,9 +121,30 @@
 #packetery-options-page, .packetery_settings {
   padding-right: 1em;
 }
+#packetery-options-page .form-table-flex .currency-rate, .packetery_settings .form-table-flex .currency-rate {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+#packetery-options-page .form-table-flex .currency-rate div:nth-child(1), .packetery_settings .form-table-flex .currency-rate div:nth-child(1) {
+  width: 360px;
+  text-align: right;
+}
+#packetery-options-page .form-table-flex .currency-rate input[type=text], .packetery_settings .form-table-flex .currency-rate input[type=text] {
+  max-width: 120px;
+}
+#packetery-options-page .form-table-flex .currency-rate .packetery-input-validation-message, .packetery_settings .form-table-flex .currency-rate .packetery-input-validation-message {
+  display: block;
+}
+#packetery-options-page .form-table-flex .currency-rate div:nth-child(3), .packetery_settings .form-table-flex .currency-rate div:nth-child(3) {
+  margin-left: 0.5rem;
+}
 #packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page input[type=email], #packetery-options-page select, .packetery_settings input[type=text], .packetery_settings input[type=number], .packetery_settings input[type=email], .packetery_settings select {
   width: 500px;
   max-width: none;
+}
+#packetery-options-page input[disabled], .packetery_settings input[disabled] {
+  background-color: #eeeeee;
 }
 #packetery-options-page .fieldset, .packetery_settings .fieldset {
   border: 1px solid #ddd;
@@ -469,7 +490,7 @@ tbody .packetery-log-column-note {
   font-size: 18px;
   font-weight: 500;
 }
-.packeta_page .form-table tr th label {
+.packeta_page .form-table tr th label, .packeta_page .form-table-flex label {
   font-family: Ubuntu, Helvetica, Arial, sans-serif;
   font-weight: 500;
   width: auto;

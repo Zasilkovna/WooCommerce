@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Rounder;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module\Order\CurrencyConversion;
 
 /**
  * Class CreatePacketMapper.
@@ -37,15 +38,18 @@ class CreatePacketMapper {
 	 * @var string
 	 */
 	private $affiliateId;
+	private CurrencyConversion $currencyConversion;
 
 	public function __construct(
 		CoreHelper $coreHelper,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		string $affiliateId
+		string $affiliateId,
+		CurrencyConversion $currencyConversion
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->affiliateId           = $affiliateId;
+		$this->currencyConversion    = $currencyConversion;
 	}
 
 	/**
@@ -56,19 +60,21 @@ class CreatePacketMapper {
 	 * @return array<string, array<int<0, max>|string, array<string, array<int, array<string, bool|float|int|string|null>>|float|string|null>|float|null>|float|int|string|null>
 	 */
 	public function fromOrderToArray( Entity\Order $order ): array {
+		[$conversionRate, $currency] = $this->currencyConversion->getOrderCustomCurrencyRate( $order );
+
 		$createPacketData = [
 			// Required attributes.
 			'number'       => $order->getCustomNumberOrNumber(),
 			'name'         => $order->getName(),
 			'surname'      => $order->getSurname(),
-			'value'        => $order->getFinalValue(),
+			'value'        => ( $order->getFinalValue() !== null ? $order->getFinalValue() / $conversionRate : null ),
 			'weight'       => $order->getFinalWeight(),
 			'addressId'    => $order->getPickupPointOrCarrierId(),
 			'eshop'        => $order->getEshop(),
 			// Optional attributes.
 			'adultContent' => (int) $order->containsAdultContent(),
 			'cod'          => null,
-			'currency'     => $order->getCurrency(),
+			'currency'     => $currency,
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
@@ -78,6 +84,7 @@ class CreatePacketMapper {
 
 		$codValue = $order->getFinalCod();
 		if ( $codValue !== null ) {
+			$codValue               /= $conversionRate;
 			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $codValue, $createPacketData['currency'], $roundingType );
 			$createPacketData['cod'] = $roundedCod;

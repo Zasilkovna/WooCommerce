@@ -12,6 +12,7 @@ class OptionNames {
 	public const PACKETERY_SYNC                              = 'packetery_sync';
 	public const PACKETERY_AUTO_SUBMISSION                   = 'packetery_auto_submission';
 	public const PACKETERY_ADVANCED                          = 'packetery_advanced';
+	public const PACKETERY_CURRENCY_RATES                    = 'packetery_currency_rates';
 	public const PACKETERY_ACTIVATED                         = 'packetery_activated';
 	public const PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET = 'packetery_tutorial_order_detail_edit_packet';
 	public const PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET   = 'packetery_tutorial_order_grid_edit_packet';

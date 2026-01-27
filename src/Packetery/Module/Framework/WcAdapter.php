@@ -184,4 +184,8 @@ class WcAdapter {
 	public function getCurrencySymbol( string $currency = '' ): string {
 		return (string) get_woocommerce_currency_symbol( $currency );
 	}
+
+	public function getWoocommerceCurrency(): string {
+		return get_woocommerce_currency();
+	}
 }

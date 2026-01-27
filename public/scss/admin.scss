@@ -142,9 +142,38 @@
 #packetery-options-page, .packetery_settings {
 	padding-right: 1em;
 
+	.form-table-flex {
+		.currency-rate {
+			display: flex;
+			align-items: center;
+			margin-bottom: 0.5rem;
+
+			div:nth-child(1) {
+				width: 360px;
+				text-align: right;
+			}
+
+			input[type="text"] {
+				max-width: 120px;
+			}
+
+			.packetery-input-validation-message {
+				display: block;
+			}
+
+			div:nth-child(3) {
+				margin-left: 0.5rem;
+			}
+		}
+	}
+
 	input[type=text], input[type=number], input[type="email"], select {
 		width: 500px;
 		max-width: none;
+	}
+
+	input[disabled] {
+		background-color: #eeeeee;
 	}
 
 	.fieldset {
@@ -553,7 +582,7 @@ tbody .packetery-log-column-note {
 		font-weight: 500;
 	}
 
-	.form-table tr th label {
+	.form-table tr th label, .form-table-flex label {
 		font-family: $font-heading;
 		font-weight: 500;
 		width: auto;

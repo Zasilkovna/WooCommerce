@@ -134,6 +134,8 @@ services:
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
 	- Packetery\Module\Forms\DiagnosticsLoggingFormFactory
+	- Packetery\Module\Forms\CurrencyRatesFormFactory
+	- Packetery\Module\Order\CurrencyConversion
 	- Packetery\Module\Order\StoredUntilModal
 	- Packetery\Module\Order\PacketSetStoredUntil
 	- Packetery\Module\Hooks\HookRegistrar
