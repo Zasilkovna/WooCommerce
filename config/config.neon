@@ -119,7 +119,7 @@ services:
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
 	- Packetery\Module\Checkout\CurrencySwitcherService
-	- Packetery\Core\Api\Soap\CreatePacketMapper(affiliateId: %affiliateId%)
+	- Packetery\Module\Order\CreatePacketMapper(affiliateId: %affiliateId%)
 	- Packetery\Module\Order\PickupPointValidator
 	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig

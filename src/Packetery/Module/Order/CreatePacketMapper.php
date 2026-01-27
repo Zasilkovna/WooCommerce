@@ -7,13 +7,12 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Core\Api\Soap;
+namespace Packetery\Module\Order;
 
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Rounder;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
-use Packetery\Module\Order\CurrencyConversion;
 
 /**
  * Class CreatePacketMapper.

@@ -6,7 +6,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap;
-use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
