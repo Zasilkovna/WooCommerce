@@ -26,9 +26,9 @@ trait HookTrait {
 	/**
 	 * Applies filters.
 	 *
-	 * @param string $hookName Hook name.
-	 * @param mixed  $value Value.
-	 * @param mixed  ...$args Arguments.
+	 * @param non-empty-string $hookName Hook name.
+	 * @param mixed            $value Value.
+	 * @param mixed            ...$args Arguments.
 	 *
 	 * @return mixed
 	 */
