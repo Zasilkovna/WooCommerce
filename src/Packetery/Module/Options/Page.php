@@ -947,8 +947,8 @@ class Page {
 
 		$diagnosticsLoggingForm = $this->diagnosticsLoggingFormFactory->createForm();
 		if (
-			$diagnosticsLoggingForm['save'] instanceof SubmitButton &&
-			$diagnosticsLoggingForm['save']->isSubmittedBy() &&
+			$diagnosticsLoggingForm['saveDiagnosticsLog'] instanceof SubmitButton &&
+			$diagnosticsLoggingForm['saveDiagnosticsLog']->isSubmittedBy() &&
 			$diagnosticsLoggingForm->isSuccess()
 		) {
 			$diagnosticsLoggingForm->fireEvents();
