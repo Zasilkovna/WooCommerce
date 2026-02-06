@@ -18,18 +18,6 @@ use WP_Post;
  */
 trait PostTrait {
 	/**
-	 * Retrieves data from a post field based on Post ID.
-	 *
-	 * @param string      $field Post field name.
-	 * @param int|WP_Post $post Optional. Post ID or post object. Defaults to global $post.
-	 *
-	 * @return string
-	 */
-	public function getPostField( string $field, $post ): string {
-		return get_post_field( $field, $post );
-	}
-
-	/**
 	 * @return int|false
 	 */
 	public function getTheId() {
