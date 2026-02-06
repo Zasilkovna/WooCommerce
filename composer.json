@@ -64,6 +64,7 @@
             "@composer:normalize:check",
             "@phpstan:all",
             "@tests:unit",
+            "composer audit",
             "echo \"\n➤  Don't forget to run and update integration tests if needed!\n\""
         ],
         "check:ec": "vendor/bin/ec .",
