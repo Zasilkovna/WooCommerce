@@ -411,6 +411,8 @@ class HookRegistrar {
 	}
 
 	private function registerBackEnd(): void {
+		$this->productCategoryFormFields->register();
+
 		if ( $this->wpAdapter->doingAjax() === false ) {
 			$this->wpAdapter->addAction( 'admin_init', [ $this, 'redirectAfterActivation' ] );
 			$this->wpAdapter->addAction( 'init', [ $this->messageManager, 'init' ] );
@@ -497,7 +499,6 @@ class HookRegistrar {
 			$this->metaboxesWrapper->register();
 			$this->storedUntilModal->register();
 			$this->productTab->register();
-			$this->productCategoryFormFields->register();
 			$this->carrierModal->register();
 
 			$this->wpAdapter->addAction(
