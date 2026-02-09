@@ -2383,12 +2383,6 @@ parameters:
 			path: ../src/Packetery/Module/ProductCategory/FormFields.php
 
 		-
-			message: '#^Parameter \#1 \$category of class Packetery\\Module\\ProductCategory\\Entity constructor expects WP_Term, WP_Error\|WP_Term\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/ProductCategory/ProductCategoryEntityFactory.php
-
-		-
 			message: '#^Method Packetery\\Module\\QueryProcessor\:\:getParamValues\(\) should return array\<string, null\> but returns array\<string, mixed\>\.$#'
 			identifier: return.type
 			count: 1

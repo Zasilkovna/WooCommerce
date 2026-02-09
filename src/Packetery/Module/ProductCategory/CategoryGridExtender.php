@@ -95,15 +95,7 @@ class CategoryGridExtender {
 		static $entityCache = [];
 
 		if ( ! isset( $entityCache[ $termId ] ) ) {
-			$term = $this->wpAdapter->getTerm( $termId );
-
-			if ( ! $term instanceof \WP_Term ) {
-				$entityCache[ $termId ] = null;
-
-				return null;
-			}
-
-			$entityCache[ $termId ] = $this->productCategoryEntityFactory->fromTerm( $term );
+			$entityCache[ $termId ] = $this->productCategoryEntityFactory->fromTermId( $termId );
 		}
 
 		return $entityCache[ $termId ];
