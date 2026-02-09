@@ -11,6 +11,7 @@ namespace Packetery\Module\Log;
 
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\ILogger;
+use Packetery\Core\Log\LogPageArguments;
 use Packetery\Core\Log\Record;
 
 /**
@@ -20,18 +21,8 @@ use Packetery\Core\Log\Record;
  */
 class DbLogger implements ILogger {
 
-	/**
-	 * Log repository.
-	 *
-	 * @var Repository
-	 */
-	private $logRepository;
+	private Repository $logRepository;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Repository $logRepository Log repository.
-	 */
 	public function __construct( Repository $logRepository ) {
 		$this->logRepository = $logRepository;
 	}
@@ -48,29 +39,12 @@ class DbLogger implements ILogger {
 	}
 
 	/**
-	 * Gets records.
-	 *
-	 * @param int|null              $orderId Order ID.
-	 * @param string|null           $action  Action.
-	 * @param array<string, string> $sorting Sorting config.
-	 * @param int                   $limit   Limit.
+	 * @param LogPageArguments $arguments
 	 *
 	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function getRecords( ?int $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable {
-		$arguments = [
-			'orderby' => $sorting,
-			'limit'   => $limit,
-		];
-
-		if ( is_numeric( $orderId ) ) {
-			$arguments['order_id'] = $orderId;
-		}
-		if ( $action !== null ) {
-			$arguments['action'] = $action;
-		}
-
+	public function getRecords( LogPageArguments $arguments ): iterable {
 		$logs = $this->logRepository->find( $arguments );
 		if ( ! $logs instanceof \Generator ) {
 			return [];
@@ -80,30 +54,34 @@ class DbLogger implements ILogger {
 	}
 
 	/**
-	 * Counts records.
-	 *
-	 * @param int|null    $orderId Order ID.
-	 * @param string|null $action  Action.
+	 * @param LogPageArguments $arguments
 	 *
 	 * @return int
 	 */
-	public function countRecords( ?int $orderId = null, ?string $action = null ): int {
-		return $this->logRepository->countRows( $orderId, $action );
+	public function countRecords( LogPageArguments $arguments ): int {
+		$where = $this->logRepository->buildQueryConditions( $arguments );
+
+		return $this->logRepository->countRows( $arguments->getOrderId(), $arguments->getAction(), $where );
 	}
 
 	/**
-	 * Gets logs for given period as array.
-	 *
+	 * @param string $before DateTime modifier.
+	 */
+	public function deleteOld( string $before ): void {
+		$this->logRepository->deleteOld( $before );
+	}
+
+	/**
 	 * @param array<array<string, string>> $dateQuery Date_query compatible array.
 	 *
 	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getForPeriodAsArray( array $dateQuery ) {
-		$arguments = [
-			'orderby'    => [ 'date' => 'ASC' ],
-			'date_query' => $dateQuery,
-		];
+		$arguments = new LogPageArguments();
+		$arguments->setOrderBy( [ 'date' => 'ASC' ] );
+		$arguments->setDateQuery( $dateQuery );
+		$arguments->setUseExactTimes( true );
 
 		$logs = $this->logRepository->find( $arguments );
 		if ( ! $logs instanceof \Generator ) {

@@ -49,6 +49,7 @@ services:
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Forms\BugReportForm
+	- Packetery\Module\Forms\LogFilterFormFactory
 	- Packetery\Module\Email\BugReportEmail(supportEmailAddress: %supportEmailAddress%)
 	- Packetery\Module\Email\BugReportAttachment
 	- Packetery\Module\Log\LogSizeLimiter(logLimitDays: %logLimitDays%, logLimitSizeBytes: %logLimitSizeBytes%)
