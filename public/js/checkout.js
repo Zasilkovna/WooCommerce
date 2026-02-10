@@ -13,13 +13,22 @@ var packeteryLoadCheckout = function( $, settings ) {
 		} );
 	}
 
-	var getCheckoutAddress = function () {
-		var section = '';
-		if ( $( '#ship-to-different-address-checkbox:checked' ).length === 1 ) {
-			section = 'shipping';
+	var getDestinationAddressSection = function () {
+		if ( $( '#ship-to-different-address-checkbox' ).length === 1 ) {
+			if ( $( '#ship-to-different-address-checkbox:checked' ).length === 1 ) {
+				return 'shipping';
+			} else {
+				return 'billing';
+			}
+		} else if ( $( '#shipping_country:visible' ).length === 1 ) {
+			return 'shipping';
 		} else {
-			section = 'billing';
+			return 'billing';
 		}
+	}
+
+	var getDestinationAddressElements = function () {
+		const section = getDestinationAddressSection();
 		return {
 			street: $( '#' + section + '_address_1' ),
 			city: $( '#' + section + '_city' ),
@@ -59,11 +68,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				};
 			};
 
-			if ( $( '#shipping_country:visible' ).length === 1 ) {
-				return extractDestination( 'shipping' );
-			} else {
-				return extractDestination( 'billing' );
-			}
+			return extractDestination( getDestinationAddressSection() );
 		};
 
 		var getRateAttrValue = function( carrierRateId, attribute, defaultValue ) {
@@ -109,7 +114,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		var rewriteDestinationAddress = function ( carrierRateId ) {
-			var destinationAddress = getCheckoutAddress();
+			var destinationAddress = getDestinationAddressElements();
 			destinationAddress.street.val( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) + ' ' + getRateAttrValue( carrierRateId, 'packetery_address_houseNumber', '' ) );
 			destinationAddress.city.val( getRateAttrValue( carrierRateId, 'packetery_address_city', '' ) );
 			destinationAddress.postCode.val( getRateAttrValue( carrierRateId, 'packetery_address_postCode', '' ) );
@@ -442,8 +447,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 		$( document ).on( 'click', '.packeta-widget-button', function( e ) {
 			e.preventDefault();
 
+			var destinationAddress = getDestinationAddress();
+			var country = destinationAddress.country || settings.country;
 			var widgetOptions = {
-				country: settings.country,
+				country: country,
 				language: settings.language
 			};
 
@@ -451,8 +458,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 			if ( hasHomeDelivery( carrierRateId ) ) {
 				widgetOptions.layout = 'hd';
 				widgetOptions.appIdentity = settings.appIdentity;
-
-				var destinationAddress = getDestinationAddress();
 				widgetOptions.street = destinationAddress.street;
 				widgetOptions.city = destinationAddress.city;
 				widgetOptions.postcode = destinationAddress.postCode;
