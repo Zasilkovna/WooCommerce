@@ -411,152 +411,9 @@ class HookRegistrar {
 	}
 
 	private function registerBackEnd(): void {
-		if ( $this->wpAdapter->doingAjax() === false ) {
-			$this->wpAdapter->addAction( 'admin_init', [ $this, 'redirectAfterActivation' ] );
-			$this->wpAdapter->addAction( 'init', [ $this->messageManager, 'init' ] );
-			$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->assetManager, 'enqueueAdminAssets' ] );
-			$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->wizardAssetManager, 'enqueueWizardAssets' ] );
-			$this->wpAdapter->addAction(
-				'admin_notices',
-				function () {
-					$this->messageManager->render( MessageManager::RENDERER_WORDPRESS );
-				},
-				self::MIN_LISTENER_PRIORITY
-			);
-			$this->wpAdapter->addAction( 'init', [ $this, 'addLinksToPluginGrid' ] );
-			$this->wpAdapter->addFilter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
-			$this->wpAdapter->addAction( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
-			$this->wpAdapter->addFilter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
+		$this->productCategoryFormFields->register();
 
-			$orderListScreenId = 'woocommerce_page_wc-orders';
-
-			$wooCommerceVersion = ModuleHelper::getWooCommerceVersion();
-			if ( $wooCommerceVersion !== null && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
-				$this->wpAdapter->addFilter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
-				$this->wpAdapter->addAction(
-					'woocommerce_order_list_table_restrict_manage_orders',
-					[
-						$this->gridExtender,
-						'renderOrderTypeSelect',
-					]
-				);
-			}
-
-			$this->queryProcessor->register();
-
-			$this->wpAdapter->addFilter(
-				sprintf( 'manage_%s_columns', $orderListScreenId ),
-				[
-					$this->gridExtender,
-					'addOrderListColumns',
-				]
-			);
-			$this->wpAdapter->addAction(
-				'manage_shop_order_posts_custom_column',
-				[
-					$this->gridExtender,
-					'fillCustomOrderListColumns',
-				],
-				10,
-				2
-			);
-			$this->wpAdapter->addAction(
-				sprintf( 'manage_%s_custom_column', $orderListScreenId ),
-				[
-					$this->gridExtender,
-					'fillCustomOrderListColumns',
-				],
-				10,
-				2
-			);
-
-			$this->wpAdapter->addFilter(
-				'manage_edit-shop_order_sortable_columns',
-				[
-					$this->gridExtender,
-					'makeOrderListSpecificColumnsSortable',
-				]
-			);
-			$this->wpAdapter->addFilter(
-				sprintf( 'manage_%s_sortable_columns', $orderListScreenId ),
-				[
-					$this->gridExtender,
-					'makeOrderListSpecificColumnsSortable',
-				]
-			);
-
-			$this->optionsPage->register();
-			$this->wpAdapter->addAction( 'admin_menu', [ $this, 'addMenuPages' ] );
-			$this->wpAdapter->addAction( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
-			$this->wpAdapter->addAction( 'admin_head', [ $this->orderCollectionPrint, 'hideFromMenus' ] );
-
-			$this->wpAdapter->addAction( 'admin_head', [ $this->viewAdmin, 'renderConfirmModalTemplate' ] );
-
-			$this->orderModal->register();
-			$this->labelPrintModal->register();
-			$this->metaboxesWrapper->register();
-			$this->storedUntilModal->register();
-			$this->productTab->register();
-			$this->productCategoryFormFields->register();
-			$this->carrierModal->register();
-
-			$this->wpAdapter->addAction(
-				'woocommerce_admin_order_data_after_shipping_address',
-				[
-					$this->viewAdmin,
-					'renderDeliveryDetail',
-				]
-			);
-
-			// Adding custom actions to dropdown in admin order list.
-			$this->wpAdapter->addFilter( 'bulk_actions-edit-shop_order', [ $this->orderBulkActions, 'addActions' ], 20 );
-			$this->wpAdapter->addFilter(
-				sprintf( 'bulk_actions-%s', $orderListScreenId ),
-				[
-					$this->orderBulkActions,
-					'addActions',
-				],
-				20
-			);
-			// Execute the action for selected orders.
-			$this->wpAdapter->addFilter(
-				'handle_bulk_actions-edit-shop_order',
-				[
-					$this->orderBulkActions,
-					'handleActions',
-				],
-				10,
-				3
-			);
-			$this->wpAdapter->addFilter(
-				sprintf( 'handle_bulk_actions-%s', $orderListScreenId ),
-				[
-					$this->orderBulkActions,
-					'handleActions',
-				],
-				10,
-				3
-			);
-			// Print packets export result.
-			$this->wpAdapter->addAction(
-				'admin_notices',
-				[
-					$this->orderBulkActions,
-					'renderPacketsExportResult',
-				],
-				self::MIN_LISTENER_PRIORITY
-			);
-			$this->wpAdapter->addAction( 'admin_init', [ $this->labelPrint, 'outputLabelsPdf' ] );
-			$this->wpAdapter->addAction( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
-
-			$this->wpAdapter->addAction( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
-			$this->wpAdapter->addAction( 'admin_init', [ $this->diagnosticsLogger, 'deletePacketaLog' ] );
-			$this->wpAdapter->addAction( 'admin_init', [ $this->pluginHooks, 'handleActions' ] );
-
-			$this->wpAdapter->addAction( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
-			$this->dashboardWidget->register();
-		} else {
-			// For blocks, used at frontend.
+		if ( $this->wpAdapter->doingAjax() === true ) {
 			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkoutSettings, 'actionCreateSettingsAjax' ] );
 			$this->wpAdapter->addAction(
 				'wp_ajax_nopriv_get_settings',
@@ -565,7 +422,152 @@ class HookRegistrar {
 					'actionCreateSettingsAjax',
 				]
 			);
+
+			return;
 		}
+
+		$this->wpAdapter->addAction( 'admin_init', [ $this, 'redirectAfterActivation' ] );
+		$this->wpAdapter->addAction( 'init', [ $this->messageManager, 'init' ] );
+		$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->assetManager, 'enqueueAdminAssets' ] );
+		$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->wizardAssetManager, 'enqueueWizardAssets' ] );
+		$this->wpAdapter->addAction(
+			'admin_notices',
+			function () {
+				$this->messageManager->render( MessageManager::RENDERER_WORDPRESS );
+			},
+			self::MIN_LISTENER_PRIORITY
+		);
+		$this->wpAdapter->addAction( 'init', [ $this, 'addLinksToPluginGrid' ] );
+		$this->wpAdapter->addFilter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
+		$this->wpAdapter->addAction( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
+		$this->wpAdapter->addFilter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
+
+		$orderListScreenId = 'woocommerce_page_wc-orders';
+
+		$wooCommerceVersion = ModuleHelper::getWooCommerceVersion();
+		if ( $wooCommerceVersion !== null && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
+			$this->wpAdapter->addFilter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
+			$this->wpAdapter->addAction(
+				'woocommerce_order_list_table_restrict_manage_orders',
+				[
+					$this->gridExtender,
+					'renderOrderTypeSelect',
+				]
+			);
+		}
+
+		$this->queryProcessor->register();
+
+		$this->wpAdapter->addFilter(
+			sprintf( 'manage_%s_columns', $orderListScreenId ),
+			[
+				$this->gridExtender,
+				'addOrderListColumns',
+			]
+		);
+		$this->wpAdapter->addAction(
+			'manage_shop_order_posts_custom_column',
+			[
+				$this->gridExtender,
+				'fillCustomOrderListColumns',
+			],
+			10,
+			2
+		);
+		$this->wpAdapter->addAction(
+			sprintf( 'manage_%s_custom_column', $orderListScreenId ),
+			[
+				$this->gridExtender,
+				'fillCustomOrderListColumns',
+			],
+			10,
+			2
+		);
+
+		$this->wpAdapter->addFilter(
+			'manage_edit-shop_order_sortable_columns',
+			[
+				$this->gridExtender,
+				'makeOrderListSpecificColumnsSortable',
+			]
+		);
+		$this->wpAdapter->addFilter(
+			sprintf( 'manage_%s_sortable_columns', $orderListScreenId ),
+			[
+				$this->gridExtender,
+				'makeOrderListSpecificColumnsSortable',
+			]
+		);
+
+		$this->optionsPage->register();
+		$this->wpAdapter->addAction( 'admin_menu', [ $this, 'addMenuPages' ] );
+		$this->wpAdapter->addAction( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
+		$this->wpAdapter->addAction( 'admin_head', [ $this->orderCollectionPrint, 'hideFromMenus' ] );
+
+		$this->wpAdapter->addAction( 'admin_head', [ $this->viewAdmin, 'renderConfirmModalTemplate' ] );
+
+		$this->orderModal->register();
+		$this->labelPrintModal->register();
+		$this->metaboxesWrapper->register();
+		$this->storedUntilModal->register();
+		$this->productTab->register();
+		$this->carrierModal->register();
+
+		$this->wpAdapter->addAction(
+			'woocommerce_admin_order_data_after_shipping_address',
+			[
+				$this->viewAdmin,
+				'renderDeliveryDetail',
+			]
+		);
+
+		// Adding custom actions to dropdown in admin order list.
+		$this->wpAdapter->addFilter( 'bulk_actions-edit-shop_order', [ $this->orderBulkActions, 'addActions' ], 20 );
+		$this->wpAdapter->addFilter(
+			sprintf( 'bulk_actions-%s', $orderListScreenId ),
+			[
+				$this->orderBulkActions,
+				'addActions',
+			],
+			20
+		);
+		// Execute the action for selected orders.
+		$this->wpAdapter->addFilter(
+			'handle_bulk_actions-edit-shop_order',
+			[
+				$this->orderBulkActions,
+				'handleActions',
+			],
+			10,
+			3
+		);
+		$this->wpAdapter->addFilter(
+			sprintf( 'handle_bulk_actions-%s', $orderListScreenId ),
+			[
+				$this->orderBulkActions,
+				'handleActions',
+			],
+			10,
+			3
+		);
+		// Print packets export result.
+		$this->wpAdapter->addAction(
+			'admin_notices',
+			[
+				$this->orderBulkActions,
+				'renderPacketsExportResult',
+			],
+			self::MIN_LISTENER_PRIORITY
+		);
+		$this->wpAdapter->addAction( 'admin_init', [ $this->labelPrint, 'outputLabelsPdf' ] );
+		$this->wpAdapter->addAction( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
+
+		$this->wpAdapter->addAction( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
+		$this->wpAdapter->addAction( 'admin_init', [ $this->diagnosticsLogger, 'deletePacketaLog' ] );
+		$this->wpAdapter->addAction( 'admin_init', [ $this->pluginHooks, 'handleActions' ] );
+
+		$this->wpAdapter->addAction( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
+		$this->dashboardWidget->register();
 	}
 
 	private function registerFrontEnd(): void {
