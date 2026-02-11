@@ -121,12 +121,6 @@ parameters:
 			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
 
 		-
-			message: '#^Parameter \#2 \$needle of function stripos expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
-
-		-
 			message: '#^Parameter \#2 \.\.\.\$args of function array_merge expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1

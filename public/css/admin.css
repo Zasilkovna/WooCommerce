@@ -579,6 +579,42 @@ tbody .packetery-log-column-note {
 .packetery-wc-native-carrier-settings h1 {
   margin: 50px 0;
 }
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packeta_filter_items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select {
+  min-width: 200px;
+}
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container {
+  min-width: 200px;
+  min-height: 44px;
+  height: auto;
+  box-sizing: border-box;
+}
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container .select2-selection--multiple,
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container .select2-selection--single {
+  min-height: 44px;
+  height: auto;
+  box-sizing: border-box;
+  padding: 0 4px 0 4px;
+  line-height: 1.4;
+}
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container .select2-selection--multiple .select2-selection__rendered,
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container .select2-selection--single .select2-selection__rendered {
+  line-height: 1.4;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container .select2-selection--multiple .select2-selection__arrow,
+.packetery-wc-native-carrier-settings .packeta_carriers_filter .packetery-carrier-list-country-select .select2-container .select2-selection--single .select2-selection__arrow {
+  height: 36px;
+}
 .packetery-wc-native-carrier-settings .packeta_country_list {
   width: 100%;
 }
@@ -591,13 +627,15 @@ tbody .packetery-log-column-note {
 .packetery-wc-native-carrier-settings .packeta_country_list_item td:last-child {
   text-align: center;
 }
-
-@media (min-width: 768px) {
-  /* Set fixed width for all elements */
-  .packetery-wc-native-carrier-settings .packeta_country_list {
-    width: 800px;
-  }
+.packetery-wc-native-carrier-settings .packetery-col-max-weight-value,
+.packetery-wc-native-carrier-settings .packetery-col-max-parcel-size {
+  text-align: left;
 }
+.packetery-wc-native-carrier-settings .packetery-col-free-shipping.packetery-align-right,
+.packetery-wc-native-carrier-settings .packetery-col-age-verification-fee.packetery-align-right {
+  text-align: right;
+}
+
 .packeta_active_carriers_column {
   max-width: 480px;
 }
