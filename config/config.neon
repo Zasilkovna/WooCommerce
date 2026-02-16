@@ -37,6 +37,7 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
+	- Packetery\Module\ProductCategory\CategoryGridExtender
 	- Packetery\Core\CoreHelper(trackingUrl: %trackingUrl%)
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager

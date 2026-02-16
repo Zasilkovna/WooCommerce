@@ -180,7 +180,10 @@ class FormFields {
 			return;
 		}
 		$productCategory = $this->productCategoryEntityFactory->fromTermId( $termId );
-		$form            = $this->createForm( $productCategory );
+		if ( $productCategory === null ) {
+			return;
+		}
+		$form = $this->createForm( $productCategory );
 
 		$form->onSuccess[] = static function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
 			if ( isset( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] ) ) {

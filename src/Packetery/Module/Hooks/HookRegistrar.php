@@ -35,6 +35,7 @@ use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Order\StoredUntilModal;
 use Packetery\Module\Product;
 use Packetery\Module\ProductCategory;
+use Packetery\Module\ProductCategory\CategoryGridExtender;
 use Packetery\Module\QueryProcessor;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
@@ -143,6 +144,7 @@ class HookRegistrar {
 	 * @var ProductCategory\FormFields
 	 */
 	private $productCategoryFormFields;
+	private CategoryGridExtender $categoryGridExtender;
 
 	/**
 	 * @var PacketAutoSubmitter
@@ -289,6 +291,7 @@ class HookRegistrar {
 		DashboardWidget $dashboardWidget,
 		PacketSubmitter $packetSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
+		CategoryGridExtender $categoryGridExtender,
 		PacketAutoSubmitter $packetAutoSubmitter,
 		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\ApiExtender $apiExtender,
@@ -333,6 +336,7 @@ class HookRegistrar {
 		$this->dashboardWidget           = $dashboardWidget;
 		$this->packetSubmitter           = $packetSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
+		$this->categoryGridExtender      = $categoryGridExtender;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 		$this->metaboxesWrapper          = $metaboxesWrapper;
 		$this->apiExtender               = $apiExtender;
@@ -411,6 +415,9 @@ class HookRegistrar {
 	}
 
 	private function registerBackEnd(): void {
+		$this->wpAdapter->addFilter( 'manage_edit-product_cat_columns', [ $this->categoryGridExtender, 'addCategoryListColumns' ] );
+		$this->wpAdapter->addFilter( 'manage_product_cat_custom_column', [ $this->categoryGridExtender, 'fillCategoryListColumn' ], 10, 3 );
+		$this->wpAdapter->addFilter( 'default_hidden_columns', [ $this->categoryGridExtender, 'hideCategoryListColumnByDefault' ], 10, 2 );
 		$this->productCategoryFormFields->register();
 
 		if ( $this->wpAdapter->doingAjax() === true ) {
