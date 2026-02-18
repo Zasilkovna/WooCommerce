@@ -42,6 +42,7 @@ class CurrencySwitcherService {
 	 */
 	public static $supportedCurrencySwitchers = [
 		'WOOCS - WooCommerce Currency Switcher',
+		'YayCurrency – WooCommerce Multi-Currency Switcher',
 	];
 
 	/**
@@ -52,6 +53,10 @@ class CurrencySwitcherService {
 	 * @return float
 	 */
 	public function getConvertedPrice( float $price ): float {
+		if ($this->moduleHelper->isPluginActive( 'yaycurrency/yay-currency.php' ) ) {
+			return $this->applyFilterYayCurrencyExchangeValue( $price );
+		}
+
 		if ( $this->moduleHelper->isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
 			return $this->applyFilterWoocsExchangeValue( $price );
 		}
@@ -79,6 +84,42 @@ class CurrencySwitcherService {
 			 * @since 1.2.7
 			 */
 			$value = (float) $this->wpAdapter->applyFilters( 'woocs_exchange_value', $value );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * YayCurrency compatibility.
+	 *
+	 * @param float $value Value of the surcharge or transport price.
+	 *
+	 * @return float
+	 */
+	private function applyFilterYayCurrencyExchangeValue( float $value ): float {
+		if ( $value <= 0 ) {
+			return $value;
+		}
+
+		$current_currency = get_woocommerce_currency();
+		$base_currency    = get_option('woocommerce_currency'); // Default currency
+
+		if ( $current_currency === $base_currency ) {
+			return $value;
+		}
+
+		if ( ! class_exists( '\Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+			return $value;
+		}
+
+		try {
+			$current_currency_obj = \Yay_Currency\Helpers\YayCurrencyHelper::get_current_currency();
+
+			$exchange_rate = (float) ($current_currency_obj['rate'] ?? 1);
+
+			$value = round((float) $value * (float) $exchange_rate, 2);
+		} catch ( \Exception $e ) {
+			return $value;
 		}
 
 		return $value;
