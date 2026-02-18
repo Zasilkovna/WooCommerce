@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Carrier\Options as CarrierOptions;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 
@@ -222,6 +223,25 @@ class OptionsProvider {
 		}
 
 		return $value;
+	}
+
+	public function getMaxCartValue(): ?int {
+		$value = $this->get( 'max_cart_value' );
+		if ( $value === null || $value === '' || is_numeric( $value ) === false ) {
+			return null;
+		}
+
+		$int = (int) $value;
+
+		return $int >= 1 ? $int : null;
+	}
+
+	public function getEffectiveMaxCartValueLimit( CarrierOptions $carrierOptions ): ?int {
+		if ( $this->isWcCarrierConfigEnabled() ) {
+			return $carrierOptions->getMaxCartValue() ?? $this->getMaxCartValue();
+		}
+
+		return $this->getMaxCartValue();
 	}
 
 	/**
