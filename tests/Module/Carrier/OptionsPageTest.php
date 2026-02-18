@@ -14,9 +14,11 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
@@ -52,6 +54,8 @@ class OptionsPageTest extends TestCase {
 			$this->createMock( ModuleHelper::class ),
 			$this->createMock( UrlBuilder::class ),
 			$this->createMock( WpAdapter::class ),
+			$this->createMock( WcAdapter::class ),
+			$this->createMock( OptionsProvider::class ),
 		);
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointcz' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointsk' ) );
