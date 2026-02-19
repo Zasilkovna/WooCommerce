@@ -114,11 +114,8 @@ class WpAdapter {
 		return wp_create_nonce( $action );
 	}
 
-	/**
-	 * @return int|false
-	 */
-	public function verifyNonce( string $nonce, string $action ) {
-		return wp_verify_nonce( $nonce, $action );
+	public function verifyNonce( string $nonce, string $action ): bool {
+		return wp_verify_nonce( $nonce, $action ) !== false;
 	}
 
 	public function sendJson( array $settings ): void {

@@ -411,7 +411,12 @@ class HookRegistrar {
 
 		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
 
-		add_action( 'packeta_create_tables', [ $this->upgrade, 'runCreateTables' ] );
+		add_action(
+			'packeta_create_tables',
+			function (): void {
+				$this->upgrade->runCreateTables();
+			}
+		);
 	}
 
 	private function registerBackEnd(): void {
