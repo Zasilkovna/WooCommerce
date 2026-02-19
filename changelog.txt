@@ -1,4 +1,18 @@
 == Changelog ==
+= 2.3.0 =
+Updated: Better destination address handling in classic checkout.
+Fixed: Storing Packeta carrier restrictions when creating a new category.
+Updated: Added new columns and filtering options to the carrier list.
+Added: Shipping method restrictions column in the category list (hidden by default).
+Added: New product list columns for age verification and shipping restrictions with filtering options.
+Added: Implemented currency exchange rate settings and price conversion when submitting a packet.
+Added: Pagination and filter form in log section.
+Added: Option to manually start the DB schema upgrade.
+Updated: Displaying the name of the pickup point next to its address.
+Updated: Optimized order retrieval for label printing.
+Updated: Prevented duplicate metabox processing on order save.
+Updated: Unoptimized PNG logo replaced with SVG from brand manual.
+
 = 2.2.0 =
 Added: Optional validation of the selected pickup point using the API.
 Added: Extended logging for diagnostics.
