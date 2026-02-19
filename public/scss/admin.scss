@@ -896,6 +896,17 @@ tbody .packetery-log-column-note {
 	margin: 30px 0;
 }
 
+.packetery-log-filter-container {
+	display: flex;
+	padding: 0.5rem;
+	justify-content: space-between;
+}
+
+.packetery-log-pagination {
+	text-align: right;
+	padding: 0 0.5rem 0.5rem 0;
+}
+
 @import 'admin/custom-declaration.scss';
 @import 'admin/widget-button.scss';
 @import 'admin/order-status.scss';
