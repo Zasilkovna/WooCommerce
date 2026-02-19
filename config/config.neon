@@ -35,6 +35,7 @@ services:
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab
 	- Packetery\Module\Product\ProductEntityFactory
+	- Packetery\Module\Product\ProductGridExtender
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Module\ProductCategory\CategoryGridExtender

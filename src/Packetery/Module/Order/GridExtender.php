@@ -1,9 +1,4 @@
 <?php
-/**
- * Class GridExtender.
- *
- * @package Packetery\Order
- */
 
 declare( strict_types=1 );
 
@@ -26,110 +21,24 @@ use WC_Order;
 
 use function esc_html;
 
-/**
- * Class GridExtender.
- *
- * @package Packetery\Order
- */
 class GridExtender {
 
 	private const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
 
-	/**
-	 * Generic CoreHelper.
-	 *
-	 * @var CoreHelper
-	 */
-	private $coreHelper;
-
-	/**
-	 * Latte Engine.
-	 *
-	 * @var Engine
-	 */
-	private $latteEngine;
-
-	/**
-	 * Http Request.
-	 *
-	 * @var Request
-	 */
-	private $httpRequest;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
-
-	/**
-	 * Order Validator.
-	 *
-	 * @var Core\Validator\Order
-	 */
-	private $orderValidator;
-
-	/**
-	 * Context resolver.
-	 *
-	 * @var ContextResolver
-	 */
-	private $contextResolver;
-
-	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
-	 * WordPress Adapter.
-	 *
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
-
-	/**
-	 * Module helper
-	 *
-	 * @var ModuleHelper
-	 */
-	private $moduleHelper;
-
-	/**
-	 * @var SizeFactory
-	 */
-	private $sizeFactory;
-
-	/**
-	 * @var PacketStatusResolver
-	 */
-	private $packetStatusResolver;
-
-	/**
-	 * @var Form
-	 */
-	private $orderForm;
+	private CoreHelper $coreHelper;
+	private Engine $latteEngine;
+	private Request $httpRequest;
+	private Repository $orderRepository;
+	private Core\Validator\Order $orderValidator;
+	private ContextResolver $contextResolver;
+	private CarrierOptionsFactory $carrierOptionsFactory;
+	private WpAdapter $wpAdapter;
+	private ModuleHelper $moduleHelper;
+	private SizeFactory $sizeFactory;
+	private PacketStatusResolver $packetStatusResolver;
+	private Form $orderForm;
 	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
-	/**
-	 * GridExtender constructor.
-	 *
-	 * @param CoreHelper            $coreHelper            CoreHelper.
-	 * @param Engine                $latteEngine           Latte Engine.
-	 * @param Request               $httpRequest           Http Request.
-	 * @param Repository            $orderRepository       Order repository.
-	 * @param OrderValidatorFactory $orderValidatorFactory Order validator.
-	 * @param ContextResolver       $contextResolver       Context resolver.
-	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
-	 * @param WpAdapter             $wpAdapter             WordPress adapter.
-	 * @param ModuleHelper          $moduleHelper          Module helper.
-	 * @param SizeFactory           $sizeFactory           Size factory.
-	 * @param PacketStatusResolver  $packetStatusResolver  Packet status resolver.
-	 * @param Form                  $orderForm             Order form.
-	 */
 	public function __construct(
 		CoreHelper $coreHelper,
 		Engine $latteEngine,
@@ -161,9 +70,7 @@ class GridExtender {
 	}
 
 	/**
-	 * Adds custom filtering links to order grid.
-	 *
-	 * @param string[]|mixed $htmlLinks Array of html links.
+	 * @param string[]|mixed $htmlLinks
 	 *
 	 * @return string[]|mixed
 	 */
@@ -237,9 +144,6 @@ class GridExtender {
 		return $htmlLinks;
 	}
 
-	/**
-	 * Adds select to order grid.
-	 */
 	public function renderOrderTypeSelect(): void {
 		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return;
@@ -269,13 +173,6 @@ class GridExtender {
 		);
 	}
 
-	/**
-	 * Gets weight cell content.
-	 *
-	 * @param Core\Entity\Order $order Order.
-	 *
-	 * @return string
-	 */
 	public function getWeightCellContent( Core\Entity\Order $order ): string {
 		return $this->latteEngine->renderToString(
 			self::TEMPLATE_GRID_COLUMN_WEIGHT,
@@ -284,10 +181,6 @@ class GridExtender {
 	}
 
 	/**
-	 * Gets weight cell content.
-	 *
-	 * @param Core\Entity\Order $order Order.
-	 *
 	 * @return array{orderNumber: null|string, weight: null|float}
 	 */
 	private function getWeightCellContentParams( Core\Entity\Order $order ): array {
@@ -298,12 +191,7 @@ class GridExtender {
 	}
 
 	/**
-	 * Get Order Entity from cache
-	 *
-	 * @param int $orderId Order ID.
-	 *
-	 * @return Core\Entity\Order|null
-	 * @throws InvalidCarrierException InvalidCarrierException.
+	 * @throws InvalidCarrierException
 	 */
 	private function getOrderByIdCached( int $orderId ): ?Core\Entity\Order {
 		static $ordersCache;
@@ -316,10 +204,8 @@ class GridExtender {
 	}
 
 	/**
-	 * Fills custom order list columns.
-	 *
-	 * @param string|mixed       $column Current order column name.
-	 * @param WC_Order|int|mixed $wcOrder WC Order.
+	 * @param string|mixed       $column
+	 * @param WC_Order|int|mixed $wcOrder
 	 */
 	public function fillCustomOrderListColumns( $column, $wcOrder ): void {
 		if ( is_string( $column ) === false ) {
@@ -491,11 +377,9 @@ class GridExtender {
 	}
 
 	/**
-	 * Add order list columns.
+	 * @param string[]|mixed $columns
 	 *
-	 * @param string[]|mixed $columns Order list columns.
-	 *
-	 * @return string[]|mixed All columns.
+	 * @return string[]|mixed
 	 */
 	public function addOrderListColumns( $columns ) {
 		if ( ! is_array( $columns ) ) {
@@ -523,11 +407,9 @@ class GridExtender {
 	}
 
 	/**
-	 * Add order list sortable columns.
+	 * @param string[] $columns
 	 *
-	 * @param string[] $columns Order list columns.
-	 *
-	 * @return string[] All columns.
+	 * @return string[]
 	 */
 	public function makeOrderListSpecificColumnsSortable( array $columns ): array {
 		$metaKey = 'packetery_packet_stored_until';
