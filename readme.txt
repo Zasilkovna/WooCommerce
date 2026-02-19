@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 6.3
-Tested up to: 6.8.2
-Stable tag: 2.2.0
+Tested up to: 6.9.1
+Stable tag: 2.3.0
 Requires PHP: 7.4
 WC requires at least: 5.1
-WC tested up to: 10.3.4
+WC tested up to: 10.5.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
@@ -63,6 +63,20 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.3.0 =
+Updated: Better destination address handling in classic checkout.
+Fixed: Storing Packeta carrier restrictions when creating a new category.
+Updated: Added new columns and filtering options to the carrier list.
+Added: Shipping method restrictions column in the category list (hidden by default).
+Added: New product list columns for age verification and shipping restrictions with filtering options.
+Added: Implemented currency exchange rate settings and price conversion when submitting a packet.
+Added: Pagination and filter form in log section.
+Added: Option to manually start the DB schema upgrade.
+Updated: Displaying the name of the pickup point next to its address.
+Updated: Optimized order retrieval for label printing.
+Updated: Prevented duplicate metabox processing on order save.
+Updated: Unoptimized PNG logo replaced with SVG from brand manual.
+
 = 2.2.0 =
 Added: Optional validation of the selected pickup point using the API.
 Added: Extended logging for diagnostics.
@@ -72,13 +86,5 @@ Added: Support for external cache folder.
 Updated: The minimum required PHP version is now 7.4.
 Added: It is now possible to insert custom shortcodes into emails to display information about the selected pickup point or the submitted packet.
 Updated: Advanced carrier setting is now enabled by default. Removed notice about pickup point split activation.
-
-= 2.1.2 =
-Fixed: Plugin no longer crashes on the orders list when a refunded order is present.
-
-= 2.1.1 =
-Fixed: Removing all transients and options upon uninstall.
-Updated: Checkout data transient lifetime raised to the default value of WooCommerce.
-Added: Backend checkout data validation when using block checkout.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

@@ -43,6 +43,16 @@ class WpAdapter {
 	}
 
 	/**
+	 * @param string|string[] $key
+	 * @param false|string    $query
+	 *
+	 * @return string
+	 */
+	public function removeQueryArg( $key, $query = false ): string {
+		return remove_query_arg( $key, $query );
+	}
+
+	/**
 	 * Gets WP term.
 	 *
 	 * @param int $termId Term id.
@@ -102,6 +112,10 @@ class WpAdapter {
 	 */
 	public function createNonce( string $action ) {
 		return wp_create_nonce( $action );
+	}
+
+	public function verifyNonce( string $nonce, string $action ): bool {
+		return wp_verify_nonce( $nonce, $action ) !== false;
 	}
 
 	public function sendJson( array $settings ): void {

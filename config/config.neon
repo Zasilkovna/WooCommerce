@@ -37,6 +37,7 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
+	- Packetery\Module\ProductCategory\CategoryGridExtender
 	- Packetery\Core\CoreHelper(trackingUrl: %trackingUrl%)
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
@@ -48,6 +49,7 @@ services:
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Forms\BugReportForm
+	- Packetery\Module\Forms\LogFilterFormFactory
 	- Packetery\Module\Email\BugReportEmail(supportEmailAddress: %supportEmailAddress%)
 	- Packetery\Module\Email\BugReportAttachment
 	- Packetery\Module\Log\LogSizeLimiter(logLimitDays: %logLimitDays%, logLimitSizeBytes: %logLimitSizeBytes%)
@@ -74,6 +76,7 @@ services:
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
+	- Packetery\Module\Carrier\CountryListingFormFactory
 	- Packetery\Module\Carrier\CountryListingPage
 	- Packetery\Module\Order\BulkActions
 	- Packetery\Module\Order\Repository

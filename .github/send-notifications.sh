@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z "${WEBHOOK_URL}" ]; then
+	echo "WEBHOOK_URL is not set. Terminating."
+	exit 0
+fi
+
 JSON_PAYLOAD=$(cat <<EOF
 {
 	"application": "PES",

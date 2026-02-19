@@ -117,6 +117,13 @@ class WcAdapter {
 	}
 
 	/**
+	 * @return array<string, string>
+	 */
+	public function countriesGetCountries(): array {
+		return WC()->countries->get_countries();
+	}
+
+	/**
 	 * @param array{contents: array<string, array<string, mixed>>, contents_cost: float, applied_coupons: array, user: array{ID: int}, destination: array<string, string>, cart_subtotal: float, packetery_payment_method: mixed, rates: array<string, WC_Shipping_Rate>} $package
 	 *
 	 * @return WC_Shipping_Zone
@@ -169,5 +176,12 @@ class WcAdapter {
 		}
 
 		return LoggingUtil::get_log_directory( $createDir );
+	}
+
+	/**
+	 * Currency code, e.g. 'CZK'. Empty for store default (same as carrier detail form).
+	 */
+	public function getCurrencySymbol( string $currency = '' ): string {
+		return (string) get_woocommerce_currency_symbol( $currency );
 	}
 }
