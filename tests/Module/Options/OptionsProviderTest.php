@@ -291,4 +291,108 @@ class OptionsProviderTest extends TestCase {
 		$result = $provider->getPacketAutoSubmissionMappedUniqueEvents();
 		$this->assertSame( [ 'order_paid', 'order_shipped' ], array_values( $result ) );
 	}
+
+	public static function customCurrencyRatesProvider(): array {
+		return [
+			'not set'                  => [
+				'currencyRatesData' => [],
+				'expectedEnabled'   => false,
+				'expectedRates'     => [],
+				'requestedCurrency' => 'CZK',
+				'expectedRate'      => null,
+			],
+			'enabled with rates'       => [
+				'currencyRatesData' => [
+					'enabled' => true,
+					'rates'   => [
+						'EUR' => 25.0,
+						'CZK' => null,
+					],
+				],
+				'expectedEnabled'   => true,
+				'expectedRates'     => [
+					'EUR' => 25.0,
+					'CZK' => null,
+				],
+				'requestedCurrency' => 'EUR',
+				'expectedRate'      => 25.0,
+			],
+			'enabled but missing rate' => [
+				'currencyRatesData' => [
+					'enabled' => true,
+				],
+				'expectedEnabled'   => true,
+				'expectedRates'     => [],
+				'requestedCurrency' => 'HUF',
+				'expectedRate'      => null,
+			],
+			'disabled with rates'      => [
+				'currencyRatesData' => [
+					'enabled' => false,
+					'rates'   => [
+						'CZK' => 1.0,
+					],
+				],
+				'expectedEnabled'   => false,
+				'expectedRates'     => [
+					'CZK' => 1.0,
+				],
+				'requestedCurrency' => 'CZK',
+				'expectedRate'      => 1.0,
+			],
+			'rates not an array'       => [
+				'currencyRatesData' => [
+					'enabled' => true,
+					'rates'   => 'not-an-array',
+				],
+				'expectedEnabled'   => true,
+				'expectedRates'     => [],
+				'requestedCurrency' => 'CZK',
+				'expectedRate'      => null,
+			],
+			'enabled as string'        => [
+				'currencyRatesData' => [
+					'enabled' => '1',
+					'rates'   => [
+						'USD' => 20.0,
+					],
+				],
+				'expectedEnabled'   => true,
+				'expectedRates'     => [
+					'USD' => 20.0,
+				],
+				'requestedCurrency' => 'CZK',
+				'expectedRate'      => null,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider customCurrencyRatesProvider
+	 */
+	public function testCustomCurrencyRates(
+		array $currencyRatesData,
+		bool $expectedEnabled,
+		array $expectedRates,
+		string $requestedCurrency,
+		?float $expectedRate
+	): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock->method( 'getOption' )
+			->willReturnCallback(
+				static function ( string $key ) use ( $currencyRatesData ) {
+					if ( $key === OptionNames::PACKETERY_CURRENCY_RATES ) {
+						return $currencyRatesData;
+					}
+
+					return [];
+				}
+			);
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$this->assertSame( $expectedEnabled, $provider->isCustomCurrencyRatesEnabled() );
+		$this->assertSame( $expectedRates, $provider->getCustomCurrencyRates() );
+		$this->assertSame( $expectedRate, $provider->getCustomCurrencyRate( $requestedCurrency ) );
+	}
 }

@@ -71,6 +71,11 @@ class OptionsProvider {
 	 */
 	private $advancedData;
 
+	/**
+	 * @var array{enabled: bool,rates: array<string, float|null>}
+	 */
+	private $currencyRatesData;
+
 	public function __construct( WpAdapter $wpAdapter ) {
 		$data = $wpAdapter->getOption( OptionNames::PACKETERY );
 		if ( $data === false || $data === null ) {
@@ -92,10 +97,16 @@ class OptionsProvider {
 			$advancedData = [];
 		}
 
+		$currencyRatesData = $wpAdapter->getOption( OptionNames::PACKETERY_CURRENCY_RATES );
+		if ( ! is_array( $currencyRatesData ) ) {
+			$currencyRatesData = [];
+		}
+
 		$this->data               = $data;
 		$this->syncData           = $syncData;
 		$this->autoSubmissionData = $autoSubmissionData;
 		$this->advancedData       = $advancedData;
+		$this->currencyRatesData  = $currencyRatesData;
 	}
 
 	/**
@@ -126,6 +137,7 @@ class OptionsProvider {
 			OptionNames::PACKETERY_SYNC            => $this->syncData,
 			OptionNames::PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
 			OptionNames::PACKETERY_ADVANCED        => $this->advancedData,
+			OptionNames::PACKETERY_CURRENCY_RATES  => $this->currencyRatesData,
 		];
 	}
 
@@ -782,5 +794,31 @@ class OptionsProvider {
 		}
 
 		return (bool) $isEnabled;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCustomCurrencyRatesEnabled(): bool {
+		return (bool) ( $this->currencyRatesData['enabled'] ?? false );
+	}
+
+	/**
+	 * @return array<string, float|null>
+	 */
+	public function getCustomCurrencyRates(): array {
+		if ( ! isset( $this->currencyRatesData['rates'] ) || ! is_array( $this->currencyRatesData['rates'] ) ) {
+			return [];
+		}
+
+		return $this->currencyRatesData['rates'];
+	}
+
+	/**
+	 * @param string $currency
+	 * @return float|null
+	 */
+	public function getCustomCurrencyRate( string $currency ): ?float {
+		return $this->getCustomCurrencyRates()[ $currency ] ?? null;
 	}
 }

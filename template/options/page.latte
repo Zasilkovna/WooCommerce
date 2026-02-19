@@ -22,6 +22,12 @@
 			{$translations['packetAutoSubmission']}
 		</a>
 		<a
+				href="{$currencyRatesTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_CURRENCY_RATES} nav-tab-active{/if}"
+		>
+			{$translations['currencyRates']}
+		</a>
+		<a
 				href="{$advancedTabLink}"
 				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_ADVANCED} nav-tab-active{/if}"
 		>
