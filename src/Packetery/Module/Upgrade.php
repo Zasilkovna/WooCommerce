@@ -238,11 +238,13 @@ class Upgrade {
 		update_option( OptionNames::VERSION, Plugin::VERSION );
 	}
 
-	public function runCreateTables(): void {
-		$this->createLogTable();
-		$this->createCarrierTable();
-		$this->createOrderTable();
-		$this->createCustomsDeclarationTables();
+	public function runCreateTables(): bool {
+		$log     = $this->createLogTable();
+		$carrier = $this->createCarrierTable();
+		$order   = $this->createOrderTable();
+		$customs = $this->createCustomsDeclarationTables();
+
+		return $log && $carrier && $order && $customs;
 	}
 
 	/**
@@ -416,56 +418,54 @@ class Upgrade {
 		return ( ( $value !== null && $value !== '' ) ? (float) $value : null );
 	}
 
-	/**
-	 * Creates log table.
-	 *
-	 * @return void
-	 */
-	private function createLogTable(): void {
+	private function createLogTable(): bool {
 		if ( $this->logRepository->createOrAlterTable() === false ) {
 			$this->messageManager->flash_message(
 				// translators: %s: Short table name.
 				sprintf( __( 'Database %s table could not be created or altered, more information might be found in WooCommerce logs.', 'packeta' ), 'log' ),
 				MessageManager::TYPE_ERROR
 			);
+
+			return false;
 		}
+
+		return true;
 	}
 
-	/**
-	 * Creates carrier table.
-	 *
-	 * @return void
-	 */
-	private function createCarrierTable(): void {
+	private function createCarrierTable(): bool {
 		if ( $this->carrierRepository->createOrAlterTable() === false ) {
 			$this->flashAndLog( 'carrier', Record::ACTION_CARRIER_TABLE_NOT_CREATED );
+
+			return false;
 		}
+
+		return true;
 	}
 
-	/**
-	 * Creates order table.
-	 *
-	 * @return void
-	 */
-	private function createOrderTable(): void {
+	private function createOrderTable(): bool {
 		if ( $this->orderRepository->createOrAlterTable() === false ) {
 			$this->flashAndLog( 'order', Record::ACTION_ORDER_TABLE_NOT_CREATED );
+
+			return false;
 		}
+
+		return true;
 	}
 
-	/**
-	 * Creates order table.
-	 *
-	 * @return void
-	 */
-	private function createCustomsDeclarationTables(): void {
+	private function createCustomsDeclarationTables(): bool {
 		if ( $this->customsDeclarationRepository->createOrAlterTable() === false ) {
 			$this->flashAndLog( 'customs_declaration', Record::ACTION_CUSTOMS_DECLARATION_TABLE_NOT_CREATED );
+
+			return false;
 		}
 
 		if ( $this->customsDeclarationRepository->createOrAlterItemTable() === false ) {
 			$this->flashAndLog( 'customs_declaration_item', Record::ACTION_CUSTOMS_DECLARATION_ITEM_TABLE_NOT_CREATED );
+
+			return false;
 		}
+
+		return true;
 	}
 
 	/**

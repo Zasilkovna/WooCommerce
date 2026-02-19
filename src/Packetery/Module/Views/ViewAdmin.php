@@ -8,9 +8,9 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order;
-use Packetery\Module\WcLogger;
 use WC_Order;
 
 use function __;
@@ -46,6 +46,7 @@ class ViewAdmin {
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 
 	public function __construct(
 		ContextResolver $contextResolver,
@@ -53,14 +54,16 @@ class ViewAdmin {
 		WpAdapter $wpAdapter,
 		Order\Repository $orderRepository,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger
 	) {
-		$this->contextResolver       = $contextResolver;
-		$this->latteEngine           = $latteEngine;
-		$this->wpAdapter             = $wpAdapter;
-		$this->orderRepository       = $orderRepository;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->moduleHelper          = $moduleHelper;
+		$this->contextResolver         = $contextResolver;
+		$this->latteEngine             = $latteEngine;
+		$this->wpAdapter               = $wpAdapter;
+		$this->orderRepository         = $orderRepository;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->moduleHelper            = $moduleHelper;
+		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
 	}
 
 	/**
@@ -70,7 +73,7 @@ class ViewAdmin {
 	 */
 	public function renderDeliveryDetail( $wcOrder ): void {
 		if ( ! $wcOrder instanceof WC_Order ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
 
 			return;
 		}

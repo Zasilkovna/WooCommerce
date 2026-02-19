@@ -22,13 +22,15 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\BugReportForm;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\Plugin;
+use Packetery\Module\Upgrade;
 use Packetery\Module\Views\UrlBuilder;
-use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\SubmitButton;
@@ -48,7 +50,9 @@ class Page {
 	private const FORM_FIELD_FREE_SHIPPING_SHOWN      = 'free_shipping_shown';
 	public const FORM_PICKUP_POINT_VALIDATION_ENABLED = 'pickup_point_validation_enabled';
 
-	public const ACTION_VALIDATE_SENDER = 'validate-sender';
+	public const ACTION_VALIDATE_SENDER         = 'validate-sender';
+	public const ACTION_UPDATE_DB_TABLES        = 'packeta_update_db_tables';
+	private const UPDATE_DB_TABLES_NONCE_ACTION = 'packeta_update_db_tables';
 
 	public const SLUG = 'packeta-options';
 
@@ -146,6 +150,8 @@ class Page {
 
 	/** @var DiagnosticsLogger  */
 	private $diagnosticsLogger;
+	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
+	private Upgrade $upgrade;
 
 	public function __construct(
 		Engine $latteEngine,
@@ -162,7 +168,9 @@ class Page {
 		string $supportEmailAddress,
 		BugReportForm $bugReportForm,
 		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
-		DiagnosticsLogger $diagnosticsLogger
+		DiagnosticsLogger $diagnosticsLogger,
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger,
+		Upgrade $upgrade
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->optionsProvider               = $optionsProvider;
@@ -179,6 +187,8 @@ class Page {
 		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
 		$this->diagnosticsLogger             = $diagnosticsLogger;
+		$this->argumentTypeErrorLogger       = $argumentTypeErrorLogger;
+		$this->upgrade                       = $upgrade;
 	}
 
 	public function register(): void {
@@ -223,7 +233,7 @@ class Page {
 	 */
 	public function customMenuOrder( $menuOrder ) {
 		if ( ! is_array( $menuOrder ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'menuOrder', 'array', $menuOrder );
+			$this->argumentTypeErrorLogger->log( __METHOD__, 'menuOrder', 'array', $menuOrder );
 
 			return $menuOrder;
 		}
@@ -888,6 +898,28 @@ class Page {
 	 */
 	public function processActions(): void {
 		$action = $this->httpRequest->getQuery( 'action' );
+		$nonce  = $this->httpRequest->getQuery( Plugin::PARAM_NONCE );
+		$nonce  = is_string( $nonce ) ? $nonce : '';
+		if (
+			$this->httpRequest->getQuery( 'page' ) === self::SLUG &&
+			$action === self::ACTION_UPDATE_DB_TABLES &&
+			$this->wpAdapter->verifyNonce( $nonce, self::UPDATE_DB_TABLES_NONCE_ACTION )
+		) {
+			$success = $this->upgrade->runCreateTables();
+			if ( $success === true ) {
+				$this->messageManager->flash_message(
+					$this->wpAdapter->__( 'Plugin database tables have been updated successfully.', 'packeta' ),
+					MessageManager::TYPE_SUCCESS,
+					MessageManager::RENDERER_PACKETERY,
+					'plugin-options'
+				);
+			}
+
+			if ( $this->wpAdapter->safeRedirect( $this->createLink( self::TAB_SUPPORT ) ) ) {
+				exit;
+			}
+		}
+
 		if ( $action === self::ACTION_VALIDATE_SENDER ) {
 			$result = $this->validateSender( $this->optionsProvider->get_sender() );
 
@@ -999,6 +1031,17 @@ class Page {
 			get_admin_url( null, 'admin.php' )
 		);
 
+		$nonce                             = $this->wpAdapter->createNonce( self::UPDATE_DB_TABLES_NONCE_ACTION );
+		$latteParams['updateDbTablesLink'] = $this->wpAdapter->addQueryArg(
+			[
+				'page'              => self::SLUG,
+				'action'            => self::ACTION_UPDATE_DB_TABLES,
+				'tab'               => self::TAB_SUPPORT,
+				Plugin::PARAM_NONCE => $nonce !== false ? $nonce : '',
+			],
+			$this->wpAdapter->adminUrl( 'admin.php' ) ?? ''
+		);
+
 		$latteParams['activeTab']               = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
 		$latteParams['generalTabLink']          = $this->createLink();
 		$latteParams['advancedTabLink']         = $this->createLink( self::TAB_ADVANCED );
@@ -1105,6 +1148,10 @@ class Page {
 			'bugReportScreenshotsSecondStep'         => $this->wpAdapter->__( 'Copy the link(s) generated after uploading', 'packeta' ),
 			'bugReportScreenshotsThirdStep'          => $this->wpAdapter->__( 'Paste the link(s) into your message.', 'packeta' ),
 			'message'                                => $this->wpAdapter->__( 'Message', 'packeta' ),
+			'updateDbTablesSectionTitle'             => $this->wpAdapter->__( 'Plugin database tables update', 'packeta' ),
+			'updateDbTablesNote'                     => $this->wpAdapter->__( 'Note: This tool will update the Packeta plugin database tables to the current version. Before running it, make sure you have successfully backed up your existing database.', 'packeta' ),
+			'updateDbTablesButton'                   => $this->wpAdapter->__( 'Update database tables', 'packeta' ),
+			'updateDbTablesConfirm'                  => $this->wpAdapter->__( 'Do you really want to run this tool?', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

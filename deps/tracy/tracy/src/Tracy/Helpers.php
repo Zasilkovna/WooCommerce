@@ -37,7 +37,8 @@ class Helpers
      */
     public static function editorUri(string $file, ?int $line = null, string $action = 'open', string $search = '', string $replace = '') : ?string
     {
-        if (Debugger::$editor && $file && ($action === 'create' || \is_file($file))) {
+        if (Debugger::$editor && $file && ($action === 'create' || @\is_file($file))) {
+            // @ - may trigger error
             $file = \strtr($file, '/', \DIRECTORY_SEPARATOR);
             $file = \strtr($file, Debugger::$editorMapping);
             $search = \str_replace("\n", \PHP_EOL, $search);

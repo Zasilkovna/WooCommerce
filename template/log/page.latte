@@ -1,8 +1,32 @@
 {varType Packetery\Core\Log\Record[] $rows}
+{varType array $translatedActions}
+{varType array $translatedStatuses}
+{varType array $translations}
 
 {include '../packeta-header.latte'}
 
 <div id="packetery-log-page" class="packeta_log">
+	<div class="packetery-log-filter-container">
+		{form $logFilterForm class => 'packetery-log-filter'}
+			<div class="packetery-log-filter-row">
+				{input status}
+				{input log_action}
+
+				<label>{$translations['dateFrom']}: {input date_from}</label>
+				<label>{$translations['dateTo']}: {input date_to}</label>
+
+				{input search placeholder => $translations['searchNote']}
+
+				{input submit}
+			</div>
+		{/form}
+		<div>
+			<a href="{$deleteUrl}" class="button" onclick="return confirm({$translations['deleteOldLogsConf']})">
+				{$translations['deleteOldLogs']}
+			</a>
+		</div>
+	</div>
+
 	<table class="packetery-log-table">
 		<thead>
 		<tr>
@@ -35,15 +59,10 @@
 				</td>
 			</tr>
 		{/foreach}
-
-			{if $maxRowsExceeded}
-			<tr>
-				<td colspan="4">
-					{$translations['moreRowsNotice']}
-				</td>
-			</tr>
-		{/if}
-
 		</tbody>
 	</table>
+
+	<div class="packetery-log-pagination">
+		{$paginationHtml|noescape}
+	</div>
 </div>

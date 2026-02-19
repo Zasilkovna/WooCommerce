@@ -3,6 +3,14 @@
 {varType string $deleteDiagnosticsLogsLink}
 {varType string $exportLink}
 {varType null|string $lastExport}
+{varType string $updateDbTablesLink}
+
+<h3>{$translations['updateDbTablesSectionTitle']}</h3>
+<p>{$translations['updateDbTablesNote']}</p>
+<p>
+	<a href="{$updateDbTablesLink}" class="button js-packeta-update-db-tables" data-confirm="{$translations['updateDbTablesConfirm']|escapeHtml}" onclick="return confirm(this.getAttribute('data-confirm'));">{$translations['updateDbTablesButton']}</a>
+</p>
+<hr class="packetery-section-divider">
 
 {if $bugReportFormEnabled === true}
 	<h3>{$translations['bugReportTitle']}</h3>

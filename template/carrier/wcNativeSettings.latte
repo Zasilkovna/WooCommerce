@@ -9,6 +9,12 @@
 		{form $form}
 			<div class="row packeta_filter_items">
 				<input n:name=Packetery\Module\Carrier\CountryListingPage::PARAM_CARRIER_FILTER placeholder="{$translations['searchPlaceholder']}">
+				<p class="packetery-input-validation-message help-block text-danger"
+					id="{$form[Packetery\Module\Carrier\CountryListingPage::PARAM_CARRIER_FILTER]->getHtmlId() . '_message'}">{inputError Packetery\Module\Carrier\CountryListingPage::PARAM_CARRIER_FILTER}</p>
+				<div class="packetery-carrier-list-country-select">
+					{input Packetery\Module\Carrier\CountryListingPage::PARAM_COUNTRY_FILTER}
+				</div>
+				{input Packetery\Module\Carrier\CountryListingPage::PARAM_ACTIVE_ONLY}
 				<button class="button button-primary">{$form[filter]->getCaption()}</button>
 			</div>
 		{/form}
@@ -24,12 +30,20 @@
 				<tr>
 					<th>{$translations['carrier']}</th>
 					<th>{$translations['status']}</th>
+					<th class="packetery-col-max-weight-value">{$translations['maxWeightValue']}</th>
+					<th class="packetery-col-free-shipping packetery-align-right">{$translations['freeShipping']}</th>
+					<th class="packetery-col-age-verification-fee packetery-align-right">{$translations['ageVerificationFee']}</th>
+					<th class="packetery-col-max-parcel-size">{$translations['maxParcelSize']}</th>
 					<th>{$translations['action']}</th>
 				</tr>
 				<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
 					<td>{$carrier['name']}</td>
 					<td class="packetery-carrier-status {if $carrier['isActivatedByUser']}packetery-carrier-status-active{else}packetery-carrier-status-inactive{/if}">
 						{$carrier['isActivatedByUser'] ? $translations['active'] : $translations['inactive']}</td>
+					<td class="packetery-col-max-weight-value">{$carrier['maxWeightValueText']}</td>
+					<td class="packetery-col-free-shipping packetery-align-right">{$carrier['freeShippingText']}</td>
+					<td class="packetery-col-age-verification-fee packetery-align-right">{$carrier['ageVerificationFeeText']}</td>
+					<td class="packetery-col-max-parcel-size">{$carrier['maxParcelSizeText']}</td>
 					<td>
 						<a class="button button-small" href="{$carrier['detailUrl']}">{$translations['setUp']}</a>
 					</td>

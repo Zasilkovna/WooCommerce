@@ -24,24 +24,19 @@ interface ILogger {
 	public function add( Record $record );
 
 	/**
-	 * Get logs.
-	 *
-	 * @param int|null              $orderId Order ID.
-	 * @param string|null           $action  Action.
-	 * @param array<string, string> $sorting Sorting config.
-	 * @param int                   $limit   Limit.
+	 * @param LogPageArguments $arguments
 	 *
 	 * @return iterable<Record>
 	 */
-	public function getRecords( ?int $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable;
+	public function getRecords( LogPageArguments $arguments ): iterable;
 
 	/**
-	 * Counts records.
-	 *
-	 * @param int|null    $orderId Order ID.
-	 * @param string|null $action  Action.
-	 *
-	 * @return int
+	 * @param LogPageArguments $arguments
 	 */
-	public function countRecords( ?int $orderId = null, ?string $action = null ): int;
+	public function countRecords( LogPageArguments $arguments ): int;
+
+	/**
+	 * @param string $before DateTime modifier.
+	 */
+	public function deleteOld( string $before ): void;
 }

@@ -5,9 +5,9 @@ namespace Tests\Module\Labels;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Labels\LabelPrintPacketData;
 use Packetery\Module\Labels\LabelPrintParametersService;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Order\Repository;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,7 +18,6 @@ class LabelPrintParametersServiceTest extends TestCase {
 	private OptionsProvider|MockObject $optionsProviderMock;
 	private FormFactory|MockObject $formFactoryMock;
 	private Request|MockObject $httpRequestMock;
-	private Repository|MockObject $orderRepositoryMock;
 	private LabelPrintParametersService $labelPrintParametersService;
 
 	protected function createLabelPrintParametersServiceMock(): void {
@@ -26,14 +25,12 @@ class LabelPrintParametersServiceTest extends TestCase {
 		$this->optionsProviderMock = $this->createMock( OptionsProvider::class );
 		$this->formFactoryMock     = $this->createMock( FormFactory::class );
 		$this->httpRequestMock     = $this->createMock( Request::class );
-		$this->orderRepositoryMock = $this->createMock( Repository::class );
 
 		$this->labelPrintParametersService = new LabelPrintParametersService(
 			$this->wpAdapterMock,
 			$this->optionsProviderMock,
 			$this->formFactoryMock,
-			$this->httpRequestMock,
-			$this->orderRepositoryMock
+			$this->httpRequestMock
 		);
 	}
 
@@ -118,31 +115,24 @@ class LabelPrintParametersServiceTest extends TestCase {
 	public function testRemoveExternalCarrierPacketIdsPacketaOnly(): void {
 		$this->createLabelPrintParametersServiceMock();
 
-		$packetIds = [
-			1 => 'packet_1',
-			2 => 'packet_2',
-		];
-
 		$orderMock1 = $this->createMock( Order::class );
+		$orderMock1->method( 'getNumber' )->willReturn( '1' );
 		$orderMock1->method( 'isExternalCarrier' )->willReturn( false );
 
 		$orderMock2 = $this->createMock( Order::class );
+		$orderMock2->method( 'getNumber' )->willReturn( '2' );
 		$orderMock2->method( 'isExternalCarrier' )->willReturn( true );
 
-		$this->orderRepositoryMock
-			->method( 'getByIdWithValidCarrier' )
-			->will(
-				$this->returnValueMap(
-					[
-						[ 1, $orderMock1 ],
-						[ 2, $orderMock2 ],
-					]
-				)
-			);
+		$labelPrintPacketData = new LabelPrintPacketData();
+		$labelPrintPacketData->addItem( $orderMock1, 'packet_1' );
+		$labelPrintPacketData->addItem( $orderMock2, 'packet_2' );
+		$result = $this->labelPrintParametersService->removeExternalCarriers( $labelPrintPacketData, false, false );
 
-		$result = $this->labelPrintParametersService->removeExternalCarrierPacketIds( $packetIds, false, false );
-
-		$this->assertEquals( [ 1 => 'packet_1' ], $result );
+		$resultPacketIds = [];
+		foreach ( $result->getItems() as $item ) {
+			$resultPacketIds[ (int) $item->getOrder()->getNumber() ] = $item->getPacketId();
+		}
+		$this->assertEquals( [ 1 => 'packet_1' ], $resultPacketIds );
 	}
 
 	/**
@@ -151,16 +141,30 @@ class LabelPrintParametersServiceTest extends TestCase {
 	public function testRemoveExternalCarrierPacketIdsKeepAll(): void {
 		$this->createLabelPrintParametersServiceMock();
 
-		$packetIds = [
-			1 => 'packet_1',
-			2 => 'packet_2',
-		];
+		$orderMock1 = $this->createMock( Order::class );
+		$orderMock1->method( 'getNumber' )->willReturn( '1' );
+		$orderMock1->method( 'isExternalCarrier' )->willReturn( false );
 
-		$this->orderRepositoryMock->expects( $this->never() )->method( 'getByIdWithValidCarrier' );
+		$orderMock2 = $this->createMock( Order::class );
+		$orderMock2->method( 'getNumber' )->willReturn( '2' );
+		$orderMock2->method( 'isExternalCarrier' )->willReturn( true );
 
-		$result = $this->labelPrintParametersService->removeExternalCarrierPacketIds( $packetIds, true, false );
+		$labelPrintPacketData = new LabelPrintPacketData();
+		$labelPrintPacketData->addItem( $orderMock1, 'packet_1' );
+		$labelPrintPacketData->addItem( $orderMock2, 'packet_2' );
+		$result = $this->labelPrintParametersService->removeExternalCarriers( $labelPrintPacketData, true, false );
 
-		$this->assertEquals( $packetIds, $result );
+		$resultPacketIds = [];
+		foreach ( $result->getItems() as $item ) {
+			$resultPacketIds[ (int) $item->getOrder()->getNumber() ] = $item->getPacketId();
+		}
+		$this->assertEquals(
+			[
+				1 => 'packet_1',
+				2 => 'packet_2',
+			],
+			$resultPacketIds
+		);
 	}
 
 	public function testGetLabelFormatByOrderWithExternalCarrier(): void {
