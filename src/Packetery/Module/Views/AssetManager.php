@@ -202,6 +202,15 @@ class AssetManager {
 					'packetery-select2',
 				]
 			);
+			$this->wpAdapter->localizeScript(
+				'packetery-admin-country-carrier',
+				'packeteryCountryCarrier',
+				[
+					'translations' => [
+						'noResults' => $this->wpAdapter->__( 'No results found', 'packeta' ),
+					],
+				]
+			);
 		}
 
 		if ( $page === Options\Page::SLUG ) {

@@ -1,74 +1,50 @@
 <?php
-/**
- * Class Page
- *
- * @package Packetery\Module\Log
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Log;
 
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Log\LogPageArguments;
 use Packetery\Core\Log\Record;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbAdapter;
 
-/**
- * Class Repository
- *
- * @package Packetery\Module\Log
- */
 class Repository {
 
-	/**
-	 * WpdbAdapter.
-	 *
-	 * @var WpdbAdapter
-	 */
-	private $wpdbAdapter;
+	private WpdbAdapter $wpdbAdapter;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param WpdbAdapter $wpdbAdapter WpdbAdapter.
-	 */
 	public function __construct( WpdbAdapter $wpdbAdapter ) {
 		$this->wpdbAdapter = $wpdbAdapter;
 	}
 
 	/**
-	 * Counts records.
-
-	 * @param int|null    $orderId Order ID.
-	 * @param string|null $action  Action.
+	 * @param int|null    $orderId
+	 * @param string|null $action
+	 * @param string[]    $where
 	 *
 	 * @return int
 	 */
-	public function countRows( ?int $orderId, ?string $action ): int {
-		$whereClause = $this->getWhereClause( [], $orderId, $action );
+	public function countRows( ?int $orderId, ?string $action, array $where = [] ): int {
+		$whereClause = $this->getWhereClause( $where, $orderId, $action );
 
 		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packeteryLog . '`' . $whereClause );
 	}
 
 	/**
-	 * Finds logs.
-	 *
-	 * @param array<string, string|int|bool|float|null|array<string,mixed>> $arguments Search arguments.
+	 * @param LogPageArguments $arguments
 	 *
 	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function find( array $arguments ) {
-		$orderId   = $arguments['order_id'] ?? null;
-		$action    = $arguments['action'] ?? null;
-		$orderBy   = $arguments['orderby'] ?? [];
-		$limit     = $arguments['limit'] ?? null;
-		$dateQuery = $arguments['date_query'] ?? [];
-
+	public function find( LogPageArguments $arguments ) {
 		$orderByTransformed = [];
-		if ( count( $orderBy ) > 0 ) {
-			foreach ( $orderBy as $orderByKey => $orderByValue ) {
+		if ( $arguments->getOrderBy() !== null ) {
+			$allowedColumns = [ 'date' ];
+			foreach ( $arguments->getOrderBy() as $orderByKey => $orderByValue ) {
+				if ( ! in_array( $orderByKey, $allowedColumns, true ) ) {
+					continue;
+				}
 				if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
 					$orderByValue = 'ASC';
 				}
@@ -83,20 +59,16 @@ class Repository {
 		}
 
 		$limitClause = '';
-		if ( is_numeric( $limit ) ) {
-			$limitClause = ' LIMIT ' . $limit;
-		}
-
-		$where = [];
-		if ( count( $dateQuery ) > 0 ) {
-			foreach ( $dateQuery as $dateQueryItem ) {
-				if ( isset( $dateQueryItem['after'] ) ) {
-					$where[] = $this->wpdbAdapter->prepare( '`date` > %s', CoreHelper::now()->modify( $dateQueryItem['after'] )->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
-				}
+		if ( $arguments->getLimit() !== null ) {
+			$limitClause = ' LIMIT ' . $arguments->getLimit();
+			if ( $arguments->getOffset() !== null ) {
+				$limitClause .= ' OFFSET ' . $arguments->getOffset();
 			}
 		}
 
-		$whereClause = $this->getWhereClause( $where, $orderId, $action );
+		$where = $this->buildQueryConditions( $arguments );
+
+		$whereClause = $this->getWhereClause( $where, $arguments->getOrderId(), $arguments->getAction() );
 
 		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packeteryLog . '` ' . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
@@ -107,11 +79,7 @@ class Repository {
 	}
 
 	/**
-	 * Delete old records.
-	 *
 	 * @param string $before DateTime modifier.
-	 *
-	 * @return void
 	 */
 	public function deleteOld( string $before ): void {
 		$dateToFormatted = CoreHelper::now()->modify( $before )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
@@ -256,5 +224,41 @@ class Repository {
 		}
 
 		return $whereClause;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function buildQueryConditions( LogPageArguments $arguments ): array {
+		$where = [];
+		if ( $arguments->getDateQuery() !== null ) {
+			foreach ( $arguments->getDateQuery() as $dateQueryItem ) {
+				if ( isset( $dateQueryItem['after'] ) ) {
+					$after = CoreHelper::now()->modify( $dateQueryItem['after'] );
+					if ( $arguments->getUseExactTimes() === false ) {
+						$after = $after->setTime( 0, 0 );
+					}
+					$where[] = $this->wpdbAdapter->prepare( '`date` >= %s', $after->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
+				}
+				if ( isset( $dateQueryItem['before'] ) ) {
+					$before = CoreHelper::now()->modify( $dateQueryItem['before'] );
+					if ( $arguments->getUseExactTimes() === false ) {
+						$before = $before->setTime( 23, 59, 59 );
+					}
+					$where[] = $this->wpdbAdapter->prepare( '`date` <= %s', $before->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
+				}
+			}
+		}
+
+		if ( $arguments->getStatus() !== null ) {
+			$where[] = $this->wpdbAdapter->prepare( '`status` = %s', $arguments->getStatus() );
+		}
+
+		if ( $arguments->getSearch() !== null && $arguments->getSearch() !== '' ) {
+			$searchWildcard = '%' . $this->wpdbAdapter->escLike( $arguments->getSearch() ) . '%';
+			$where[]        = $this->wpdbAdapter->prepare( '(`title` LIKE %s OR `params` LIKE %s)', $searchWildcard, $searchWildcard );
+		}
+
+		return $where;
 	}
 }

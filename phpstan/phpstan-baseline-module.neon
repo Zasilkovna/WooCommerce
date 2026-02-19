@@ -121,12 +121,6 @@ parameters:
 			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
 
 		-
-			message: '#^Parameter \#2 \$needle of function stripos expects int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
-
-		-
 			message: '#^Parameter \#2 \.\.\.\$args of function array_merge expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -961,6 +955,12 @@ parameters:
 			path: ../src/Packetery/Module/Forms/BugReportForm.php
 
 		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: ../src/Packetery/Module/Forms/LogFilterFormFactory.php
+
+		-
 			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:asScheduleSingleAction\(\) has parameter \$args with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1167,7 +1167,7 @@ parameters:
 		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 1
+			count: 5
 			path: ../src/Packetery/Module/Log/Page.php
 
 		-
@@ -1179,12 +1179,6 @@ parameters:
 		-
 			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
 			identifier: arrayFilter.strict
-			count: 1
-			path: ../src/Packetery/Module/Log/Repository.php
-
-		-
-			message: '#^Cannot access offset ''after'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../src/Packetery/Module/Log/Repository.php
 
@@ -1209,30 +1203,6 @@ parameters:
 		-
 			message: '#^Method Packetery\\Module\\Log\\Repository\:\:remapToRecord\(\) has parameter \$logs with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Log/Repository.php
-
-		-
-			message: '#^Parameter \#1 \$modifier of method DateTimeImmutable\:\:modify\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Log/Repository.php
-
-		-
-			message: '#^Parameter \#1 \$var of function count expects array\|Countable, array\<string, mixed\>\|bool\|float\|int\|string given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Packetery/Module/Log/Repository.php
-
-		-
-			message: '#^Parameter \#2 \$orderId of method Packetery\\Module\\Log\\Repository\:\:getWhereClause\(\) expects int\|null, array\<string, mixed\>\|bool\|float\|int\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Log/Repository.php
-
-		-
-			message: '#^Parameter \#3 \$action of method Packetery\\Module\\Log\\Repository\:\:getWhereClause\(\) expects string\|null, array\<string, mixed\>\|bool\|float\|int\|string\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Log/Repository.php
 
@@ -2381,12 +2351,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../src/Packetery/Module/ProductCategory/FormFields.php
-
-		-
-			message: '#^Parameter \#1 \$category of class Packetery\\Module\\ProductCategory\\Entity constructor expects WP_Term, WP_Error\|WP_Term\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/ProductCategory/ProductCategoryEntityFactory.php
 
 		-
 			message: '#^Method Packetery\\Module\\QueryProcessor\:\:getParamValues\(\) should return array\<string, null\> but returns array\<string, mixed\>\.$#'

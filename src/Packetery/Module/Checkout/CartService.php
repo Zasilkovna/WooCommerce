@@ -194,7 +194,10 @@ class CartService {
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
-				$productCategoryEntity           = $this->productCategoryEntityFactory->fromTermId( (int) $productCategoryId );
+				$productCategoryEntity = $this->productCategoryEntityFactory->fromTermId( (int) $productCategoryId );
+				if ( $productCategoryEntity === null ) {
+					continue;
+				}
 				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRateIds();
 				if ( in_array( $shippingRate, $disallowedCategoryShippingRates, true ) ) {
 					return true;

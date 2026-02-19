@@ -62,6 +62,42 @@ class Options {
 		return $this->options;
 	}
 
+	public function getFreeShippingLimit(): ?float {
+		$value = $this->options['free_shipping_limit'] ?? null;
+		if ( is_numeric( $value ) && (float) $value > 0 ) {
+			return (float) $value;
+		}
+
+		return null;
+	}
+
+	public function getMaxWeightFromLimits(): ?float {
+		return $this->getMaxFromLimits( self::PRICING_TYPE_BY_WEIGHT, OptionsPage::FORM_FIELD_WEIGHT_LIMITS, 'weight' );
+	}
+
+	public function getMaxProductValue(): ?float {
+		return $this->getMaxFromLimits( self::PRICING_TYPE_BY_PRODUCT_VALUE, OptionsPage::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
+	}
+
+	private function getMaxFromLimits( string $pricingType, string $limitsOptionKey, string $limitValueKey ): ?float {
+		if ( $this->getPricingType() !== $pricingType ) {
+			return null;
+		}
+		$limits = $this->options[ $limitsOptionKey ] ?? [];
+		if ( ! is_array( $limits ) || $limits === [] ) {
+			return null;
+		}
+		$max = null;
+		foreach ( $limits as $limit ) {
+			$value = isset( $limit[ $limitValueKey ] ) && is_numeric( $limit[ $limitValueKey ] ) ? (float) $limit[ $limitValueKey ] : null;
+			if ( $value !== null && ( $max === null || $value > $max ) ) {
+				$max = $value;
+			}
+		}
+
+		return $max;
+	}
+
 	/**
 	 * Age verification fee.
 	 *
