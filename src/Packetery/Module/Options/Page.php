@@ -128,16 +128,8 @@ class Page {
 	 * @var PacketSynchronizer
 	 */
 	private $packetSynchronizer;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
-
-	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
+	private WpAdapter $wpAdapter;
+	private WcAdapter $wcAdapter;
 
 	/**
 	 * @var string

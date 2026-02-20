@@ -242,13 +242,11 @@ class Options {
 	}
 
 	public function getMaxCartValue(): ?int {
-		$value = $this->options['max_cart_value'] ?? null;
-		if ( $value === null || $value === '' || is_numeric( $value ) === false ) {
+		$maxCartValue = $this->options['max_cart_value'] ?? null;
+		if ( $maxCartValue === null || $maxCartValue === '' || is_numeric( $maxCartValue ) === false ) {
 			return null;
 		}
 
-		$int = (int) $value;
-
-		return $int >= 1 ? $int : null;
+		return (int) $maxCartValue >= 1 ? (int) $maxCartValue : null;
 	}
 }

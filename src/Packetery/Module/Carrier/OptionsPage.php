@@ -101,21 +101,9 @@ class OptionsPage {
 	 * @var UrlBuilder
 	 */
 	private $urlBuilder;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
-
-	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
-
-	/**
-	 * @var OptionsProvider
-	 */
-	private $optionsProvider;
+	private WpAdapter $wpAdapter;
+	private WcAdapter $wcAdapter;
+	private OptionsProvider $optionsProvider;
 
 	public function __construct(
 		Engine $latteEngine,
@@ -531,10 +519,6 @@ class OptionsPage {
 		if ( isset( $options['surcharge_limits'] ) ) {
 			$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
 			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
-		}
-
-		if ( $this->optionsProvider->isWcCarrierConfigEnabled() === false && array_key_exists( self::FORM_FIELD_MAX_CART_VALUE, $persistedOptionsArray ) ) {
-			$options[ self::FORM_FIELD_MAX_CART_VALUE ] = $persistedOptionsArray[ self::FORM_FIELD_MAX_CART_VALUE ];
 		}
 
 		update_option( OptionPrefixer::getOptionId( $options['id'] ), $options );
