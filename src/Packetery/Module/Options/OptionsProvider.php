@@ -231,7 +231,9 @@ class OptionsProvider {
 			return null;
 		}
 
-		return (int) $maxCartValue >= 1 ? (int) $maxCartValue : null;
+		$maxCartValue = (int) $maxCartValue;
+
+		return $maxCartValue >= 1 ? $maxCartValue : null;
 	}
 
 	public function getEffectiveMaxCartValueLimit( Carrier\Options $carrierOptions ): ?int {
