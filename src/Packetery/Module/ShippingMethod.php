@@ -25,7 +25,6 @@ class ShippingMethod extends WC_Shipping_Method {
 		$this->instance_id = absint( $instanceId );
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->method_title = __( 'Packeta', 'packeta' );
-		$this->title        = __( 'Packeta', 'packeta' );
 		$this->enabled      = 'yes'; // This can be added as a setting.
 		$this->supports     = [
 			'shipping-zones',
@@ -49,6 +48,7 @@ class ShippingMethod extends WC_Shipping_Method {
 				$this->process_admin_options();
 			}
 		);
+		$this->title = $this->get_option( 'title', __( 'Packeta', 'packeta' ) );
 	}
 
 	public function get_admin_options_html(): string {
@@ -81,6 +81,13 @@ class ShippingMethod extends WC_Shipping_Method {
 	 * @return array<string|int, mixed>
 	 */
 	public function get_instance_form_fields(): array {
-		return [];
+		return [
+			'title' => [
+				'title'   => __( 'Method title', 'packeta' ),
+				'type'    => 'text',
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				'default' => $this->method_title,
+			],
+		];
 	}
 }
