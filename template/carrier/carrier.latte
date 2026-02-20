@@ -226,6 +226,23 @@
 					</tr>
 
 					{include weightRulesSection form => $form}
+					{if isset($form['max_cart_value'])}
+					<tr>
+						<th scope="row">
+							<label n:name=max_cart_value />
+						</th>
+						<td>
+							<div>
+								<input type="number" step="1" min="1" n:name=max_cart_value
+										data-lfv-message-id="{$form[max_cart_value]->getHtmlId() . '_message'}">
+								<span> {$globalCurrency|noescape}</span>
+							</div>
+							<p class="packetery-help-block">{$translations['maxCartValueDescription']}</p>
+							<p class="packetery-input-validation-message help-block text-danger"
+								id="{$form[max_cart_value]->getHtmlId() . '_message'}">{inputError max_cart_value}</p>
+						</td>
+					</tr>
+					{/if}
 					{include productValueRulesSection form => $form}
 
 					{if $carrier->supportsCod()}

@@ -211,6 +211,11 @@ class ShippingRateFactory {
 		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
 		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 
+		$maxCartValueLimit = $this->optionsProvider->getEffectiveMaxCartValueLimit( $carrierOptions );
+		if ( $maxCartValueLimit !== null && $this->cartService->getTotalCartProductValueAfterDiscount() > $maxCartValueLimit ) {
+			return false;
+		}
+
 		$isCarrierOptionInactive  = $allowedCarrierNames === null && ! $carrierOptions->isActive();
 		$isCarDeliveryDisabled    = $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled();
 		$isOptionDisallowed       = in_array( $optionId, $disallowedShippingRateIds, true );

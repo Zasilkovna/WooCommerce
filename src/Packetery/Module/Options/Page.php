@@ -21,6 +21,7 @@ use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\BugReportForm;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\MessageManager;
@@ -127,11 +128,8 @@ class Page {
 	 * @var PacketSynchronizer
 	 */
 	private $packetSynchronizer;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
+	private WpAdapter $wpAdapter;
+	private WcAdapter $wcAdapter;
 
 	/**
 	 * @var string
@@ -165,6 +163,7 @@ class Page {
 		UrlBuilder $urlBuilder,
 		PacketSynchronizer $packetSynchronizer,
 		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
 		string $supportEmailAddress,
 		BugReportForm $bugReportForm,
 		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
@@ -184,6 +183,7 @@ class Page {
 		$this->packetSynchronizer            = $packetSynchronizer;
 		$this->supportEmailAddress           = $supportEmailAddress;
 		$this->wpAdapter                     = $wpAdapter;
+		$this->wcAdapter                     = $wcAdapter;
 		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
 		$this->diagnosticsLogger             = $diagnosticsLogger;
@@ -582,6 +582,11 @@ class Page {
 			__( 'Payment methods that represent cash on delivery', 'packeta' ),
 			$enabledGateways
 		)->checkDefaultValue( false );
+
+		$currencySymbol = html_entity_decode( $this->wcAdapter->getCurrencySymbol(), ENT_QUOTES, 'UTF-8' );
+		$maxCartValue   = $container->addInteger( 'max_cart_value', $this->wpAdapter->__( 'Max value of products in cart', 'packeta' ) . ' (' . $currencySymbol . ')' );
+		$maxCartValue->setRequired( false )
+			->addRule( Form::MIN, $this->wpAdapter->__( 'Please enter a valid whole number.', 'packeta' ), 1 );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
 			->setRequired()
@@ -1120,6 +1125,7 @@ class Page {
 				'</a>'
 			),
 			'advancedCarrierSettingsDescription'     => $advancedCarrierSettingsDescription,
+			'maxCartValueDescription'                => $this->wpAdapter->__( 'If the value of all products in the cart exceeds the specified value, Packeta shipping methods will not be available. Use the same convention as the Prices include tax setting.', 'packeta' ),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'defaultDimensionsDescription'           => __( 'These dimensions will be applied to the packet by default, if required by the carrier.', 'packeta' ),
