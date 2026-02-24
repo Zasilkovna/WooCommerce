@@ -121,7 +121,7 @@
 #packetery-options-page, .packetery_settings {
   padding-right: 1em;
 }
-#packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page input[type=email], #packetery-options-page select, .packetery_settings input[type=text], .packetery_settings input[type=number], .packetery_settings input[type=email], .packetery_settings select {
+#packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page input[type=email], #packetery-options-page select, #packetery-options-page textarea, .packetery_settings input[type=text], .packetery_settings input[type=number], .packetery_settings input[type=email], .packetery_settings select, .packetery_settings textarea {
   width: 500px;
   max-width: none;
 }

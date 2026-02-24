@@ -91,6 +91,7 @@ services:
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
 	- Packetery\Module\EntityFactory\SizeFactory
+	- Packetery\Module\Order\LabelNoteResolver
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
