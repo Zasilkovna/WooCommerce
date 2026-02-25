@@ -427,6 +427,9 @@ class HookRegistrar {
 		$this->wpAdapter->addFilter( 'manage_edit-product_cat_columns', [ $this->categoryGridExtender, 'addCategoryListColumns' ] );
 		$this->wpAdapter->addFilter( 'manage_product_cat_custom_column', [ $this->categoryGridExtender, 'fillCategoryListColumn' ], 10, 3 );
 		$this->wpAdapter->addFilter( 'default_hidden_columns', [ $this->categoryGridExtender, 'hideCategoryListColumnByDefault' ], 10, 2 );
+		$this->wpAdapter->addFilter( 'manage_edit-product_columns', [ $this->productGridExtender, 'addProductListColumns' ] );
+		$this->wpAdapter->addAction( 'manage_product_posts_custom_column', [ $this->productGridExtender, 'fillCustomProductListColumns' ], 10, 2 );
+		$this->wpAdapter->addFilter( 'default_hidden_columns', [ $this->productGridExtender, 'defaultHiddenColumns' ], 10, 2 );
 		$this->productCategoryFormFields->register();
 
 		if ( $this->wpAdapter->doingAjax() === true ) {
@@ -529,9 +532,6 @@ class HookRegistrar {
 		$this->productTab->register();
 		$this->carrierModal->register();
 
-		$this->wpAdapter->addFilter( 'manage_edit-product_columns', [ $this->productGridExtender, 'addProductListColumns' ] );
-		$this->wpAdapter->addAction( 'manage_product_posts_custom_column', [ $this->productGridExtender, 'fillCustomProductListColumns' ], 10, 2 );
-		$this->wpAdapter->addFilter( 'default_hidden_columns', [ $this->productGridExtender, 'defaultHiddenColumns' ], 10, 2 );
 		$this->wpAdapter->addFilter( 'woocommerce_products_admin_list_table_filters', [ $this->productGridExtender, 'addProductFilters' ] );
 		$this->wpAdapter->addFilter( 'posts_clauses', [ $this->productGridExtender, 'processProductFilterClauses' ], 10, 2 );
 
