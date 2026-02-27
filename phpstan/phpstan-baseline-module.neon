@@ -241,164 +241,8 @@ parameters:
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
 
 		-
-			message: '#^Cannot access offset ''active'' on Packetery\\Nette\\ComponentModel\\IComponent\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 8
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot access offset ''id'' on array\|object\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot access offset ''pricing_type'' on array\|object\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot access offset ''vendor_groups'' on array\|object\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot call method getCountry\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot call method getId\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot call method hasPickupPoints\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot call method isCarDelivery\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Cannot call method supportsAgeVerification\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:checkOverlapping\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:createForm\(\) has parameter \$carrierData with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:createFormTemplate\(\) has parameter \$carrierData with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getAvailableVendors\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
 			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getCarrierTemplateData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getCheckedVendors\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getCheckedVendors\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) has parameter \$carrierOptions with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:isAvailableVendorsCountLowerThanRequiredMinimum\(\) has parameter \$availableVendors with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:mergeNewLimits\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:mergeNewLimits\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:sortLimits\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:sortLimits\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
-			identifier: if.condNotBoolean
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#1 \$carrierData of method Packetery\\Module\\Carrier\\OptionsPage\:\:createForm\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#1 \$carrierData of method Packetery\\Module\\Carrier\\OptionsPage\:\:createFormTemplate\(\) expects array, mixed given\.$#'
-			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
 
@@ -409,56 +253,8 @@ parameters:
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
 
 		-
-			message: '#^Parameter \#1 \$countryCode of method Packetery\\Module\\Carrier\\OptionsPage\:\:createUrl\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
 			message: '#^Parameter \#1 \$countryIso of method Packetery\\Module\\Carrier\\OptionsPage\:\:renderCountryCarriers\(\) expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#1 \$data of method Packetery\\Nette\\Forms\\Container\:\:setDefaults\(\) expects array\|object, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#1 \$options of method Packetery\\Module\\Carrier\\OptionsPage\:\:getCheckedVendors\(\) expects array, array\|object given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#1 \$options of method Packetery\\Module\\Carrier\\OptionsPage\:\:mergeNewLimits\(\) expects array, array\|ArrayAccess given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#2 \$carrierId of method Packetery\\Module\\Carrier\\OptionsPage\:\:createUrl\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#2 \$carrierOptions of method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) expects array\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Parameter \#2 \$options of method Packetery\\Module\\Carrier\\OptionsPage\:\:checkOverlapping\(\) expects array, array\|ArrayAccess given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Property Packetery\\Nette\\Forms\\Container\:\:\$onValidate \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Carrier\\OptionsPage\), ''validateOptions''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
 
@@ -727,6 +523,12 @@ parameters:
 			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
 
 		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Checkout/RateCalculator.php
+
+		-
 			message: '#^Cannot call method get_free_shipping\(\) on class\-string\|object\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -735,7 +537,7 @@ parameters:
 		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
-			count: 1
+			count: 2
 			path: ../src/Packetery/Module/Checkout/RateCalculator.php
 
 		-
@@ -955,16 +757,52 @@ parameters:
 			path: ../src/Packetery/Module/Forms/BugReportForm.php
 
 		-
+			message: '#^Cannot access offset ''active'' on Packetery\\Nette\\ComponentModel\\IComponent\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 8
+			path: ../src/Packetery/Module/Forms/CarrierFormFactory.php
+
+		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 6
-			path: ../src/Packetery/Module/Forms/LogFilterFormFactory.php
+			count: 4
+			path: ../src/Packetery/Module/Forms/CarrierFormFactory.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Container\:\:\$onValidate \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Forms\\CarrierFormFactory\), ''validateOptions''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Forms/CarrierFormFactory.php
 
 		-
 			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{Packetery\\Module\\Options\\Page, string\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../src/Packetery/Module/Forms/CurrencyRatesFormFactory.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: ../src/Packetery/Module/Forms/LogFilterFormFactory.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: ../src/Packetery/Module/Forms/ShippingClassFormFactory.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Container\:\:\$onValidate \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Forms\\ShippingClassFormFactory\), ''validateOptions''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Forms/ShippingClassFormFactory.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Forms\\ShippingClassFormFactory\), ''updateOptions''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Forms/ShippingClassFormFactory.php
 
 		-
 			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:asScheduleSingleAction\(\) has parameter \$args with no value type specified in iterable type array\.$#'
