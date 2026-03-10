@@ -18,6 +18,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\Product;
 use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class Tab
@@ -63,15 +64,18 @@ class DataTab {
 	 */
 	private $productEntityFactory;
 	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
+	private Request $httpRequest;
 
 	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory          $formFactory          Factory engine.
-	 * @param Engine               $latteEngine          Latte engine.
-	 * @param EntityRepository     $carrierRepository    Carrier repository.
-	 * @param CarDeliveryConfig    $carDeliveryConfig    Car Delivery config.
-	 * @param ProductEntityFactory $productEntityFactory Product entity factory.
+	 * @param FormFactory             $formFactory          Factory engine.
+	 * @param Engine                  $latteEngine          Latte engine.
+	 * @param EntityRepository        $carrierRepository    Carrier repository.
+	 * @param CarDeliveryConfig       $carDeliveryConfig    Car Delivery config.
+	 * @param ProductEntityFactory    $productEntityFactory    Product entity factory.
+	 * @param ArgumentTypeErrorLogger $argumentTypeErrorLogger Argument type error logger.
+	 * @param Request                 $httpRequest            HTTP request.
 	 */
 	public function __construct(
 		FormFactory $formFactory,
@@ -79,7 +83,8 @@ class DataTab {
 		EntityRepository $carrierRepository,
 		CarDeliveryConfig $carDeliveryConfig,
 		ProductEntityFactory $productEntityFactory,
-		ArgumentTypeErrorLogger $argumentTypeErrorLogger
+		ArgumentTypeErrorLogger $argumentTypeErrorLogger,
+		Request $httpRequest
 	) {
 		$this->formFactory             = $formFactory;
 		$this->latteEngine             = $latteEngine;
@@ -87,6 +92,7 @@ class DataTab {
 		$this->carDeliveryConfig       = $carDeliveryConfig;
 		$this->productEntityFactory    = $productEntityFactory;
 		$this->argumentTypeErrorLogger = $argumentTypeErrorLogger;
+		$this->httpRequest             = $httpRequest;
 	}
 
 	/**
@@ -180,6 +186,10 @@ class DataTab {
 	public function saveData( $postId ): void {
 		$product = $this->productEntityFactory->fromPostId( $postId );
 		if ( $product->isPhysical() === false ) {
+			return;
+		}
+
+		if ( $this->httpRequest->getPost( 'action' ) === 'inline-save' ) {
 			return;
 		}
 
