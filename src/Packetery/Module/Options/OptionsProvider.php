@@ -202,6 +202,15 @@ class OptionsProvider {
 		return $this->get( 'packeta_label_format' ) ?? self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	}
 
+	public function getLabelNoteTemplate(): ?string {
+		$value = $this->get( 'label_note' );
+		if ( ! is_string( $value ) || $value === '' ) {
+			return null;
+		}
+
+		return $value;
+	}
+
 	/**
 	 * Does user allow label emailing?
 	 *

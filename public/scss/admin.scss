@@ -142,7 +142,7 @@
 #packetery-options-page, .packetery_settings {
 	padding-right: 1em;
 
-	input[type=text], input[type=number], input[type="email"], select {
+	input[type=text], input[type=number], input[type="email"], select, textarea {
 		width: 500px;
 		max-width: none;
 	}
