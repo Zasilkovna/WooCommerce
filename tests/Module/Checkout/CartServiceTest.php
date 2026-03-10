@@ -161,6 +161,17 @@ class CartServiceTest extends TestCase {
 		$this->assertSame( $totalProductPrice, $this->cartService->getTotalCartProductValue() );
 	}
 
+	public function testGetTotalCartProductValueAfterDiscountSumsLineTotals(): void {
+		$this->createCartServiceMock();
+
+		$this->wcAdapter->method( 'cartGetCartContentsTotal' )->willReturn( 29.0 );
+		$this->wcAdapter->method( 'cartGetCartContentsTax' )->willReturn( 4.0 );
+		$this->optionsProvider->method( 'arePricesTaxInclusive' )->willReturn( true );
+		$this->wcAdapter->method( 'getPriceDecimals' )->willReturn( 2 );
+
+		$this->assertSame( 33.0, $this->cartService->getTotalCartProductValueAfterDiscount() );
+	}
+
 	public function testGetDisallowedShippingRateIdsWithPhysicalProduct(): void {
 		$this->createCartServiceMock();
 

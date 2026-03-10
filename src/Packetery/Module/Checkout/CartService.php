@@ -102,6 +102,15 @@ class CartService {
 		return $totalProductPrice;
 	}
 
+	public function getTotalCartProductValueAfterDiscount(): float {
+		$total = $this->wcAdapter->cartGetCartContentsTotal();
+		if ( $this->optionsProvider->arePricesTaxInclusive() ) {
+			$total += $this->wcAdapter->cartGetCartContentsTax();
+		}
+
+		return round( $total, $this->wcAdapter->getPriceDecimals() );
+	}
+
 	/**
 	 * @throws ProductNotFoundException
 	 */
