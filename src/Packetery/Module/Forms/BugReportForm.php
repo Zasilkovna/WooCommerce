@@ -31,7 +31,7 @@ class BugReportForm {
 	}
 
 	public function createForm(): Form {
-		$form = new Form();
+		$form = new Form( 'bugReportForm' );
 
 		$adminEmail = $this->wpAdapter->getOption( 'admin_email' );
 		$form->addEmail( 'replyTo', $this->wpAdapter->__( 'Email for reply', 'packeta' ) )

@@ -47,7 +47,7 @@ class CarrierModalFormFactory {
 	 * @return Form
 	 */
 	public function create( array $carrierOptions, ?string $currentCarrier ): Form {
-		$form = $this->formFactory->create();
+		$form = $this->formFactory->create( 'carrierModalForm' );
 
 		$form->addSelect( self::FIELD_CARRIER_ID, __( 'Carrier:', 'packeta' ), $carrierOptions )
 			->setRequired()

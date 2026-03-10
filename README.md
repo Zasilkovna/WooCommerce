@@ -224,6 +224,19 @@ add_filter( 'packeta_order_grid_links_settings', function ( \Packetery\Module\Or
 } );
 ```
 
+##### Filter to enable/disable product list filters
+
+To enable or disable the product list filters (age verification and shipping method restrictions), use the following code in your preferred place (e.g. a plugin or theme).
+
+```php
+add_filter( 'packetery_product_list_filters_enabled', function ( array $filters ): array {
+	$filters['packetery_age_verification'] = false;
+	$filters['packetery_shipping_restrictions'] = false;
+
+	return $filters;
+} );
+```
+
 ## Email Templates and Shortcodes
 
 The plugin provides shortcodes that can be used in WooCommerce email templates to display Packeta-related information.

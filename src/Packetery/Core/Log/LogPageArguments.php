@@ -19,9 +19,9 @@ class LogPageArguments {
 	/**
 	 * @var array<string, string>|null
 	 */
-	private ?array $orderBy;
-	private ?int $limit;
-	private ?int $offset;
+	private ?array $orderBy     = null;
+	private ?int $limit         = null;
+	private ?int $offset        = null;
 	private bool $useExactTimes = false;
 
 	/**

@@ -35,6 +35,7 @@ services:
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab
 	- Packetery\Module\Product\ProductEntityFactory
+	- Packetery\Module\Product\ProductGridExtender
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Module\ProductCategory\CategoryGridExtender
@@ -120,7 +121,7 @@ services:
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
 	- Packetery\Module\Checkout\CurrencySwitcherService
-	- Packetery\Core\Api\Soap\CreatePacketMapper(affiliateId: %affiliateId%)
+	- Packetery\Module\Order\CreatePacketMapper(affiliateId: %affiliateId%)
 	- Packetery\Module\Order\PickupPointValidator
 	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
@@ -135,6 +136,8 @@ services:
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
 	- Packetery\Module\Forms\DiagnosticsLoggingFormFactory
+	- Packetery\Module\Forms\CurrencyRatesFormFactory
+	- Packetery\Module\Order\CurrencyConversion
 	- Packetery\Module\Order\StoredUntilModal
 	- Packetery\Module\Order\PacketSetStoredUntil
 	- Packetery\Module\Hooks\HookRegistrar
