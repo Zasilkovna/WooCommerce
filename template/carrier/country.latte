@@ -7,7 +7,7 @@
 	{if $forms}
 		<div class="packeta_carrier_list">
 			{foreach $forms as $carrier_data}
-				{include 'carrier.latte', carrier_data: $carrier_data}
+				{include 'carrier.latte', carrier_data: $carrier_data, asTab: false}
 			{/foreach}
 		</div>
 	{else}

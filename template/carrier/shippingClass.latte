@@ -1,0 +1,110 @@
+<div class="packetery-carrier-options-page packeta_carrier_detail_wrapper">
+	<div class="packeta packeta_carrier_detail">
+		{foreach $tabs as $tab}
+			{if $tab['slug'] === $activeTab}
+				{var $classData = $tab}
+			{/if}
+		{/foreach}
+
+		{if isset($classData['form'])}
+
+			{import 'carrierFormSections.latte'}
+
+			{var $form = $formTemplate}
+			<form n:name=$form class="packetery-hidden">
+				<table class="form-table" role="presentation">
+					{include weightRulesSection form => $form}
+					{include productValueRulesSection form => $form}
+					{include surchargeRulesSection form => $form}
+				</table>
+			</form>
+
+			{var $form = $classData['form']}
+			<form n:name=$form data-replication-form-id="{$replicationFormId}">
+				<table class="form-table">
+					<tr>
+						<th scope="row">
+							<label n:name=pricing_type />
+						</th>
+						<td>
+							<select n:name=pricing_type></select>
+							<p class="packetery-input-validation-message help-block text-danger"
+								id="{$form[pricing_type]->getHtmlId() . '_message'}">{inputError $form['pricing_type']}</p>
+						</td>
+					</tr>
+
+				{include weightRulesSection form => $form, sectionId => ($classData['weightSectionId'] ?? null)}
+
+				{include productValueRulesSection form => $form, sectionId => ($classData['valueSectionId'] ?? null)}
+
+					{ifset $form['default_COD_surcharge']}
+						<tr n:formContainer="$form">
+							<th scope="row">
+								<label n:name=default_COD_surcharge />
+							</th>
+							<td>
+								<div>
+									<input n:name=default_COD_surcharge
+											data-lfv-message-id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">
+									<span> {$globalCurrency|noescape}</span>
+								</div>
+								<p class="packetery-input-validation-message help-block text-danger"
+									id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">{inputError $form['default_COD_surcharge']}</p>
+							</td>
+						</tr>
+					{/ifset}
+
+					{ifset $form['surcharge_limits']}
+						{include surchargeRulesSection form => $form}
+					{/ifset}
+
+					{ifset $form['free_shipping_limit']}
+						<tr n:formContainer="$form">
+							<th scope="row">
+								<label n:name=free_shipping_limit />
+							</th>
+							<td>
+								<div>
+									<input n:name=free_shipping_limit
+											data-lfv-message-id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">
+									<span> {$globalCurrency|noescape}</span>
+								</div>
+								<p class="packetery-input-validation-message help-block text-danger"
+									id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">{inputError $form['free_shipping_limit']}</p>
+								<p>
+									{$translations['afterExceedingThisAmountShippingIsFree']}
+								</p>
+							</td>
+						</tr>
+					{/ifset}
+
+					{ifset $form['age_verification_fee']}
+						<tr n:formContainer="$form">
+							<th scope="row">
+								<label n:name=age_verification_fee />
+							</th>
+							<td>
+								<div>
+									<input n:name=age_verification_fee
+											data-lfv-message-id="{$form['age_verification_fee']->getHtmlId() . '_message'}">
+									<span> {$globalCurrency|noescape}</span>
+								</div>
+								<p class="packetery-input-validation-message help-block text-danger"
+									id="{$form['age_verification_fee']->getHtmlId() . '_message'}">{inputError $form['age_verification_fee']}</p>
+							</td>
+						</tr>
+					{/ifset}
+					<tr>
+						<tr></tr>
+						<td>
+							<p class="submit">
+								<button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
+							</p>
+						</td>
+					</tr>
+				</table>
+			</form>
+
+		{/if}
+	</div>
+</div>

@@ -251,4 +251,10 @@ class Options {
 
 		return $maxCartValue >= 1 ? $maxCartValue : null;
 	}
+
+	public function hasPerClassOptions(): bool {
+		return isset( $this->options['per_class'] ) &&
+				is_array( $this->options['per_class'] ) &&
+				count( $this->options['per_class'] ) > 0;
+	}
 }
