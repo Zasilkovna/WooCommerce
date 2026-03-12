@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Checkout;
 
+use Automattic\WooCommerce\Admin\Overrides\Order;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\Options as CarrierOptions;
@@ -305,6 +306,8 @@ class CheckoutValidatorTest extends TestCase {
 			$this->expectNotToPerformAssertions();
 		}
 
-		$checkoutValidator->actionValidateBlockCheckoutData();
+		$order   = $this->createMock( Order::class );
+		$request = $this->createMock( \WP_REST_Request::class );
+		$checkoutValidator->actionValidateBlockCheckoutData( $order, $request );
 	}
 }
