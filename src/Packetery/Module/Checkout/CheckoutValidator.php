@@ -18,6 +18,7 @@ use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
 use WC_REST_Exception;
 use WP_Error;
+use WP_REST_Request;
 
 class CheckoutValidator {
 
@@ -119,10 +120,23 @@ class CheckoutValidator {
 	/**
 	 * Using wc_add_notice works even for block checkout, but WC_REST_Exception is recommended.
 	 *
+	 * @param \Automattic\WooCommerce\Admin\Overrides\Order $order
+	 * @param WP_REST_Request                               $request
+	 *
+	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
+	 *
 	 * @throws WC_REST_Exception
 	 * @throws ProductNotFoundException
 	 */
-	public function actionValidateBlockCheckoutData(): void {
+	public function actionValidateBlockCheckoutData(
+		\Automattic\WooCommerce\Admin\Overrides\Order $order,
+		WP_REST_Request $request
+	): void {
+		$jsonParams = $request->get_json_params();
+		if ( is_array( $jsonParams ) && isset( $jsonParams['payment_method'] ) && count( $jsonParams ) === 1 ) {
+			return;
+		}
+
 		$error = $this->getFirstError();
 		if ( $error !== null ) {
 			throw new WC_REST_Exception( 'packeta_cart_validation_failed', $error );
