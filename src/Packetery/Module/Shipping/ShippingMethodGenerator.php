@@ -12,7 +12,7 @@ class ShippingMethodGenerator {
 	/**
 	 * @link https://doc.nette.org/en/php-generator
 	 */
-	public function generateClass( string $carrierId, string $carrierName ): void {
+	public function generateClass( string $carrierId, string $carrierName ): bool {
 		$file = new PhpFile();
 		$file->addComment( 'This file is auto-generated.' );
 		$file->setStrictTypes();
@@ -30,11 +30,11 @@ class ShippingMethodGenerator {
 		$filePath = __DIR__ . '/Generated/' . $className . '.php';
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
 		if ( ! is_writable( $filePath ) ) {
-			return;
+			return false;
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		file_put_contents( $filePath, $file );
+		return (bool) file_put_contents( $filePath, $file );
 	}
 
 	private static function getClassnameFromCarrierId( string $carrierId ): string {

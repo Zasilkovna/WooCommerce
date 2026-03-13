@@ -193,8 +193,10 @@ class Updater {
 				}
 			}
 
-			if ( ShippingMethodGenerator::classExists( (string) $carrierId ) === false ) {
-				$this->shippingMethodGenerator->generateClass( (string) $carrierId, (string) $carrier['name'] );
+			if (
+				ShippingMethodGenerator::classExists( (string) $carrierId ) === false &&
+				$this->shippingMethodGenerator->generateClass( (string) $carrierId, (string) $carrier['name'] ) === true
+			) {
 				$this->addLogEntry(
 				// translators: %s is a carrier name.
 					sprintf( (string) $this->wpAdapter->__( 'Class for carrier "%s" has been generated.', 'packeta' ), $carrier['name'] )
