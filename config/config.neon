@@ -151,6 +151,7 @@ services:
 	- Packetery\Module\Views\AssetManager
 	- Packetery\Module\Shipping\ShippingProvider
 	- Packetery\Module\Shipping\ShippingMethodGenerator
+	- Packetery\Module\Shipping\ShippingMethodBulkGenerator
 	- Packetery\Module\WidgetUrlResolver(widgetEnvironment: %widgetEnvironment%)
 	- Packetery\Module\Views\WizardAssetManager
 	- Packetery\Module\Dashboard\DashboardPage

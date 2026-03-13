@@ -274,4 +274,8 @@ class WpAdapter {
 	public function currentTime( string $type, bool $gmt ): string {
 		return (string) current_time( $type, $gmt );
 	}
+
+	public function isWritable( string $path ): bool {
+		return wp_is_writable( $path );
+	}
 }
