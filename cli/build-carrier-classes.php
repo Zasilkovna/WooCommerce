@@ -5,7 +5,7 @@
  * @package Packetery
  */
 
-use Packetery\Module\Shipping\ShippingMethodGenerator;
+use Packetery\Module\Shipping\ShippingMethodBulkGenerator;
 use Packetery\Module\Shipping\ShippingProvider;
 
 require_once __DIR__ . '/../../../../wp-load.php';
@@ -15,7 +15,7 @@ $container = require __DIR__ . '/../bootstrap-cli.php';
 ShippingProvider::loadAllClasses();
 
 /**
- * @var ShippingMethodGenerator $generator
+ * @var ShippingMethodBulkGenerator $generator
  */
-$generator = $container->getByType( ShippingMethodGenerator::class );
+$generator = $container->getByType( ShippingMethodBulkGenerator::class );
 $generator->generateClasses();
