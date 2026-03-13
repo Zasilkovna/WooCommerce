@@ -220,6 +220,12 @@ class CheckoutSettings {
 		if ( $this->wcAdapter->cart() instanceof WC_Cart ) {
 			$settings['biggestProductSize']        = $this->cartService->getBiggestProductSize();
 			$settings['isAgeVerificationRequired'] = $this->cartService->isAgeVerificationRequired();
+			/**
+			 * Filter widget weight in checkout.
+			 *
+			 * @since 1.6.3
+			 */
+			$settings['weight'] = (float) $this->wpAdapter->applyFilters( 'packeta_widget_weight', $this->cartService->getCartWeightKg() );
 		}
 
 		$this->wpAdapter->sendJson( $settings );
