@@ -28,6 +28,10 @@ class ShippingMethodGenerator {
 		$class->addConstant( 'CARRIER_ID', $carrierId )->setPublic();
 
 		$filePath = __DIR__ . '/Generated/' . $className . '.php';
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
+		if ( ! is_writable( $filePath ) ) {
+			return;
+		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		file_put_contents( $filePath, $file );
