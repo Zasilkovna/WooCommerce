@@ -239,14 +239,19 @@ class Checkout {
 		if (
 			$chosenCarrier === null ||
 			! $chosenCarrier->supportsAgeVerification() ||
-			$ageVerificationFee === null ||
 			$isAgeVerificationRequired === false
 		) {
 			$this->diagnosticsLogger->log( 'Age verification fee is not added', [] );
 
 			return;
 		}
-		$feeAmount = $this->currencySwitcherService->getConvertedPrice( $ageVerificationFee );
+
+		$feeAmount = $this->getAgeVerificationFeeAmount( $carrierOptions, $ageVerificationFee );
+		if ( $feeAmount === null ) {
+			return;
+		}
+
+		$feeAmount = $this->currencySwitcherService->getConvertedPrice( $feeAmount );
 		$this->diagnosticsLogger->log( 'Age verification converted price is added', [ 'feeAmount' => $feeAmount ] );
 
 		if ( $isTaxable && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
@@ -275,12 +280,17 @@ class Checkout {
 			return;
 		}
 
-		$applicableSurcharge = $this->rateCalculator->getCODSurcharge(
-			$carrierOptions->toArray(),
-			$this->wcAdapter->cartGetSubtotal()
-		);
-		$this->diagnosticsLogger->log( 'Get COD surcharge', [ 'applicableSurcharge' => $applicableSurcharge ] );
-		$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
+		$carrierOptionsArray = $carrierOptions->toArray();
+		if ( $carrierOptions->hasPerClassOptions() ) {
+			$applicableSurcharge = $this->getPerClassCodSurcharge( $carrierOptionsArray );
+		} else {
+			$applicableSurcharge = $this->rateCalculator->getCODSurcharge(
+				$carrierOptionsArray,
+				$this->wcAdapter->cartGetSubtotal()
+			);
+			$this->diagnosticsLogger->log( 'Get COD surcharge', [ 'applicableSurcharge' => $applicableSurcharge ] );
+			$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
+		}
 		$this->diagnosticsLogger->log( 'Get COD surcharge converted', [ 'applicableSurcharge' => $applicableSurcharge ] );
 		if ( $applicableSurcharge <= 0 ) {
 			return;
@@ -409,5 +419,115 @@ class Checkout {
 		$this->diagnosticsLogger->log( 'Filtered payment methods', [ 'availableGateways' => $availableGateways ] );
 
 		return $availableGateways;
+	}
+
+	/**
+	 * @param Carrier\Options $carrierOptions
+	 * @param float|null      $ageVerificationFee
+	 *
+	 * @return float|null
+	 */
+	public function getAgeVerificationFeeAmount( Carrier\Options $carrierOptions, ?float $ageVerificationFee ): ?float {
+		$carrierOptionsArray = $carrierOptions->toArray();
+		if ( ! $carrierOptions->hasPerClassOptions() ) {
+			if ( $ageVerificationFee === null ) {
+				$this->diagnosticsLogger->log( 'Age verification fee (global) not set', [] );
+
+				return null;
+			}
+
+			return $ageVerificationFee;
+		}
+
+		$calculationType   = $carrierOptionsArray['class_calculation_type'] ?? 'per_class';
+		$classTotals       = $this->rateCalculator->getCartItemsGroupedByShippingClass();
+		$presentClassSlugs = [];
+
+		foreach ( array_keys( $classTotals ) as $shippingClassSlug ) {
+			if (
+				! isset( $carrierOptionsArray['per_class'][ $shippingClassSlug ]['age_verification_fee'] ) ||
+				! is_numeric( $carrierOptionsArray['per_class'][ $shippingClassSlug ]['age_verification_fee'] )
+			) {
+				$shippingClassSlug = 'no_class';
+			}
+			$presentClassSlugs[ $shippingClassSlug ] = true;
+		}
+
+		$perClassFees = [];
+		foreach ( array_keys( $presentClassSlugs ) as $shippingClassSlug ) {
+			if (
+				isset( $carrierOptionsArray['per_class'][ $shippingClassSlug ]['age_verification_fee'] ) &&
+				is_numeric( $carrierOptionsArray['per_class'][ $shippingClassSlug ]['age_verification_fee'] )
+			) {
+				$perClassFees[ $shippingClassSlug ] = (float) $carrierOptionsArray['per_class'][ $shippingClassSlug ]['age_verification_fee'];
+			} elseif ( $ageVerificationFee !== null ) {
+				$perClassFees[ $shippingClassSlug ] = $ageVerificationFee;
+			}
+		}
+
+		if ( $perClassFees === [] && $ageVerificationFee === null ) {
+			return null;
+		}
+
+		if ( $calculationType === 'per_order_most_expensive' ) {
+			return $perClassFees === [] ? 0.0 : max( $perClassFees );
+		}
+
+		return array_sum( $perClassFees );
+	}
+
+	/**
+	 * @param array<string, array<string, mixed>> $optionsArray
+	 *
+	 * @return float
+	 */
+	public function getPerClassCodSurcharge( array $optionsArray ): float {
+		$calculationType = $optionsArray['class_calculation_type'] ?? 'per_class';
+		$classTotals     = $this->rateCalculator->getCartItemsGroupedByShippingClass();
+		$classValues     = [];
+
+		foreach ( $classTotals as $shippingClassSlug => $totals ) {
+			$shippingClassOptions = $optionsArray['per_class'][ $shippingClassSlug ] ?? null;
+			if (
+				! is_array( $shippingClassOptions ) ||
+				(
+					! isset( $shippingClassOptions['surcharge_limits'] ) &&
+					( ! isset( $shippingClassOptions['default_COD_surcharge'] ) || ! is_numeric( $shippingClassOptions['default_COD_surcharge'] ) )
+				)
+			) {
+				$shippingClassSlug = 'no_class';
+			}
+			if ( ! isset( $classValues[ $shippingClassSlug ] ) ) {
+				$classValues[ $shippingClassSlug ] = 0.0;
+			}
+			$classValues[ $shippingClassSlug ] += $totals['value'];
+		}
+
+		$perClassSurcharges = [];
+		foreach ( $classValues as $shippingClassSlug => $classProductsSubtotal ) {
+			$finalCarrierOptions  = $optionsArray;
+			$shippingClassOptions = $optionsArray['per_class'][ $shippingClassSlug ] ?? null;
+			if ( isset( $shippingClassOptions ) && is_array( $shippingClassOptions ) ) {
+				$finalCarrierOptions = array_merge( $finalCarrierOptions, $shippingClassOptions );
+			}
+			$perClassSurcharges[ $shippingClassSlug ] = $this->rateCalculator->getCODSurcharge( $finalCarrierOptions, $classProductsSubtotal );
+		}
+
+		if ( $calculationType === 'per_order_most_expensive' ) {
+			$surcharge = $perClassSurcharges === [] ? 0.0 : max( $perClassSurcharges );
+		} else {
+			$surcharge = array_sum( $perClassSurcharges );
+		}
+
+		$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $surcharge );
+		$this->diagnosticsLogger->log(
+			'Get COD surcharge (per-class)',
+			[
+				'applicableSurcharge' => $applicableSurcharge,
+				'calculationType'     => $calculationType,
+			]
+		);
+
+		return $applicableSurcharge;
 	}
 }

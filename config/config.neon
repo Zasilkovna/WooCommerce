@@ -160,3 +160,7 @@ services:
 	- Packetery\Module\Labels\CarrierLabelService
 	- Packetery\Module\Labels\LabelPrintParametersService
 	- Packetery\Module\DiagnosticsLogger\DiagnosticsLogger
+	- Packetery\Module\Carrier\ShippingClassPage
+	- Packetery\Module\Forms\ShippingClassFormFactory
+	- Packetery\Module\Forms\ShippingFormHelper
+	- Packetery\Module\Forms\CarrierFormFactory

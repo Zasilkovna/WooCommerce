@@ -714,7 +714,6 @@ tbody .packetery-log-column-note {
   width: 100%;
   max-width: 100%;
   padding: 24px 16px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
   margin-top: 0;
   margin-bottom: 16px;
 }
@@ -722,6 +721,10 @@ tbody .packetery-log-column-note {
   min-width: 60px;
   padding: 12px 4px;
   text-align: right;
+}
+
+.packeta_carrier_detail.card {
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
 }
 
 .packeta_carrier_title {

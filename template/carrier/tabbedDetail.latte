@@ -1,0 +1,34 @@
+{include '../packeta-header.latte'}
+
+<div class="packetery-options-page packeta_page">
+
+	<nav class="nav-tab-wrapper">
+		<a
+				href="{$generalTabLink}"
+				class="nav-tab{if $activeTab === null} nav-tab-active{/if}"
+		>
+			{$translations['general']}
+		</a>
+		{foreach $tabs as $tab}
+			<a
+					href="{$tab['link']}"
+					class="nav-tab{if $activeTab === $tab['slug']} nav-tab-active{/if}"
+			>
+				{$tab['title']}
+			</a>
+		{/foreach}
+	</nav>
+
+	<div class="packeta_tab_content">
+		{$flashMessages|noescape}
+		{php settings_errors()}
+
+		<div class="packeta_carrier_list">
+			{if $activeTab === null}
+				{include 'carrier.latte', carrier_data: $carrierTemplateData, displayCarrierTitle: false, asTab: true}
+			{else}
+				{include 'shippingClass.latte', tabs: $tabs, activeTab: $activeTab, formTemplate: $formTemplate}
+			{/if}
+		</div>
+	</div>
+</div>
