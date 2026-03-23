@@ -34,6 +34,7 @@ use Packetery\Module\Order\PacketSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Order\StoredUntilModal;
 use Packetery\Module\Product;
+use Packetery\Module\Product\ProductGridExtender;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\ProductCategory\CategoryGridExtender;
 use Packetery\Module\QueryProcessor;
@@ -94,6 +95,7 @@ class HookRegistrar {
 	 * @var Product\DataTab
 	 */
 	private $productTab;
+	private ProductGridExtender $productGridExtender;
 
 	/**
 	 * @var CronService
@@ -279,6 +281,7 @@ class HookRegistrar {
 		Order\LabelPrint $labelPrint,
 		GridExtender $gridExtender,
 		Product\DataTab $productTab,
+		ProductGridExtender $productGridExtender,
 		Api\Registrar $apiRegistar,
 		Order\Modal $orderModal,
 		Options\Exporter $exporter,
@@ -324,6 +327,7 @@ class HookRegistrar {
 		$this->labelPrint                = $labelPrint;
 		$this->gridExtender              = $gridExtender;
 		$this->productTab                = $productTab;
+		$this->productGridExtender       = $productGridExtender;
 		$this->apiRegistrar              = $apiRegistar;
 		$this->orderModal                = $orderModal;
 		$this->exporter                  = $exporter;
@@ -423,6 +427,9 @@ class HookRegistrar {
 		$this->wpAdapter->addFilter( 'manage_edit-product_cat_columns', [ $this->categoryGridExtender, 'addCategoryListColumns' ] );
 		$this->wpAdapter->addFilter( 'manage_product_cat_custom_column', [ $this->categoryGridExtender, 'fillCategoryListColumn' ], 10, 3 );
 		$this->wpAdapter->addFilter( 'default_hidden_columns', [ $this->categoryGridExtender, 'hideCategoryListColumnByDefault' ], 10, 2 );
+		$this->wpAdapter->addFilter( 'manage_edit-product_columns', [ $this->productGridExtender, 'addProductListColumns' ] );
+		$this->wpAdapter->addAction( 'manage_product_posts_custom_column', [ $this->productGridExtender, 'fillCustomProductListColumns' ], 10, 2 );
+		$this->wpAdapter->addFilter( 'default_hidden_columns', [ $this->productGridExtender, 'defaultHiddenColumns' ], 10, 2 );
 		$this->productCategoryFormFields->register();
 
 		if ( $this->wpAdapter->doingAjax() === true ) {
@@ -524,6 +531,9 @@ class HookRegistrar {
 		$this->storedUntilModal->register();
 		$this->productTab->register();
 		$this->carrierModal->register();
+
+		$this->wpAdapter->addFilter( 'woocommerce_products_admin_list_table_filters', [ $this->productGridExtender, 'addProductFilters' ] );
+		$this->wpAdapter->addFilter( 'posts_clauses', [ $this->productGridExtender, 'processProductFilterClauses' ], 10, 2 );
 
 		$this->wpAdapter->addAction(
 			'woocommerce_admin_order_data_after_shipping_address',

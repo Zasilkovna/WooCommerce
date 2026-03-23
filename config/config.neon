@@ -35,6 +35,7 @@ services:
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab
 	- Packetery\Module\Product\ProductEntityFactory
+	- Packetery\Module\Product\ProductGridExtender
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Module\ProductCategory\CategoryGridExtender
@@ -91,6 +92,7 @@ services:
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
 	- Packetery\Module\EntityFactory\SizeFactory
+	- Packetery\Module\Order\LabelNoteResolver
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
@@ -119,7 +121,7 @@ services:
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
 	- Packetery\Module\Checkout\CurrencySwitcherService
-	- Packetery\Core\Api\Soap\CreatePacketMapper(affiliateId: %affiliateId%)
+	- Packetery\Module\Order\CreatePacketMapper(affiliateId: %affiliateId%)
 	- Packetery\Module\Order\PickupPointValidator
 	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
@@ -134,6 +136,8 @@ services:
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
 	- Packetery\Module\Forms\DiagnosticsLoggingFormFactory
+	- Packetery\Module\Forms\CurrencyRatesFormFactory
+	- Packetery\Module\Order\CurrencyConversion
 	- Packetery\Module\Order\StoredUntilModal
 	- Packetery\Module\Order\PacketSetStoredUntil
 	- Packetery\Module\Hooks\HookRegistrar
@@ -156,3 +160,7 @@ services:
 	- Packetery\Module\Labels\CarrierLabelService
 	- Packetery\Module\Labels\LabelPrintParametersService
 	- Packetery\Module\DiagnosticsLogger\DiagnosticsLogger
+	- Packetery\Module\Carrier\ShippingClassPage
+	- Packetery\Module\Forms\ShippingClassFormFactory
+	- Packetery\Module\Forms\ShippingFormHelper
+	- Packetery\Module\Forms\CarrierFormFactory

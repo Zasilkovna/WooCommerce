@@ -9,6 +9,7 @@ use Packetery\Module\Carrier\CarrierActivityBridge;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Dashboard\DashboardHelper;
+use Packetery\Module\Forms\ShippingFormHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Views\UrlBuilder;
 
@@ -28,11 +29,6 @@ class DashboardWidget {
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
-
-	/**
-	 * @var Carrier\OptionsPage
-	 */
-	private $carrierOptionsPage;
 
 	/**
 	 * @var Options\Page
@@ -73,12 +69,12 @@ class DashboardWidget {
 	 * @var DashboardHelper
 	 */
 	private $dashboardHelper;
+	private ShippingFormHelper $shippingFormHelper;
 
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
 		OptionsProvider $optionsProvider,
-		Carrier\OptionsPage $carrierOptionsPage,
 		Options\Page $optionsPage,
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
@@ -86,12 +82,12 @@ class DashboardWidget {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		UrlBuilder $urlBuilder,
 		CarrierActivityBridge $carrierActivityBridge,
-		DashboardHelper $dashboardHelper
+		DashboardHelper $dashboardHelper,
+		ShippingFormHelper $shippingFormHelper
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
 		$this->optionsProvider         = $optionsProvider;
-		$this->carrierOptionsPage      = $carrierOptionsPage;
 		$this->optionsPage             = $optionsPage;
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
@@ -100,6 +96,7 @@ class DashboardWidget {
 		$this->urlBuilder              = $urlBuilder;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
 		$this->dashboardHelper         = $dashboardHelper;
+		$this->shippingFormHelper      = $shippingFormHelper;
 	}
 
 	/**
@@ -146,7 +143,7 @@ class DashboardWidget {
 				$activeCountries[ $country ] = [
 					CountryListingPage::DATA_KEY_COUNTRY_CODE => $country,
 					'name' => $wcCountries[ strtoupper( $country ) ],
-					'url'  => $this->carrierOptionsPage->createUrl( $country ),
+					'url'  => $this->shippingFormHelper->createUrl( $country ),
 				];
 			}
 		}
@@ -175,7 +172,7 @@ class DashboardWidget {
 					'noActiveCountry'        => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Now you do not send parcels to any country via Packeta. The settings can be made %1$shere%2$s.', 'packeta' ),
-						...$this->moduleHelper->createLinkParts( $this->carrierOptionsPage->createUrl() )
+						...$this->moduleHelper->createLinkParts( $this->shippingFormHelper->createUrl() )
 					),
 					'noCodPaymentConfigured' => sprintf(
 						// translators: 1: link start 2: link end.
@@ -185,7 +182,7 @@ class DashboardWidget {
 					'noExternalCarrier'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No external carrier was found. Carriers can be downloaded %1$shere%2$s.', 'packeta' ),
-						...$this->moduleHelper->createLinkParts( $this->carrierOptionsPage->createUrl() )
+						...$this->moduleHelper->createLinkParts( $this->shippingFormHelper->createUrl() )
 					),
 					'noPacketaShipping'      => sprintf(
 						// translators: 1: link start 2: link end.
