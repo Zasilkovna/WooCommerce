@@ -425,13 +425,7 @@ class CountryListingPage {
 				'name'              => $carrier->getName(),
 				'isActivatedByUser' => $carrierOptions->isActive(),
 				'isActive'          => $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ),
-				'detailUrl'         => add_query_arg(
-					[
-						'page'                            => OptionsPage::SLUG,
-						OptionsPage::PARAMETER_CARRIER_ID => $carrierId,
-					],
-					get_admin_url( null, 'admin.php' )
-				),
+				'detailUrl'         => $this->urlBuilder->getCarrierConfigLink( $carrierId ),
 			];
 			if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 				$carrierRow['maxWeightValueText']     = $this->formatMaxWeightValueText( $carrierOptions );

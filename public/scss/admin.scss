@@ -142,9 +142,38 @@
 #packetery-options-page, .packetery_settings {
 	padding-right: 1em;
 
-	input[type=text], input[type=number], input[type="email"], select {
+	.form-table-flex {
+		.currency-rate {
+			display: flex;
+			align-items: center;
+			margin-bottom: 0.5rem;
+
+			div:nth-child(1) {
+				width: 360px;
+				text-align: right;
+			}
+
+			input[type="text"] {
+				max-width: 120px;
+			}
+
+			.packetery-input-validation-message {
+				display: block;
+			}
+
+			div:nth-child(3) {
+				margin-left: 0.5rem;
+			}
+		}
+	}
+
+	input[type=text], input[type=number], input[type="email"], select, textarea {
 		width: 500px;
 		max-width: none;
+	}
+
+	input[disabled] {
+		background-color: #eeeeee;
 	}
 
 	.fieldset {
@@ -553,7 +582,7 @@ tbody .packetery-log-column-note {
 		font-weight: 500;
 	}
 
-	.form-table tr th label {
+	.form-table tr th label, .form-table-flex label {
 		font-family: $font-heading;
 		font-weight: 500;
 		width: auto;
@@ -815,7 +844,6 @@ tbody .packetery-log-column-note {
 	width: 100%;
 	max-width: 100%;
 	padding: 24px 16px;
-	box-shadow: 0 0 40px rgb(0 0 0 / 10%) !important;
 	margin-top: 0;
 	margin-bottom: 16px;
 
@@ -824,6 +852,10 @@ tbody .packetery-log-column-note {
 		padding: 12px 4px;
 		text-align: right;
 	}
+}
+
+.packeta_carrier_detail.card {
+	box-shadow: 0 0 40px rgb(0 0 0 / 10%) !important;
 }
 
 .packeta_carrier_title {

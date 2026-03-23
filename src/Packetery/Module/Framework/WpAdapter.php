@@ -64,6 +64,15 @@ class WpAdapter {
 	}
 
 	/**
+	 * @param array{taxonomy: string, hide_empty: false} $args
+	 *
+	 * @return WP_Term[]|int[]|string[]|string|WP_Error
+	 */
+	public function getTerms( array $args ) {
+		return get_terms( $args );
+	}
+
+	/**
 	 * Checks whether the given variable is an instance of the `WP_Error` class.
 	 *
 	 * @param mixed $thing Variable to check.

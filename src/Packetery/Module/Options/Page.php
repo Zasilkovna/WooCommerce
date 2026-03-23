@@ -20,11 +20,14 @@ use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\BugReportForm;
+use Packetery\Module\Forms\CurrencyRatesFormFactory;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\ArgumentTypeErrorLogger;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Order\CurrencyConversion;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
@@ -61,6 +64,7 @@ class Page {
 	public const TAB_SUPPORT            = 'support';
 	public const TAB_PACKET_STATUS_SYNC = 'packet-status-sync';
 	public const TAB_AUTO_SUBMISSION    = 'auto-submission';
+	public const TAB_CURRENCY_RATES     = 'currency-rates';
 
 	public const PARAM_TAB = 'tab';
 
@@ -127,11 +131,7 @@ class Page {
 	 * @var PacketSynchronizer
 	 */
 	private $packetSynchronizer;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
+	private WpAdapter $wpAdapter;
 
 	/**
 	 * @var string
@@ -152,6 +152,9 @@ class Page {
 	private $diagnosticsLogger;
 	private ArgumentTypeErrorLogger $argumentTypeErrorLogger;
 	private Upgrade $upgrade;
+	private CurrencyRatesFormFactory $currencyRatesFormFactory;
+	private CurrencyConversion $currencyConversion;
+	private WcAdapter $wcAdapter;
 
 	public function __construct(
 		Engine $latteEngine,
@@ -170,7 +173,10 @@ class Page {
 		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
 		DiagnosticsLogger $diagnosticsLogger,
 		ArgumentTypeErrorLogger $argumentTypeErrorLogger,
-		Upgrade $upgrade
+		Upgrade $upgrade,
+		CurrencyRatesFormFactory $currencyRatesFormFactory,
+		CurrencyConversion $currencyConversion,
+		WcAdapter $wcAdapter
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->optionsProvider               = $optionsProvider;
@@ -189,6 +195,9 @@ class Page {
 		$this->diagnosticsLogger             = $diagnosticsLogger;
 		$this->argumentTypeErrorLogger       = $argumentTypeErrorLogger;
 		$this->upgrade                       = $upgrade;
+		$this->currencyRatesFormFactory      = $currencyRatesFormFactory;
+		$this->currencyConversion            = $currencyConversion;
+		$this->wcAdapter                     = $wcAdapter;
 	}
 
 	public function register(): void {
@@ -394,13 +403,7 @@ class Page {
 	 * @return void
 	 */
 	public function onAutoSubmissionFormSuccess( Form $form, array $values ): void {
-		update_option( OptionNames::PACKETERY_AUTO_SUBMISSION, $values );
-
-		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
-
-		if ( wp_safe_redirect( $this->createLink( self::TAB_AUTO_SUBMISSION ) ) ) {
-			exit;
-		}
+		$this->saveOptions( OptionNames::PACKETERY_AUTO_SUBMISSION, self::TAB_AUTO_SUBMISSION, $values );
 	}
 
 	/**
@@ -506,13 +509,7 @@ class Page {
 			unset( $values['max_days_of_packet_status_syncing'] );
 		}
 
-		update_option( OptionNames::PACKETERY_SYNC, $values );
-
-		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
-
-		if ( wp_safe_redirect( $this->createLink( self::TAB_PACKET_STATUS_SYNC ) ) ) {
-			exit;
-		}
+		$this->saveOptions( OptionNames::PACKETERY_SYNC, self::TAB_PACKET_STATUS_SYNC, $values );
 	}
 
 	public function createAdvancedForm(): Form {
@@ -533,13 +530,23 @@ class Page {
 	}
 
 	public function onAdvancedFormSuccess( Form $form, array $values ): void {
-		update_option( OptionNames::PACKETERY_ADVANCED, $values );
+		$this->saveOptions( OptionNames::PACKETERY_ADVANCED, self::TAB_ADVANCED, $values );
+	}
 
-		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
-
-		if ( wp_safe_redirect( $this->createLink( self::TAB_ADVANCED ) ) ) {
-			exit;
+	/**
+	 * @param Form                                              $form
+	 * @param array{enabled: bool,rates: array<string, string>} $values
+	 */
+	public function onCurrencyRatesFormSuccess( Form $form, array $values ): void {
+		foreach ( $this->currencyConversion->getList() as $code ) {
+			if ( isset( $values['rates'][ $code ] ) && $values['rates'][ $code ] !== '' ) {
+				$values['rates'][ $code ] = (float) str_replace( ',', '.', (string) $values['rates'][ $code ] );
+			} else {
+				$values['rates'][ $code ] = null;
+			}
 		}
+
+		$this->saveOptions( OptionNames::PACKETERY_CURRENCY_RATES, self::TAB_CURRENCY_RATES, $values );
 	}
 
 	/**
@@ -572,6 +579,10 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( OptionsProvider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
+		$container->addTextArea( 'label_note', $this->wpAdapter->__( 'Label note', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::MAX_LENGTH, null, 300 );
+
 		$gateways        = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
@@ -582,6 +593,11 @@ class Page {
 			__( 'Payment methods that represent cash on delivery', 'packeta' ),
 			$enabledGateways
 		)->checkDefaultValue( false );
+
+		$currencySymbol = html_entity_decode( $this->wcAdapter->getCurrencySymbol(), ENT_QUOTES, 'UTF-8' );
+		$maxCartValue   = $container->addInteger( 'max_cart_value', $this->wpAdapter->__( 'Max value of products in cart', 'packeta' ) . ' (' . $currencySymbol . ')' );
+		$maxCartValue->setRequired( false )
+			->addRule( Form::MIN, $this->wpAdapter->__( 'Please enter a valid whole number.', 'packeta' ), 1 );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
 			->setRequired()
@@ -965,6 +981,15 @@ class Page {
 			$advancedForm->fireEvents();
 		}
 
+		$currencyRatesForm = $this->currencyRatesFormFactory->createForm( [ $this, 'onCurrencyRatesFormSuccess' ] );
+		if (
+			$currencyRatesForm['saveCurrencyRates'] instanceof SubmitButton &&
+			$currencyRatesForm['saveCurrencyRates']->isSubmittedBy() &&
+			$currencyRatesForm->isSuccess()
+		) {
+			$currencyRatesForm->fireEvents();
+		}
+
 		$bugReportForm = $this->bugReportForm->createForm();
 		if (
 			$bugReportForm['submit'] instanceof SubmitButton &&
@@ -995,6 +1020,8 @@ class Page {
 			$latteParams = [ 'form' => $this->createPacketStatusSyncForm() ];
 		} elseif ( $activeTab === self::TAB_AUTO_SUBMISSION ) {
 			$latteParams = [ 'form' => $this->createAutoSubmissionForm() ];
+		} elseif ( $activeTab === self::TAB_CURRENCY_RATES ) {
+			$latteParams = [ 'form' => $this->currencyRatesFormFactory->createForm( [ $this, 'onCurrencyRatesFormSuccess' ] ) ];
 		} elseif ( $activeTab === self::TAB_ADVANCED ) {
 			$latteParams = [ 'form' => $this->createAdvancedForm() ];
 		} elseif ( $activeTab === self::TAB_GENERAL ) {
@@ -1048,6 +1075,7 @@ class Page {
 		$latteParams['supportTabLink']          = $this->createLink( self::TAB_SUPPORT );
 		$latteParams['packetStatusSyncTabLink'] = $this->createLink( self::TAB_PACKET_STATUS_SYNC );
 		$latteParams['autoSubmissionTabLink']   = $this->createLink( self::TAB_AUTO_SUBMISSION );
+		$latteParams['currencyRatesTabLink']    = $this->createLink( self::TAB_CURRENCY_RATES );
 
 		$latteParams['canValidateSender']    = (bool) $this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(
@@ -1076,7 +1104,9 @@ class Page {
 		$latteParams['isCzechLocale']                = $this->moduleHelper->isCzechLocale();
 		$latteParams['logoZasilkovna']               = $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' );
 		$latteParams['logoPacketa']                  = $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' );
-		$advancedCarrierSettingsDescription          = sprintf(
+		$latteParams['defaultCurrency']              = $this->wcAdapter->getWoocommerceCurrency();
+
+		$advancedCarrierSettingsDescription = sprintf(
 			// translators: first %s is line break, second one is e-mail address
 			__( 'When this feature is active, Packeta carriers will appear as separate shipping methods under WooCommerce → Settings → Shipping. After enabling or disabling this feature, you need to reconfigure your shipping methods in WooCommerce.%1$sIf you encounter any issues, please contact us at %2$s.', 'packeta' ),
 			'<br>',
@@ -1087,6 +1117,8 @@ class Page {
 			'title'                                  => __( 'Options', 'packeta' ),
 			'general'                                => __( 'General', 'packeta' ),
 			'packetAutoSubmission'                   => __( 'Packet auto-submission', 'packeta' ),
+			'currencyRates'                          => $this->wpAdapter->__( 'Currency rates', 'packeta' ),
+			'currencyRatesDescription'               => $this->wpAdapter->__( 'Set custom currency rates for conversion. If a rate is set for a currency, packets to countries using that currency will be submitted in that currency instead of the default shop currency.', 'packeta' ),
 			'packetAutoSubmissionMappingDescription' => __( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
 			// translators: %s represents URL.
 			'apiPasswordCanBeFoundAt%sUrl'           => __( 'API password can be found at %s', 'packeta' ),
@@ -1120,9 +1152,15 @@ class Page {
 				'</a>'
 			),
 			'advancedCarrierSettingsDescription'     => $advancedCarrierSettingsDescription,
+			'maxCartValueDescription'                => $this->wpAdapter->__( 'If the value of all products in the cart exceeds the specified value, Packeta shipping methods will not be available. Use the same convention as the Prices include tax setting.', 'packeta' ),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'defaultDimensionsDescription'           => __( 'These dimensions will be applied to the packet by default, if required by the carrier.', 'packeta' ),
+			'labelNoteDescription'                   => sprintf(
+				/* translators: 1: placeholder for order number */
+				$this->wpAdapter->__( 'Custom text printed on the carrier label. Use %1$s to insert the order number. If set, the buyer note from checkout is not shown on the label.', 'packeta' ),
+				'<code>{{order-id}}</code>'
+			),
 			'setCheckoutDetectionDescription'        => __( 'If you have trouble displaying the widget button in the checkout, you can force what type of checkout you are using.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),
@@ -1176,5 +1214,27 @@ class Page {
 			$params,
 			get_admin_url( null, 'admin.php' )
 		);
+	}
+
+	/**
+	 * @param string               $optionKey
+	 * @param string               $tab
+	 * @param array<string, mixed> $values
+	 *
+	 * @return void
+	 */
+	public function saveOptions( string $optionKey, string $tab, array $values ): void {
+		$this->wpAdapter->updateOption( $optionKey, $values );
+
+		$this->messageManager->flash_message(
+			$this->wpAdapter->__( 'Settings saved.', 'packeta' ),
+			MessageManager::TYPE_SUCCESS,
+			MessageManager::RENDERER_PACKETERY,
+			'plugin-options'
+		);
+
+		if ( $this->wpAdapter->safeRedirect( $this->createLink( $tab ) ) ) {
+			exit;
+		}
 	}
 }

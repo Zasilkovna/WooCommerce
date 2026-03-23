@@ -1,0 +1,7 @@
+{varType string|null $currentValue}
+{varType array<string, string> $translations}
+
+<select name="packetery_age_verification">
+	<option value="">{$translations['filterByAgeVerification']}</option>
+	<option value="1"{if $currentValue === '1'} selected="selected"{/if}>{$translations['yes']}</option>
+</select>
