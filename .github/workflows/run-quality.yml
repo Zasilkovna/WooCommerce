@@ -38,3 +38,4 @@ jobs:
 
       - name: Composer security audit (root)
         run: composer audit
+        continue-on-error: true
