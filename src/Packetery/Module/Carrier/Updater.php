@@ -11,7 +11,9 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Shipping\ShippingMethodGenerator;
 use Packetery\Module\Transients;
 
 /**
@@ -51,17 +53,23 @@ class Updater {
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
+	private ShippingMethodGenerator $shippingMethodGenerator;
+	private WcAdapter $wcAdapter;
 
 	public function __construct(
 		Repository $carrierRepository,
 		ILogger $logger,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		ShippingMethodGenerator $shippingMethodGenerator,
+		WcAdapter $wcAdapter
 	) {
-		$this->carrierRepository     = $carrierRepository;
-		$this->logger                = $logger;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->wpAdapter             = $wpAdapter;
+		$this->carrierRepository       = $carrierRepository;
+		$this->logger                  = $logger;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->wpAdapter               = $wpAdapter;
+		$this->shippingMethodGenerator = $shippingMethodGenerator;
+		$this->wcAdapter               = $wcAdapter;
 	}
 
 	/**
@@ -141,8 +149,9 @@ class Updater {
 	 * @param array<int, array<string, string>> $carriers Validated data retrieved from API.
 	 */
 	public function save( array $carriers ): void {
-		$mappedData   = $this->carriers_mapper( $carriers );
-		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
+		$mappedData           = $this->carriers_mapper( $carriers );
+		$carriersInDb         = $this->carrierRepository->getAllRawIndexed();
+		$carriersNotGenerated = [];
 		foreach ( $mappedData as $carrierId => $carrier ) {
 			if ( isset( $carriersInDb[ $carrierId ] ) ) {
 				$this->carrierRepository->update( $carrier, $carrierId );
@@ -188,6 +197,25 @@ class Updater {
 					);
 				}
 			}
+
+			if ( ShippingMethodGenerator::classExists( (string) $carrierId ) === false ) {
+				if ( $this->shippingMethodGenerator->generateClass( (string) $carrierId, (string) $carrier['name'] ) === true ) {
+					$this->addLogEntry(
+					// translators: %s is a carrier name.
+						sprintf( (string) $this->wpAdapter->__( 'Class for carrier "%s" has been generated.', 'packeta' ), $carrier['name'] )
+					);
+				} else {
+					$carriersNotGenerated[] = $carrier['name'] . " ($carrierId)";
+				}
+			}
+		}
+
+		if ( $carriersNotGenerated !== [] ) {
+			$wcLogger = $this->wcAdapter->getLogger();
+			$wcLogger->error(
+				'The classes for the following carriers could not be generated, the folder is probably not writable: ' . implode( ', ', $carriersNotGenerated ),
+				[ 'source' => 'packeta' ]
+			);
 		}
 
 		if ( count( $carriersInDb ) > 0 ) {
