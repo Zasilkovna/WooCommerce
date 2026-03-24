@@ -48,11 +48,37 @@
 		</tr>
 		<tr>
 			<th scope="row">
+				<label n:name=packetery-label_note />
+			</th>
+			<td>
+				<textarea n:name=packetery-label_note class="packetery-js-wizard-general-label-note" rows="3"></textarea>
+				<div class="packetery-help-block">
+					<p>
+						{$translations['labelNoteDescription']|noescape}
+					</p>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">
 				<label n:name=packetery-cod_payment_methods />
 			</th>
 			<td>
 				<div class="custom-select2-wrapper packetery-js-wizard-general-cod">
 					<select data-packetery-select2 n:name=packetery-cod_payment_methods ></select>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">
+				<label n:name=packetery-max_cart_value />
+			</th>
+			<td>
+				<input type="number" step="1" min="1" n:name=packetery-max_cart_value>
+				<div class="packetery-help-block">
+					<p>
+						{$translations['maxCartValueDescription']}
+					</p>
 				</div>
 			</td>
 		</tr>

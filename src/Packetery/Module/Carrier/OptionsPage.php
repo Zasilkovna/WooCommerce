@@ -16,9 +16,11 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
@@ -38,6 +40,7 @@ class OptionsPage {
 	public const FORM_FIELD_WEIGHT_LIMITS        = 'weight_limits';
 	public const FORM_FIELD_PRODUCT_VALUE_LIMITS = 'product_value_limits';
 	public const FORM_FIELD_PRICING_TYPE         = 'pricing_type';
+	public const FORM_FIELD_MAX_CART_VALUE       = 'max_cart_value';
 
 	public const SLUG                    = 'packeta-country';
 	public const PARAMETER_COUNTRY_CODE  = 'country_code';
@@ -98,11 +101,9 @@ class OptionsPage {
 	 * @var UrlBuilder
 	 */
 	private $urlBuilder;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
+	private WpAdapter $wpAdapter;
+	private WcAdapter $wcAdapter;
+	private OptionsProvider $optionsProvider;
 
 	public function __construct(
 		Engine $latteEngine,
@@ -116,7 +117,9 @@ class OptionsPage {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
+		OptionsProvider $optionsProvider
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -130,6 +133,8 @@ class OptionsPage {
 		$this->moduleHelper          = $moduleHelper;
 		$this->urlBuilder            = $urlBuilder;
 		$this->wpAdapter             = $wpAdapter;
+		$this->wcAdapter             = $wcAdapter;
+		$this->optionsProvider       = $optionsProvider;
 	}
 
 	/**
@@ -207,6 +212,12 @@ class OptionsPage {
 			foreach ( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] as $index => $limit ) {
 				$this->addWeightLimit( $weightLimits, $index );
 			}
+		}
+
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+			$maxCartValue = $form->addInteger( self::FORM_FIELD_MAX_CART_VALUE, $this->wpAdapter->__( 'Max value of products in cart', 'packeta' ) . ':' );
+			$maxCartValue->setRequired( false )
+				->addRule( Form::MIN, $this->wpAdapter->__( 'Please enter a valid whole number.', 'packeta' ), 1 );
 		}
 
 		$productValueLimits = $form->addContainer( self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
@@ -640,7 +651,7 @@ class OptionsPage {
 	 */
 	private function getCommonTemplateParams(): array {
 		return [
-			'globalCurrency' => get_woocommerce_currency_symbol(),
+			'globalCurrency' => $this->wcAdapter->getCurrencySymbol(),
 			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 			'isCzechLocale'  => $this->moduleHelper->isCzechLocale(),
 			'logoZasilkovna' => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
@@ -676,6 +687,7 @@ class OptionsPage {
 			'checkAtLeastTwo'                        => $this->wpAdapter->__( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
 			'lowAvailableVendorsCount'               => $this->wpAdapter->__( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
 			'carrierUnavailable'                     => $this->wpAdapter->__( 'This carrier is unavailable.', 'packeta' ),
+			'maxCartValueDescription'                => $this->wpAdapter->__( 'If the value of all products in the cart exceeds the specified value, Packeta shipping methods will not be available. This setting takes precedence over the max value of products in cart in the plugin general settings. Use the same convention as the Prices include tax setting.', 'packeta' ),
 		];
 	}
 
