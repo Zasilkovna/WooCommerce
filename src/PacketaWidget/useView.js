@@ -13,7 +13,7 @@ const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
 
 export const useView = ( cart ) => {
 	const [ viewState, setViewState ] = useState( null );
-	const { shippingRates, shippingAddress, cartItemsWeight } = cart;
+	const { shippingRates, shippingAddress } = cart;
 	const paymentStore = useSelect( ( select ) => {
 		return select( PAYMENT_STORE_KEY );
 	}, [] );
@@ -114,7 +114,6 @@ export const useView = ( cart ) => {
 		dynamicSettings,
 		setViewState,
 		shippingAddress,
-		cartItemsWeight,
 	);
 
 	const onHDWidgetButtonClicked = useOnHDWidgetButtonClicked(

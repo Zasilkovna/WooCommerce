@@ -15,7 +15,6 @@ export const useOnWidgetButtonClicked = (
 	dynamicSettings,
 	setViewState,
 	shippingAddress,
-	cartItemsWeight,
 ) => {
 	const {
 		carrierConfig,
@@ -30,8 +29,7 @@ export const useOnWidgetButtonClicked = (
 	const onWidgetButtonClicked = useCallback( () => {
 		const rateId = getShippingMethodOptionId( packetaShippingRate.rate_id );
 
-		let weight = +( cartItemsWeight / 1000 ).toFixed( 2 );
-		let widgetOptions = { language, appIdentity, weight };
+		let widgetOptions = { language, appIdentity };
 		widgetOptions.country = shippingAddress.country.toLowerCase();
 		if ( carrierConfig[ rateId ].carriers ) {
 			widgetOptions.carriers = carrierConfig[ rateId ].carriers;
@@ -41,6 +39,10 @@ export const useOnWidgetButtonClicked = (
 		}
 
 		if ( dynamicSettings ) {
+			if ( dynamicSettings.weight ) {
+				widgetOptions.weight = dynamicSettings.weight;
+			}
+
 			if ( dynamicSettings.isAgeVerificationRequired ) {
 				widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 			}

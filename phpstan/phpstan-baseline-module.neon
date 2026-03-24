@@ -573,7 +573,7 @@ parameters:
 		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
-			count: 1
+			count: 2
 			path: ../src/Packetery/Module/Checkout/CheckoutSettings.php
 
 		-
@@ -955,16 +955,16 @@ parameters:
 			path: ../src/Packetery/Module/Forms/BugReportForm.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 6
-			path: ../src/Packetery/Module/Forms/LogFilterFormFactory.php
-
-		-
 			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{Packetery\\Module\\Options\\Page, string\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../src/Packetery/Module/Forms/CurrencyRatesFormFactory.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: ../src/Packetery/Module/Forms/LogFilterFormFactory.php
 
 		-
 			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:asScheduleSingleAction\(\) has parameter \$args with no value type specified in iterable type array\.$#'
