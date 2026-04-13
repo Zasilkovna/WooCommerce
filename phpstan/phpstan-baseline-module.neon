@@ -2239,12 +2239,6 @@ parameters:
 			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
 
 		-
-			message: '#^Argument of an invalid type array\<int, array\<string, string\>\>\|null supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: ../src/Packetery/Module/Shipping/ShippingMethodGenerator.php
-
-		-
 			message: '#^Access to an undefined property object\:\:\$method_title\.$#'
 			identifier: property.notFound
 			count: 2
