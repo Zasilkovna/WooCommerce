@@ -93,6 +93,12 @@ if ( is_dir( $wpContentConfigDir ) ) {
 	}
 }
 
+$configurator->addStaticParameters(
+	[
+		'consoleMode' => \PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg',
+	]
+);
+
 $container = $configurator->createContainer();
 CompatibilityBridge::setContainer( $container );
 
