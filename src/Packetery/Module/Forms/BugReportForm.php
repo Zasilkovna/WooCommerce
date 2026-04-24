@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Forms;
 
 use Packetery\Module\Email\BugReportEmail;
+use Packetery\Module\FormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Nette\Forms\Form;
@@ -20,18 +21,23 @@ class BugReportForm {
 	/** @var BugReportEmail */
 	private $bugReportEmail;
 
+	/** @var FormFactory */
+	private $formFactory;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		MessageManager $messageManager,
-		BugReportEmail $bugReportEmail
+		BugReportEmail $bugReportEmail,
+		FormFactory $formFactory
 	) {
 		$this->wpAdapter      = $wpAdapter;
 		$this->messageManager = $messageManager;
 		$this->bugReportEmail = $bugReportEmail;
+		$this->formFactory    = $formFactory;
 	}
 
 	public function createForm(): Form {
-		$form = new Form( 'bugReportForm' );
+		$form = $this->formFactory->create( 'bugReportForm' );
 
 		$adminEmail = $this->wpAdapter->getOption( 'admin_email' );
 		$form->addEmail( 'replyTo', $this->wpAdapter->__( 'Email for reply', 'packeta' ) )
