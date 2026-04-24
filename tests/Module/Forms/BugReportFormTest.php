@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Module\Forms;
 
 use Packetery\Module\Email\BugReportEmail;
+use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\BugReportForm;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
@@ -17,6 +18,7 @@ class BugReportFormTest extends TestCase {
 	private WpAdapter&MockObject $wpAdapter;
 	private MessageManager&MockObject $messageManager;
 	private BugReportEmail&MockObject $bugReportEmail;
+	private FormFactory&MockObject $formFactory;
 
 	private const TEST_EMAIL       = 'test@example.com';
 	private const TEST_SITE_NAME   = 'Test Site';
@@ -29,11 +31,13 @@ class BugReportFormTest extends TestCase {
 		$this->wpAdapter      = $this->createMock( WpAdapter::class );
 		$this->messageManager = $this->createMock( MessageManager::class );
 		$this->bugReportEmail = $this->createMock( BugReportEmail::class );
+		$this->formFactory    = $this->createMock( FormFactory::class );
 
 		return new BugReportForm(
 			$this->wpAdapter,
 			$this->messageManager,
-			$this->bugReportEmail
+			$this->bugReportEmail,
+			$this->formFactory
 		);
 	}
 
@@ -50,6 +54,10 @@ class BugReportFormTest extends TestCase {
 		$this->wpAdapter->method( 'getOption' )
 			->with( 'admin_email' )
 			->willReturn( self::ADMIN_EMAIL );
+
+		$this->formFactory->method( 'create' )
+			->with( 'bugReportForm' )
+			->willReturn( new Form( 'bugReportForm' ) );
 
 		$form = $bugReportForm->createForm();
 

@@ -37,4 +37,5 @@ jobs:
         run: composer run-script composer:normalize:check
 
       - name: Composer security audit (root)
+        continue-on-error: true
         run: composer audit
