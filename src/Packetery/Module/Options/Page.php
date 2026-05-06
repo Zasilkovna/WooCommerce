@@ -131,11 +131,7 @@ class Page {
 	 * @var PacketSynchronizer
 	 */
 	private $packetSynchronizer;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
+	private WpAdapter $wpAdapter;
 
 	/**
 	 * @var string
@@ -583,6 +579,10 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( OptionsProvider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
+		$container->addTextArea( 'label_note', $this->wpAdapter->__( 'Label note', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::MAX_LENGTH, null, 300 );
+
 		$gateways        = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
@@ -593,6 +593,11 @@ class Page {
 			__( 'Payment methods that represent cash on delivery', 'packeta' ),
 			$enabledGateways
 		)->checkDefaultValue( false );
+
+		$currencySymbol = html_entity_decode( $this->wcAdapter->getCurrencySymbol(), ENT_QUOTES, 'UTF-8' );
+		$maxCartValue   = $container->addInteger( 'max_cart_value', $this->wpAdapter->__( 'Max value of products in cart', 'packeta' ) . ' (' . $currencySymbol . ')' );
+		$maxCartValue->setRequired( false )
+			->addRule( Form::MIN, $this->wpAdapter->__( 'Please enter a valid whole number.', 'packeta' ), 1 );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
 			->setRequired()
@@ -1147,9 +1152,15 @@ class Page {
 				'</a>'
 			),
 			'advancedCarrierSettingsDescription'     => $advancedCarrierSettingsDescription,
+			'maxCartValueDescription'                => $this->wpAdapter->__( 'If the value of all products in the cart exceeds the specified value, Packeta shipping methods will not be available. Use the same convention as the Prices include tax setting.', 'packeta' ),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'defaultDimensionsDescription'           => __( 'These dimensions will be applied to the packet by default, if required by the carrier.', 'packeta' ),
+			'labelNoteDescription'                   => sprintf(
+				/* translators: 1: placeholder for order number */
+				$this->wpAdapter->__( 'Custom text printed on the carrier label. Use %1$s to insert the order number. If set, the buyer note from checkout is not shown on the label.', 'packeta' ),
+				'<code>{{order-id}}</code>'
+			),
 			'setCheckoutDetectionDescription'        => __( 'If you have trouble displaying the widget button in the checkout, you can force what type of checkout you are using.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),

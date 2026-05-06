@@ -38,6 +38,10 @@ trait WcCartTrait {
 		return (float) WC()->cart->get_cart_contents_total();
 	}
 
+	public function getPriceDecimals(): int {
+		return wc_get_price_decimals();
+	}
+
 	/**
 	 * Gets cart tax amount.
 	 *

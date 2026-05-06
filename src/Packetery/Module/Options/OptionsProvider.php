@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Carrier;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 
@@ -213,6 +214,15 @@ class OptionsProvider {
 		return $this->get( 'packeta_label_format' ) ?? self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	}
 
+	public function getLabelNoteTemplate(): ?string {
+		$value = $this->get( 'label_note' );
+		if ( ! is_string( $value ) || $value === '' ) {
+			return null;
+		}
+
+		return $value;
+	}
+
 	/**
 	 * Does user allow label emailing?
 	 *
@@ -234,6 +244,25 @@ class OptionsProvider {
 		}
 
 		return $value;
+	}
+
+	public function getMaxCartValue(): ?int {
+		$maxCartValue = $this->get( 'max_cart_value' );
+		if ( $maxCartValue === null || $maxCartValue === '' || is_numeric( $maxCartValue ) === false ) {
+			return null;
+		}
+
+		$maxCartValue = (int) $maxCartValue;
+
+		return $maxCartValue >= 1 ? $maxCartValue : null;
+	}
+
+	public function getEffectiveMaxCartValueLimit( Carrier\Options $carrierOptions ): ?int {
+		if ( $this->isWcCarrierConfigEnabled() ) {
+			return $carrierOptions->getMaxCartValue() ?? $this->getMaxCartValue();
+		}
+
+		return $this->getMaxCartValue();
 	}
 
 	/**

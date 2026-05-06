@@ -240,4 +240,15 @@ class Options {
 		return ( isset( $this->options['vendor_groups'] ) && is_array( $this->options['vendor_groups'] ) ) ?
 			$this->options['vendor_groups'] : null;
 	}
+
+	public function getMaxCartValue(): ?int {
+		$maxCartValue = $this->options['max_cart_value'] ?? null;
+		if ( $maxCartValue === null || $maxCartValue === '' || is_numeric( $maxCartValue ) === false ) {
+			return null;
+		}
+
+		$maxCartValue = (int) $maxCartValue;
+
+		return $maxCartValue >= 1 ? $maxCartValue : null;
+	}
 }

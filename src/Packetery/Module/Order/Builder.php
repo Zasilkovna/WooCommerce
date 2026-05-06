@@ -23,6 +23,7 @@ use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Order\LabelNoteResolver;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
 use Packetery\Module\WeightCalculator;
@@ -39,54 +40,14 @@ use WC_Product;
  */
 class Builder {
 
-	/**
-	 * Options provider.
-	 *
-	 * @var OptionsProvider Options provider.
-	 */
-	private $optionsProvider;
-
-	/**
-	 * Weight calculator.
-	 *
-	 * @var WeightCalculator
-	 */
-	private $calculator;
-
-	/**
-	 * Customs declaration repository.
-	 *
-	 * @var CustomsDeclaration\Repository
-	 */
-	private $customsDeclarationRepository;
-
-	/**
-	 * Internal pickup points config.
-	 *
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointsConfig;
-
-	/**
-	 * CoreHelper.
-	 *
-	 * @var CoreHelper
-	 */
-	private $coreHelper;
-
-	/**
-	 * Payment helper.
-	 *
-	 * @var PaymentHelper
-	 */
-	private $paymentHelper;
-
-	/**
-	 * Carrier repository.
-	 *
-	 * @var Carrier\EntityRepository
-	 */
-	private $carrierRepository;
+	private OptionsProvider $optionsProvider;
+	private WeightCalculator $calculator;
+	private CustomsDeclaration\Repository $customsDeclarationRepository;
+	private PacketaPickupPointsConfig $pickupPointsConfig;
+	private CoreHelper $coreHelper;
+	private PaymentHelper $paymentHelper;
+	private Carrier\EntityRepository $carrierRepository;
+	private LabelNoteResolver $labelNoteResolver;
 
 	/**
 	 * Builder constructor.
@@ -98,6 +59,7 @@ class Builder {
 	 * @param CoreHelper                    $coreHelper                   CoreHelper.
 	 * @param PaymentHelper                 $paymentHelper                Payment helper.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
+	 * @param LabelNoteResolver             $labelNoteResolver            Label note resolver.
 	 */
 	public function __construct(
 		OptionsProvider $optionsProvider,
@@ -106,7 +68,8 @@ class Builder {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CoreHelper $coreHelper,
 		PaymentHelper $paymentHelper,
-		Carrier\EntityRepository $carrierRepository
+		Carrier\EntityRepository $carrierRepository,
+		LabelNoteResolver $labelNoteResolver
 	) {
 		$this->optionsProvider              = $optionsProvider;
 		$this->calculator                   = $calculator;
@@ -115,6 +78,7 @@ class Builder {
 		$this->coreHelper                   = $coreHelper;
 		$this->paymentHelper                = $paymentHelper;
 		$this->carrierRepository            = $carrierRepository;
+		$this->labelNoteResolver            = $labelNoteResolver;
 	}
 
 	/**
@@ -241,10 +205,6 @@ class Builder {
 		if ( isset( $contactInfo['phone'] ) && $contactInfo['phone'] !== '' ) {
 			$order->setPhone( $contactInfo['phone'] );
 		}
-		// Additional address information.
-		if ( isset( $contactInfo['address_2'] ) && $contactInfo['address_2'] !== '' ) {
-			$order->setNote( $contactInfo['address_2'] );
-		}
 
 		$order->setEmail( $orderData['billing']['email'] );
 		$hasCodPaymentMethod = $this->paymentHelper->isCodPaymentMethod( $orderData['payment_method'] );
@@ -260,6 +220,13 @@ class Builder {
 		$order->setCurrency( $wcOrder->get_currency() );
 
 		$order->setCustomsDeclaration( $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() ) );
+
+		$labelNoteTemplate = $this->optionsProvider->getLabelNoteTemplate();
+		if ( $labelNoteTemplate !== null ) {
+			$order->setNote( $this->labelNoteResolver->resolve( $labelNoteTemplate, $order ) );
+		} elseif ( isset( $contactInfo['address_2'] ) && $contactInfo['address_2'] !== '' ) {
+			$order->setNote( $contactInfo['address_2'] );
+		}
 
 		return $order;
 	}
