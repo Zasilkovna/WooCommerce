@@ -77,7 +77,15 @@ const steps = [
 			title: wizardTourConfig.translations.trackingUrl.title,
 			description: wizardTourConfig.translations.trackingUrl.description
 		}
-	},{
+	},
+	{
+		element: '.packetery-js-wizard-metabox-consign-password',
+		popover: {
+			title: wizardTourConfig.translations.zboxConsignPassword.title,
+			description: wizardTourConfig.translations.zboxConsignPassword.description
+		}
+	},
+	{
 		element: '.packetery-js-wizard-metabox-packet-status',
 		popover: {
 			title: wizardTourConfig.translations.packetStatus.title,

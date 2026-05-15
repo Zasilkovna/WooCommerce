@@ -86,6 +86,11 @@ class PacketSubmitter {
 	 */
 	private $coreHelper;
 
+	/**
+	 * @var ConsignPasswordSynchronizer
+	 */
+	private $consignPasswordSynchronizer;
+
 	public function __construct(
 		Soap\Client $soapApiClient,
 		OrderValidatorFactory $orderValidatorFactory,
@@ -99,7 +104,8 @@ class PacketSubmitter {
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer,
 		ModuleHelper $moduleHelper,
-		CoreHelper $coreHelper
+		CoreHelper $coreHelper,
+		ConsignPasswordSynchronizer $consignPasswordSynchronizer
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidatorFactory->create();
@@ -114,6 +120,7 @@ class PacketSubmitter {
 		$this->packetSynchronizer           = $packetSynchronizer;
 		$this->moduleHelper                 = $moduleHelper;
 		$this->coreHelper                   = $coreHelper;
+		$this->consignPasswordSynchronizer  = $consignPasswordSynchronizer;
 	}
 
 	/**
@@ -308,6 +315,9 @@ class PacketSubmitter {
 				return $submissionResult;
 			}
 
+			$shouldScheduleConsignPasswordFetch = false;
+			$consignPasswordFetchImmediate      = false;
+
 			$response = $this->soapApiClient->createPacket( $createPacketData );
 			if ( $response->hasFault() ) {
 				$record          = new Log\Record();
@@ -354,12 +364,19 @@ class PacketSubmitter {
 				} else {
 					as_enqueue_async_action( self::HOOK_PACKET_STATUS_SYNC, [ $order->getNumber() ] );
 				}
+
+				$shouldScheduleConsignPasswordFetch = true;
+				$consignPasswordFetchImmediate      = $immediatePacketStatusCheck;
 			}
 
 			$submissionResult->increaseLogsCount();
 			$this->logger->add( $record );
 			$order->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $order );
+
+			if ( $shouldScheduleConsignPasswordFetch ) {
+				$this->consignPasswordSynchronizer->schedule( $order, $consignPasswordFetchImmediate );
+			}
 		} else {
 			$submissionResult->increaseIgnoredCount();
 		}

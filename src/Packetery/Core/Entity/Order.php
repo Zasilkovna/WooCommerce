@@ -183,6 +183,13 @@ class Order {
 	private $packetClaimPassword;
 
 	/**
+	 * Z-BOX consign password from packetInfo.
+	 *
+	 * @var string|null
+	 */
+	private $consignPassword;
+
+	/**
 	 * Packet ID
 	 *
 	 * @var string|null
@@ -627,6 +634,15 @@ class Order {
 	}
 
 	/**
+	 * @param string|null $consignPassword Consign password.
+	 *
+	 * @return void
+	 */
+	public function setConsignPassword( ?string $consignPassword ): void {
+		$this->consignPassword = $consignPassword;
+	}
+
+	/**
 	 * Sets packet status.
 	 *
 	 * @param string|null $packetStatus Packet status.
@@ -830,6 +846,13 @@ class Order {
 	 */
 	public function getPacketClaimPassword(): ?string {
 		return $this->packetClaimPassword;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getConsignPassword(): ?string {
+		return $this->consignPassword;
 	}
 
 	/**

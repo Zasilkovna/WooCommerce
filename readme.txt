@@ -64,6 +64,7 @@ Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
 = 2.3.0 =
+Added: Optional Z-BOX consign password from packet info (setting, async fetch, admin order metabox and AWB printout, cleared on packet cancel).
 Updated: Better destination address handling in classic checkout.
 Fixed: Storing Packeta carrier restrictions when creating a new category.
 Updated: Added new columns and filtering options to the carrier list.

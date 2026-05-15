@@ -5,6 +5,7 @@
 {varType int[] $packetIds}
 {varType Packetery\Core\Entity\Address $storeAddress}
 {varType string $storeName}
+{varType bool $showConsignPasswordForZBox}
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +18,7 @@
 	<table class="packetery-order-collection-print-table">
 		<thead>
 		<tr>
-			<td colspan="8">
+			<td colspan="{if $showConsignPasswordForZBox}7{else}6{/if}">
 				<table>
 					<tbody>
 					<tr>
@@ -50,6 +51,7 @@
 		<tr>
 			<th>{$translations['orderNumber']}</th>
 			<th>{$translations['barcode']}</th>
+			<th n:if="$showConsignPasswordForZBox">{$translations['zboxConsignPassword']}</th>
 			<th>{$translations['created']}</th>
 			<th>{$translations['nameAndSurname']}</th>
 			<th>{$translations['cod']}</th>
@@ -63,6 +65,9 @@
 			<tr class="{if $iterator->odd}odd{else}even{/if}">
 				<td class="packetery-no-wrap order-number-column">{$order->getCustomNumber()}</td>
 				<td class="packetery-no-wrap">{$packetId}</td>
+				<td n:if="$showConsignPasswordForZBox" class="packetery-no-wrap">
+					{if $order->getConsignPassword()}{$order->getConsignPassword()}{/if}
+				</td>
 				<td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_date_created()|date:'d. m.'}</td>
 				<td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_formatted_shipping_full_name()}</td>
 				<td class="packetery-no-wrap cod-column">
