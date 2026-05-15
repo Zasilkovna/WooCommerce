@@ -5,6 +5,9 @@
 		{$translations['packetTrackingOnline']}:
 		<a href="{$packetTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
 	</li>
+	<li n:if="$showConsignPasswordForZBox && $order->getConsignPassword()" class="packetery-js-wizard-metabox-consign-password">
+		{$translations['zboxConsignPassword']}: {$order->getConsignPassword()}
+	</li>
 	<li n:if="$packetStatusTranslatedName" class="packetery-js-wizard-metabox-packet-status">
 		<p class="packetery-order-status {$statusClass}">{$packetStatusTranslatedName}</p>
 	</li>

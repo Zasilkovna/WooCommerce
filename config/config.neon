@@ -106,6 +106,7 @@ services:
 	- Packetery\Module\Order\CollectionPrint
 	- Packetery\Module\Order\PacketStatusResolver
 	- Packetery\Module\Order\PacketSynchronizer
+	- Packetery\Module\Order\ConsignPasswordSynchronizer
 	- Packetery\Module\Order\PacketAutoSubmitter
 	- Packetery\Nette\Http\RequestFactory
 	requestFactory: Packetery\Module\HttpRequestFactory(%consoleMode%, %disableGetPostCookieParsing%)

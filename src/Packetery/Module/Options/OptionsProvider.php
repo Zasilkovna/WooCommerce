@@ -36,6 +36,7 @@ class OptionsProvider {
 	public const HIDE_CHECKOUT_LOGO_DEFAULT                = false;
 	public const AUTO_EMAIL_INFO_INSERTION_DEFAULT         = true;
 	public const PICKUP_POINT_VALIDATION_ENABLED_DEFAULT   = false;
+	public const SHOW_CONSIGN_PASSWORD_FOR_Z_BOX_DEFAULT   = false;
 
 	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
 	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
@@ -782,5 +783,14 @@ class OptionsProvider {
 		}
 
 		return (bool) $isEnabled;
+	}
+
+	public function isShowConsignPasswordForZBoxEnabled(): bool {
+		$value = $this->get( 'show_consign_password_for_z_box' );
+		if ( $value !== null ) {
+			return (bool) $value;
+		}
+
+		return self::SHOW_CONSIGN_PASSWORD_FOR_Z_BOX_DEFAULT;
 	}
 }

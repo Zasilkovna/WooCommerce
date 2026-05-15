@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.3.0 =
+Added: Optional Z-BOX consign password from packet info (setting, async fetch, admin order metabox and AWB printout, cleared on packet cancel).
+
 = 2.2.0 =
 Added: Optional validation of the selected pickup point using the API.
 Added: Extended logging for diagnostics.

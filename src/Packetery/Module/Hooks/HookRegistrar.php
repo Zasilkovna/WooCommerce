@@ -25,6 +25,7 @@ use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Module\Order\CollectionPrint;
+use Packetery\Module\Order\ConsignPasswordSynchronizer;
 use Packetery\Module\Order\GridExtender;
 use Packetery\Module\Order\LabelPrint;
 use Packetery\Module\Order\LabelPrintModal;
@@ -230,6 +231,11 @@ class HookRegistrar {
 	private $packetSynchronizer;
 
 	/**
+	 * @var ConsignPasswordSynchronizer
+	 */
+	private $consignPasswordSynchronizer;
+
+	/**
 	 * @var CheckoutSettings
 	 */
 	private $checkoutSettings;
@@ -306,6 +312,7 @@ class HookRegistrar {
 		Options\Page $optionsPage,
 		WpAdapter $wpAdapter,
 		PacketSynchronizer $packetSynchronizer,
+		ConsignPasswordSynchronizer $consignPasswordSynchronizer,
 		CheckoutSettings $checkoutSettings,
 		ModuleHelper $moduleHelper,
 		ShippingProvider $shippingProvider,
@@ -315,50 +322,51 @@ class HookRegistrar {
 		EmailShortcodes $shortcodes,
 		DiagnosticsLogger $diagnosticsLogger
 	) {
-		$this->messageManager            = $messageManager;
-		$this->checkout                  = $checkout;
-		$this->orderBulkActions          = $orderBulkActions;
-		$this->labelPrint                = $labelPrint;
-		$this->gridExtender              = $gridExtender;
-		$this->productTab                = $productTab;
-		$this->apiRegistrar              = $apiRegistar;
-		$this->orderModal                = $orderModal;
-		$this->exporter                  = $exporter;
-		$this->orderCollectionPrint      = $orderCollectionPrint;
-		$this->orderRepository           = $orderRepository;
-		$this->upgrade                   = $upgrade;
-		$this->queryProcessor            = $queryProcessor;
-		$this->optionsProvider           = $optionsProvider;
-		$this->cronService               = $cronService;
-		$this->dashboardWidget           = $dashboardWidget;
-		$this->packetSubmitter           = $packetSubmitter;
-		$this->productCategoryFormFields = $productCategoryFormFields;
-		$this->packetAutoSubmitter       = $packetAutoSubmitter;
-		$this->metaboxesWrapper          = $metaboxesWrapper;
-		$this->apiExtender               = $apiExtender;
-		$this->labelPrintModal           = $labelPrintModal;
-		$this->updateOrderHook           = $updateOrderHook;
-		$this->carrierModal              = $carrierModal;
-		$this->storedUntilModal          = $storedUntilModal;
-		$this->blockHooks                = $blockHooks;
-		$this->viewAdmin                 = $viewAdmin;
-		$this->viewFrontend              = $viewFrontend;
-		$this->viewMail                  = $viewMail;
-		$this->assetManager              = $assetManager;
-		$this->pluginHooks               = $pluginHooks;
-		$this->carrierOptionsPage        = $carrierOptionsPage;
-		$this->logPage                   = $logPage;
-		$this->optionsPage               = $optionsPage;
-		$this->wpAdapter                 = $wpAdapter;
-		$this->packetSynchronizer        = $packetSynchronizer;
-		$this->checkoutSettings          = $checkoutSettings;
-		$this->moduleHelper              = $moduleHelper;
-		$this->shippingProvider          = $shippingProvider;
-		$this->checkoutStorage           = $checkoutStorage;
-		$this->wizardAssetManager        = $wizardAssetManager;
-		$this->dashboardPage             = $dashboardPage;
-		$this->shortcodes                = $shortcodes;
-		$this->diagnosticsLogger         = $diagnosticsLogger;
+		$this->messageManager              = $messageManager;
+		$this->checkout                    = $checkout;
+		$this->orderBulkActions            = $orderBulkActions;
+		$this->labelPrint                  = $labelPrint;
+		$this->gridExtender                = $gridExtender;
+		$this->productTab                  = $productTab;
+		$this->apiRegistrar                = $apiRegistar;
+		$this->orderModal                  = $orderModal;
+		$this->exporter                    = $exporter;
+		$this->orderCollectionPrint        = $orderCollectionPrint;
+		$this->orderRepository             = $orderRepository;
+		$this->upgrade                     = $upgrade;
+		$this->queryProcessor              = $queryProcessor;
+		$this->optionsProvider             = $optionsProvider;
+		$this->cronService                 = $cronService;
+		$this->dashboardWidget             = $dashboardWidget;
+		$this->packetSubmitter             = $packetSubmitter;
+		$this->productCategoryFormFields   = $productCategoryFormFields;
+		$this->packetAutoSubmitter         = $packetAutoSubmitter;
+		$this->metaboxesWrapper            = $metaboxesWrapper;
+		$this->apiExtender                 = $apiExtender;
+		$this->labelPrintModal             = $labelPrintModal;
+		$this->updateOrderHook             = $updateOrderHook;
+		$this->carrierModal                = $carrierModal;
+		$this->storedUntilModal            = $storedUntilModal;
+		$this->blockHooks                  = $blockHooks;
+		$this->viewAdmin                   = $viewAdmin;
+		$this->viewFrontend                = $viewFrontend;
+		$this->viewMail                    = $viewMail;
+		$this->assetManager                = $assetManager;
+		$this->pluginHooks                 = $pluginHooks;
+		$this->carrierOptionsPage          = $carrierOptionsPage;
+		$this->logPage                     = $logPage;
+		$this->optionsPage                 = $optionsPage;
+		$this->wpAdapter                   = $wpAdapter;
+		$this->packetSynchronizer          = $packetSynchronizer;
+		$this->consignPasswordSynchronizer = $consignPasswordSynchronizer;
+		$this->checkoutSettings            = $checkoutSettings;
+		$this->moduleHelper                = $moduleHelper;
+		$this->shippingProvider            = $shippingProvider;
+		$this->checkoutStorage             = $checkoutStorage;
+		$this->wizardAssetManager          = $wizardAssetManager;
+		$this->dashboardPage               = $dashboardPage;
+		$this->shortcodes                  = $shortcodes;
+		$this->diagnosticsLogger           = $diagnosticsLogger;
 	}
 
 	public function register(): void {
@@ -403,6 +411,7 @@ class HookRegistrar {
 		$this->updateOrderHook->register();
 		$this->packetSubmitter->registerCronAction();
 		$this->packetSynchronizer->register();
+		$this->consignPasswordSynchronizer->register();
 		$this->shortcodes->register();
 
 		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );

@@ -154,6 +154,7 @@ class Builder {
 		$order->setPacketClaimId( $result->packet_claim_id );
 		$order->setPacketClaimTrackingUrl( $this->coreHelper->getTrackingUrl( $result->packet_claim_id ) );
 		$order->setPacketClaimPassword( $result->packet_claim_password );
+		$order->setConsignPassword( $result->consign_password );
 		$order->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
 		$order->setIsExported( (bool) $result->is_exported );
 		$order->setIsLabelPrinted( (bool) $result->is_label_printed );

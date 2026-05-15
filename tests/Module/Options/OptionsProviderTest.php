@@ -291,4 +291,31 @@ class OptionsProviderTest extends TestCase {
 		$result = $provider->getPacketAutoSubmissionMappedUniqueEvents();
 		$this->assertSame( [ 'order_paid', 'order_shipped' ], array_values( $result ) );
 	}
+
+	public function testShowConsignPasswordForZBoxDefaultsToDisabled(): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock->method( 'getOption' )->willReturn( [] );
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$this->assertFalse( $provider->isShowConsignPasswordForZBoxEnabled() );
+	}
+
+	public function testShowConsignPasswordForZBoxReadsStoredValue(): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock->method( 'getOption' )
+			->willReturnCallback(
+				static function ( string $key ) {
+					if ( $key === OptionNames::PACKETERY ) {
+						return [ 'show_consign_password_for_z_box' => true ];
+					}
+
+					return [];
+				}
+			);
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$this->assertTrue( $provider->isShowConsignPasswordForZBoxEnabled() );
+	}
 }

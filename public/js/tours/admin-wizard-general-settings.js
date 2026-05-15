@@ -153,6 +153,13 @@
 						}
 					},
 					{
+						element: '.packetery-js-wizard-show-consign-password-zbox',
+						popover: {
+							title: wizardTourConfig.translations.showConsignPasswordForZBox.title,
+							description: wizardTourConfig.translations.showConsignPasswordForZBox.description
+						}
+					},
+					{
 						element: '.packetery-js-wizard-settings-save-button',
 						popover: {
 							title: wizardTourConfig.translations.settingsSaveButton.title,

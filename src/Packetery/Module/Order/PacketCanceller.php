@@ -256,6 +256,7 @@ class PacketCanceller {
 			$this->wcOrderActions->updateOrderStatus( $order->getNumber(), PacketStatus::CANCELLED );
 			$order->setPacketId( null );
 			$order->setPacketTrackingUrl( null );
+			$order->setConsignPassword( null );
 			$order->updateApiErrorMessage( null );
 
 			if ( $result->hasFault() ) {
