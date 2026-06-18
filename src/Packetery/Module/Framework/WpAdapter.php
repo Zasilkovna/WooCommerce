@@ -64,7 +64,7 @@ class WpAdapter {
 	}
 
 	/**
-	 * @param array{taxonomy: string, hide_empty: false} $args
+	 * @param array{taxonomy?: string|string[], hide_empty?: bool|int, number?: int|string, fields?: string, meta_query?: array<mixed>} $args
 	 *
 	 * @return WP_Term[]|int[]|string[]|string|WP_Error
 	 */

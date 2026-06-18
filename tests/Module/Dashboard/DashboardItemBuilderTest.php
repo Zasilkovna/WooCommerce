@@ -88,11 +88,114 @@ class DashboardItemBuilderTest extends TestCase {
 		$this->assertEquals( 'https://example.com/admin-dashboard-page-update', $result );
 	}
 
+	public function testBuildItemsProducesContiguouslyNumberedStepsWithoutCarrierType(): void {
+		$this->wpAdapterMock->method( '__' )->willReturnArgument( 0 );
+
+		$items = $this->dashboardItemBuilder->buildItems();
+
+		$captions   = array_map( static fn( $item ) => $item->getCaption(), $items );
+		$sortOrders = array_map( static fn( $item ) => $item->getSortOrder(), $items );
+
+		$this->assertSame(
+			[
+				'Basic settings of the Packeta plugin',
+				'Restrict carriers for products or categories',
+				'Carriers update',
+				'Carrier settings',
+				'Shipping zone settings',
+				'Set up shipment status tracking',
+				'Set up automatic shipment submission',
+				'Currency rates',
+				'Age verification 18+',
+			],
+			$captions
+		);
+		$this->assertSame( range( 1, count( $items ) ), $sortOrders );
+		$this->assertNotContains( 'Carrier type setting', $captions );
+		$this->assertNotContains( 'Product settings', $captions );
+		$this->assertSame( 'Age verification 18+', $captions[ count( $captions ) - 1 ] );
+	}
+
+	public function testIsCurrencyRatesStepFinishedIsFalseWhenFeatureDisabled(): void {
+		$this->optionsProviderMock->method( 'isCustomCurrencyRatesEnabled' )->willReturn( false );
+		$this->optionsProviderMock->expects( $this->never() )->method( 'getCustomCurrencyRates' );
+
+		$this->assertFalse( $this->invokeIsCurrencyRatesStepFinished() );
+	}
+
+	public function testIsCurrencyRatesStepFinishedIsFalseWhenNoUsableRate(): void {
+		$this->optionsProviderMock->method( 'isCustomCurrencyRatesEnabled' )->willReturn( true );
+		$this->optionsProviderMock->method( 'getCustomCurrencyRates' )->willReturn(
+			[
+				'EUR' => null,
+				'USD' => 0.0,
+			]
+		);
+
+		$this->assertFalse( $this->invokeIsCurrencyRatesStepFinished() );
+	}
+
+	public function testIsCurrencyRatesStepFinishedIsTrueWhenEnabledWithRate(): void {
+		$this->optionsProviderMock->method( 'isCustomCurrencyRatesEnabled' )->willReturn( true );
+		$this->optionsProviderMock->method( 'getCustomCurrencyRates' )->willReturn(
+			[
+				'EUR' => null,
+				'USD' => 25.3,
+			]
+		);
+
+		$this->assertTrue( $this->invokeIsCurrencyRatesStepFinished() );
+	}
+
+	public function testHasCategoriesWithDisallowedCarriersReflectsTermsResult(): void {
+		$this->wpAdapterMock->method( 'getTerms' )->willReturn( [] );
+		$this->assertFalse( $this->invokeHasCategoriesWithDisallowedCarriers() );
+	}
+
+	public function testHasCategoriesWithDisallowedCarriersIsTrueWhenTermFound(): void {
+		$this->wpAdapterMock->method( 'getTerms' )->willReturn( [ 7 ] );
+		$this->assertTrue( $this->invokeHasCategoriesWithDisallowedCarriers() );
+	}
+
+	public function testHasCategoriesWithDisallowedCarriersIsFalseOnWpError(): void {
+		$this->wpAdapterMock->method( 'getTerms' )->willReturn( 'unexpected-non-array' );
+		$this->assertFalse( $this->invokeHasCategoriesWithDisallowedCarriers() );
+	}
+
+	public function testProductStepDescriptionsAppendCreateProductHintOnlyWhenNoProduct(): void {
+		$this->wpAdapterMock->method( '__' )->willReturnArgument( 0 );
+
+		$this->assertSame(
+			'Disable specific Packeta carriers for individual products or whole product categories.',
+			$this->invokeDescription( 'getDisallowedCarriersDescription', 'https://example.com/edit' )
+		);
+		$this->assertSame(
+			'Mark products intended for adults only (18+). First create at least one product.',
+			$this->invokeDescription( 'getAgeVerificationDescription', null )
+		);
+	}
+
+	private function invokeIsCurrencyRatesStepFinished(): bool {
+		return $this->invokePrivateMethod( 'isCurrencyRatesStepFinished' );
+	}
+
+	private function invokeHasCategoriesWithDisallowedCarriers(): bool {
+		return $this->invokePrivateMethod( 'hasCategoriesWithDisallowedCarriers' );
+	}
+
+	private function invokeDescription( string $methodName, ?string $productUrl ): string {
+		return $this->invokePrivateMethod( $methodName, $productUrl );
+	}
+
 	private function invokeGetCarrierUpdateUrl(): ?string {
+		return $this->invokePrivateMethod( 'getCarrierUpdateUrl' );
+	}
+
+	private function invokePrivateMethod( string $methodName, mixed ...$args ): mixed {
 		$reflection = new ReflectionClass( DashboardItemBuilder::class );
-		$method     = $reflection->getMethod( 'getCarrierUpdateUrl' );
+		$method     = $reflection->getMethod( $methodName );
 		$method->setAccessible( true );
 
-		return $method->invoke( $this->dashboardItemBuilder );
+		return $method->invoke( $this->dashboardItemBuilder, ...$args );
 	}
 }

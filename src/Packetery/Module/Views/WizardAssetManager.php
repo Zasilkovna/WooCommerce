@@ -107,10 +107,6 @@ class WizardAssetManager {
 		if ( $this->request->getQuery( 'wizard-auto-submission-tour-enabled' ) === 'true' ) {
 			$this->createAutoSubmissionTour( $basicTranslations );
 		}
-
-		if ( $this->request->getQuery( 'wizard-advanced-tour-enabled' ) === 'true' ) {
-			$this->createAdvancedTour( $basicTranslations );
-		}
 	}
 
 	private function enqueueOrderGridTours( bool $isItFirstRunOrderOrderGridEditPacket ): void {
@@ -290,20 +286,6 @@ class WizardAssetManager {
 		];
 
 		$this->enqueueTourScript( 'admin-wizard-auto-submission-settings.js', array_merge( $translations, $basicTranslations ) );
-	}
-
-	/**
-	 * @param array<string, array<string, string|null>|string|null> $basicTranslations
-	 */
-	private function createAdvancedTour( array $basicTranslations ): void {
-		$translations = [
-			'newCarrierEnabled' => [
-				'title'       => $this->wpAdapter->__( 'Advanced carrier settings', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'You can enable the advanced carrier settings to get better support of WooCommerce features here.', 'packeta' ),
-			],
-		];
-
-		$this->enqueueTourScript( 'admin-wizard-advanced-settings.js', array_merge( $translations, $basicTranslations ) );
 	}
 
 	private function createOrderGridEditPacketTour( array $basicTranslations ): void {
