@@ -744,15 +744,6 @@ class OptionsProvider {
 		return self::DEFAULT_VALUE_CARRIER_SETTINGS;
 	}
 
-	public function isWcCarrierConfigEnabledNullable(): ?bool {
-		$isEnabled = $this->advancedData['new_carrier_settings_enabled'] ?? null;
-		if ( $isEnabled !== null ) {
-			return (bool) $isEnabled;
-		}
-
-		return null;
-	}
-
 	/**
 	 * Tells auto order status, if it is valid, otherwise empty string.
 	 *
