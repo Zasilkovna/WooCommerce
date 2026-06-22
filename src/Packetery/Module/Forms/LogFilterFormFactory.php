@@ -4,15 +4,21 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Forms;
 
+use Packetery\Module\FormFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\Forms\Form;
 
 class LogFilterFormFactory {
 
 	private WpAdapter $wpAdapter;
+	private FormFactory $formFactory;
 
-	public function __construct( WpAdapter $wpAdapter ) {
-		$this->wpAdapter = $wpAdapter;
+	public function __construct(
+		WpAdapter $wpAdapter,
+		FormFactory $formFactory
+	) {
+		$this->wpAdapter   = $wpAdapter;
+		$this->formFactory = $formFactory;
 	}
 
 	/**
@@ -21,7 +27,7 @@ class LogFilterFormFactory {
 	 * @param array<string,mixed>  $defaults
 	 */
 	public function create( array $translatedActions, array $translatedStatuses, array $defaults, string $actionUrl ): Form {
-		$form = new Form();
+		$form = $this->formFactory->create();
 		$form->setMethod( 'GET' );
 		$form->setAction( $actionUrl );
 
