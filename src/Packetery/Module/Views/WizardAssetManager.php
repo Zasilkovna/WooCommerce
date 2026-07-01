@@ -240,8 +240,8 @@ class WizardAssetManager {
 				'description' => $this->wpAdapter->__( 'If enabled, selected pickup point will be validated using the API to prevent bypassing widget restrictions.', 'packeta' ),
 			],
 			'showConsignPasswordForZBox'   => [
-				'title'       => $this->wpAdapter->__( 'Show consign password for Z-BOX', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'If enabled, the Z-BOX consign password will be fetched after packet creation and displayed in the order metabox and on the AWB printout.', 'packeta' ),
+				'title'       => $this->wpAdapter->__( 'Show consignment code', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'If enabled, the consignment code will be fetched after packet creation and displayed in the order metabox and on the AWB printout.', 'packeta' ),
 			],
 		];
 
@@ -395,8 +395,8 @@ class WizardAssetManager {
 				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the packet, you can click through to online tracking.', 'packeta' ),
 			],
 			'zboxConsignPassword' => [
-				'title'       => $this->wpAdapter->__( 'Z-BOX consign password', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Password for submitting the packet to a Z-BOX. Shown only when enabled in general settings and after the password has been fetched from Packeta.', 'packeta' ),
+				'title'       => $this->wpAdapter->__( 'Consignment code', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Consignment code for submitting the packet. Shown only when enabled in general settings and after the consignment code has been fetched from Packeta.', 'packeta' ),
 			],
 			'claimTrackingUrl'    => [
 				'title'       => $this->wpAdapter->__( 'Claim tracking url', 'packeta' ),

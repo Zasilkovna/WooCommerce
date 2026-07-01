@@ -200,7 +200,7 @@ class CollectionPrint {
 					'recipient'              => __( 'Recipient', 'packeta' ),
 					'orderNumber'            => __( 'Order number', 'packeta' ),
 					'barcode'                => __( 'Barcode', 'packeta' ),
-					'zboxConsignPassword'    => __( 'Z-BOX consign password', 'packeta' ),
+					'zboxConsignPassword'    => __( 'Consignment code', 'packeta' ),
 					'created'                => __( 'Created', 'packeta' ),
 					'nameAndSurname'         => __( 'Name and surname', 'packeta' ),
 					'cod'                    => __( 'C.O.D.', 'packeta' ),

@@ -335,7 +335,7 @@ class Metabox {
 						'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
 						'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
-						'zboxConsignPassword'       => $this->wpAdapter->__( 'Z-BOX consign password', 'packeta' ),
+						'zboxConsignPassword'       => $this->wpAdapter->__( 'Consignment code', 'packeta' ),
 						'setStoredUntil'            => $this->wpAdapter->__( 'Set the pickup date extension', 'packeta' ),
 						'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					],
