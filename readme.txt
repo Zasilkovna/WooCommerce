@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 6.3
-Tested up to: 6.8.2
-Stable tag: 2.2.0
+Tested up to: 7.0
+Stable tag: 2.3.0
 Requires PHP: 7.4
 WC requires at least: 5.1
-WC tested up to: 10.3.4
+WC tested up to: 10.9.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
@@ -64,7 +64,7 @@ Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
 = 2.3.0 =
-Added: Optional consignment code from packet info (setting, async fetch, admin order metabox and AWB printout, cleared on packet cancel).
+Added: Option to display the consignment code in the order detail and on the printed parcel list.
 
 = 2.2.0 =
 Added: Optional validation of the selected pickup point using the API.
