@@ -699,7 +699,7 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::PICKUP_POINT_VALIDATION_ENABLED_DEFAULT );
 
-		$container->addCheckbox( 'show_consign_password_for_z_box', __( 'Show consign password for Z-BOX', 'packeta' ) )
+		$container->addCheckbox( 'show_consign_password_for_z_box', __( 'Show consignment code', 'packeta' ) )
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::SHOW_CONSIGN_PASSWORD_FOR_Z_BOX_DEFAULT );
 
