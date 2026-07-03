@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.3.1 =
+Fixed: Database structure was not updated after updating the plugin.
+
 = 2.3.0 =
 Added: Option to display the consignment code in the order detail and on the printed parcel list.
 
