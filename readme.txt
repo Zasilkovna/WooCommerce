@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 6.3
 Tested up to: 7.0
-Stable tag: 2.3.0
+Stable tag: 2.3.1
 Requires PHP: 7.4
 WC requires at least: 5.1
 WC tested up to: 10.9.1
@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.3.1 =
+Fixed: Database structure was not updated after updating the plugin.
+
 = 2.3.0 =
 Added: Option to display the consignment code in the order detail and on the printed parcel list.
 
