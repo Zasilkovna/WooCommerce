@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Core\Returns\ReturnSettings;
 use Packetery\Module\Carrier;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
@@ -77,6 +78,11 @@ class OptionsProvider {
 	 */
 	private $currencyRatesData;
 
+	/**
+	 * @var array<string, mixed>
+	 */
+	private array $returnsData;
+
 	public function __construct( WpAdapter $wpAdapter ) {
 		$data = $wpAdapter->getOption( OptionNames::PACKETERY );
 		if ( $data === false || $data === null ) {
@@ -103,11 +109,17 @@ class OptionsProvider {
 			$currencyRatesData = [];
 		}
 
+		$returnsData = $wpAdapter->getOption( OptionNames::PACKETERY_RETURNS );
+		if ( ! is_array( $returnsData ) ) {
+			$returnsData = [];
+		}
+
 		$this->data               = $data;
 		$this->syncData           = $syncData;
 		$this->autoSubmissionData = $autoSubmissionData;
 		$this->advancedData       = $advancedData;
 		$this->currencyRatesData  = $currencyRatesData;
+		$this->returnsData        = $returnsData;
 	}
 
 	/**
@@ -139,6 +151,7 @@ class OptionsProvider {
 			OptionNames::PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
 			OptionNames::PACKETERY_ADVANCED        => $this->advancedData,
 			OptionNames::PACKETERY_CURRENCY_RATES  => $this->currencyRatesData,
+			OptionNames::PACKETERY_RETURNS         => $this->returnsData,
 		];
 	}
 
@@ -849,5 +862,76 @@ class OptionsProvider {
 	 */
 	public function getCustomCurrencyRate( string $currency ): ?float {
 		return $this->getCustomCurrencyRates()[ $currency ] ?? null;
+	}
+
+	public function isReturnsEnabled(): bool {
+		return (bool) ( $this->returnsData['enabled'] ?? false );
+	}
+
+	public function isGuestReturnsAllowed(): bool {
+		return (bool) ( $this->returnsData['allow_guest'] ?? false );
+	}
+
+	public function isReturnsApprovalRequired(): bool {
+		return (bool) ( $this->returnsData['approve_before_send'] ?? false );
+	}
+
+	/**
+	 * Bridges the stored returns options into the pure Core eligibility value object.
+	 */
+	public function getReturnSettings(): ReturnSettings {
+		$returnWindowDays = $this->returnsData['return_window_days'] ?? null;
+		$returnWindowDays = is_numeric( $returnWindowDays )
+			? (int) $returnWindowDays
+			: ReturnSettings::RETURN_WINDOW_DAYS_DEFAULT;
+
+		$excludeVirtual = isset( $this->returnsData['exclude_virtual'] )
+			? (bool) $this->returnsData['exclude_virtual']
+			: ReturnSettings::EXCLUDE_VIRTUAL_DEFAULT;
+
+		$maxOrderValue = $this->returnsData['max_order_value'] ?? null;
+		$maxOrderValue = is_numeric( $maxOrderValue ) ? (float) $maxOrderValue : null;
+
+		$maxWeightKg = $this->returnsData['max_weight_kg'] ?? null;
+		$maxWeightKg = is_numeric( $maxWeightKg ) ? (float) $maxWeightKg : null;
+
+		$storedCountries  = $this->returnsData['allowed_countries'] ?? [];
+		$allowedCountries = [];
+		if ( is_array( $storedCountries ) ) {
+			foreach ( $storedCountries as $code => $isChecked ) {
+				if ( (bool) $isChecked ) {
+					$allowedCountries[] = (string) $code;
+				}
+			}
+		}
+
+		return new ReturnSettings(
+			$returnWindowDays,
+			$excludeVirtual,
+			$maxOrderValue,
+			$maxWeightKg,
+			$allowedCountries,
+			$this->toIntList( $this->returnsData['excluded_categories'] ?? null )
+		);
+	}
+
+	/**
+	 * @param mixed $value Raw stored value.
+	 *
+	 * @return int[]
+	 */
+	private function toIntList( $value ): array {
+		if ( ! is_array( $value ) ) {
+			return [];
+		}
+
+		$result = [];
+		foreach ( $value as $item ) {
+			if ( is_numeric( $item ) ) {
+				$result[] = (int) $item;
+			}
+		}
+
+		return $result;
 	}
 }

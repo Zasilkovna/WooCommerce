@@ -36,6 +36,7 @@ class OptionsPage {
 	public const FORM_FIELD_PRODUCT_VALUE_LIMITS = 'product_value_limits';
 	public const FORM_FIELD_PRICING_TYPE         = 'pricing_type';
 	public const FORM_FIELD_MAX_CART_VALUE       = 'max_cart_value';
+	public const FORM_FIELD_ALLOW_RETURNS        = 'allow_returns';
 	public const FORM_FIELD_CLASS_CALC_TYPE      = 'class_calculation_type';
 	public const OPTIONS_SECTION_PER_CLASS       = 'per_class';
 

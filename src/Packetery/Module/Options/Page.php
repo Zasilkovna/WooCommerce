@@ -15,6 +15,7 @@ use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
+use Packetery\Core\Returns\ReturnSettings;
 use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
@@ -32,6 +33,7 @@ use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Plugin;
+use Packetery\Module\ProductCategory;
 use Packetery\Module\Upgrade;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
@@ -65,6 +67,7 @@ class Page {
 	public const TAB_PACKET_STATUS_SYNC = 'packet-status-sync';
 	public const TAB_AUTO_SUBMISSION    = 'auto-submission';
 	public const TAB_CURRENCY_RATES     = 'currency-rates';
+	public const TAB_RETURNS            = 'returns';
 
 	public const PARAM_TAB = 'tab';
 
@@ -533,6 +536,114 @@ class Page {
 		$this->saveOptions( OptionNames::PACKETERY_ADVANCED, self::TAB_ADVANCED, $values );
 	}
 
+	public function createReturnsForm(): Form {
+		$form     = $this->formFactory->create( 'packetery_returns_form' );
+		$defaults = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY_RETURNS );
+
+		$form->addCheckbox( 'enabled', __( 'Enable returns', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( false )
+			->addCondition( Form::EQUAL, true )
+				->toggle( '.returns_content' );
+
+		$form->addCheckbox( 'allow_guest', __( 'Allow returns for guest orders', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( false );
+
+		$form->addCheckbox( 'approve_before_send', __( 'Approve returns before sending', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( false );
+
+		$form->addText( 'return_window_days', __( 'Return window (days)', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->setDefaultValue( ReturnSettings::RETURN_WINDOW_DAYS_DEFAULT );
+
+		$form->addCheckbox( 'exclude_virtual', __( 'Exclude orders with virtual products', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( ReturnSettings::EXCLUDE_VIRTUAL_DEFAULT );
+
+		$form->addText( 'max_order_value', __( 'Maximum order value', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 );
+
+		$form->addText( 'max_weight_kg', __( 'Maximum order weight (kg)', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 );
+
+		$allowedCountries = $form->addContainer( 'allowed_countries' );
+		foreach ( $this->getReturnCountryOptions() as $code => $name ) {
+			$allowedCountries->addCheckbox( $code, $name );
+		}
+
+		$form->addMultiSelect( 'excluded_categories', __( 'Excluded product categories', 'packeta' ), $this->getReturnCategoryOptions() )
+			->checkDefaultValue( false );
+
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
+		$form->setDefaults( $defaults );
+
+		$form->onSuccess[] = [ $this, 'onReturnsFormSuccess' ];
+
+		return $form;
+	}
+
+	public function onReturnsFormSuccess( Form $form ): void {
+		// Read a recursive array from the form so nested containers (allowed_countries) are stored as
+		// plain arrays, not ArrayHash. Nette calls this with a second $values arg, which PHP ignores.
+		/** @var array<string, mixed> $formValues */
+		$formValues = $form->getValues( 'array' );
+		$this->saveOptions( OptionNames::PACKETERY_RETURNS, self::TAB_RETURNS, $formValues );
+	}
+
+	/**
+	 * WooCommerce country keys are uppercase ISO2, serviced countries are lowercase; map them so
+	 * only serviced countries are offered.
+	 *
+	 * @return array<string, string>
+	 */
+	private function getReturnCountryOptions(): array {
+		$wcCountries = $this->wcAdapter->countriesGetCountries();
+		$options     = [];
+		foreach ( ReturnSettings::SERVICED_COUNTRIES as $code ) {
+			$wcKey = strtoupper( $code );
+			if ( isset( $wcCountries[ $wcKey ] ) ) {
+				$options[ $code ] = $wcCountries[ $wcKey ];
+			}
+		}
+
+		return $options;
+	}
+
+	/**
+	 * @return array<int, string>
+	 */
+	private function getReturnCategoryOptions(): array {
+		$terms = $this->wpAdapter->getTerms(
+			[
+				'taxonomy'   => ProductCategory\Entity::TAXONOMY_NAME,
+				'hide_empty' => false,
+			]
+		);
+
+		if ( ! is_array( $terms ) ) {
+			return [];
+		}
+
+		$options = [];
+		foreach ( $terms as $term ) {
+			if ( $term instanceof \WP_Term ) {
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				$options[ $term->term_id ] = $term->name;
+			}
+		}
+
+		return $options;
+	}
+
 	/**
 	 * @param Form                                              $form
 	 * @param array{enabled: bool,rates: array<string, string>} $values
@@ -981,6 +1092,14 @@ class Page {
 			$advancedForm->fireEvents();
 		}
 
+		$returnsForm = $this->createReturnsForm();
+		if (
+			$returnsForm['save'] instanceof SubmitButton &&
+			$returnsForm['save']->isSubmittedBy()
+		) {
+			$returnsForm->fireEvents();
+		}
+
 		$currencyRatesForm = $this->currencyRatesFormFactory->createForm( [ $this, 'onCurrencyRatesFormSuccess' ] );
 		if (
 			$currencyRatesForm['saveCurrencyRates'] instanceof SubmitButton &&
@@ -1024,6 +1143,8 @@ class Page {
 			$latteParams = [ 'form' => $this->currencyRatesFormFactory->createForm( [ $this, 'onCurrencyRatesFormSuccess' ] ) ];
 		} elseif ( $activeTab === self::TAB_ADVANCED ) {
 			$latteParams = [ 'form' => $this->createAdvancedForm() ];
+		} elseif ( $activeTab === self::TAB_RETURNS ) {
+			$latteParams = [ 'form' => $this->createReturnsForm() ];
 		} elseif ( $activeTab === self::TAB_GENERAL ) {
 			$latteParams = [ 'form' => $this->create_form() ];
 		} elseif ( $activeTab === self::TAB_SUPPORT ) {
@@ -1076,6 +1197,7 @@ class Page {
 		$latteParams['packetStatusSyncTabLink'] = $this->createLink( self::TAB_PACKET_STATUS_SYNC );
 		$latteParams['autoSubmissionTabLink']   = $this->createLink( self::TAB_AUTO_SUBMISSION );
 		$latteParams['currencyRatesTabLink']    = $this->createLink( self::TAB_CURRENCY_RATES );
+		$latteParams['returnsTabLink']          = $this->createLink( self::TAB_RETURNS );
 
 		$latteParams['canValidateSender']    = (bool) $this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(
@@ -1126,6 +1248,10 @@ class Page {
 			'saveChanges'                            => __( 'Save changes', 'packeta' ),
 			'validateSender'                         => __( 'Validate sender', 'packeta' ),
 			'advanced'                               => __( 'Advanced', 'packeta' ),
+			'returns'                                => __( 'Returns', 'packeta' ),
+			'returnsNoLimitDescription'              => __( 'Leave empty for no limit.', 'packeta' ),
+			'returnsAllowedCountriesLabel'           => __( 'Return countries for non-Packeta orders', 'packeta' ),
+			'returnsAllowedCountriesDescription'     => __( 'Applies only to orders delivered by a non-Packeta carrier (returns still go through Packeta). Returns of Packeta orders are enabled per carrier.', 'packeta' ),
 			'support'                                => __( 'Support', 'packeta' ),
 			'optionsExportInfo1'                     => __(
 				'By clicking the button, you will export the settings of your plugin into a separate file. The export does not contain any sensitive information about your e-shop. Please send the resulting file to the technical support of Packeta (you can find the e-mail address here:',

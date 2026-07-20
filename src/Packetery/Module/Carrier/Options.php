@@ -139,6 +139,10 @@ class Options {
 		return $this->options['active'] ?? false;
 	}
 
+	public function allowsReturns(): bool {
+		return (bool) ( $this->options['allow_returns'] ?? false );
+	}
+
 	/**
 	 * Tells if carrier has coupon free shipping active.
 	 *

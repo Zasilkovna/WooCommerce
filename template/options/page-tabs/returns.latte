@@ -1,0 +1,92 @@
+<form n:name=$form>
+	<table class="form-table packetery_settings" role="presentation">
+		<tr>
+			<th scope="row">
+				<label n:name=enabled />
+			</th>
+			<td>
+				<input n:name=enabled>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=allow_guest />
+			</th>
+			<td>
+				<input n:name=allow_guest>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=approve_before_send />
+			</th>
+			<td>
+				<input n:name=approve_before_send>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=return_window_days />
+			</th>
+			<td>
+				<input n:name=return_window_days>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=exclude_virtual />
+			</th>
+			<td>
+				<input n:name=exclude_virtual>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=max_order_value />
+			</th>
+			<td>
+				<input n:name=max_order_value>
+				<div class="packetery-help-block">
+					<p>{$translations['returnsNoLimitDescription']}</p>
+				</div>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=max_weight_kg />
+			</th>
+			<td>
+				<input n:name=max_weight_kg>
+				<div class="packetery-help-block">
+					<p>{$translations['returnsNoLimitDescription']}</p>
+				</div>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label>{$translations['returnsAllowedCountriesLabel']}</label>
+			</th>
+			<td>
+				{foreach $form['allowed_countries']->getControls() as $control}
+					<input n:name=$control>
+					<label n:name=$control />
+					<br>
+				{/foreach}
+				<div class="packetery-help-block">
+					<p>{$translations['returnsAllowedCountriesDescription']}</p>
+				</div>
+			</td>
+		</tr>
+		<tr class="returns_content">
+			<th scope="row">
+				<label n:name=excluded_categories />
+			</th>
+			<td>
+				<select n:name=excluded_categories></select>
+			</td>
+		</tr>
+	</table>
+	<p class="submit">
+		<button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
+	</p>
+</form>

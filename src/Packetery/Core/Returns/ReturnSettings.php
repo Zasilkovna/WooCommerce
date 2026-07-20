@@ -14,7 +14,8 @@ namespace Packetery\Core\Returns;
  *
  * Only the restriction settings consumed by {@see ReturnEligibility} live here. Workflow flags
  * (service enabled, allow guest, approve before send) are handled at the module/gate level, not by
- * the pure eligibility engine.
+ * the pure eligibility engine. Whether a Packeta carrier allows returns is configured per carrier,
+ * not here — {@see ReturnableOrderInfo::carrierAllowsReturns()}.
  *
  * @package Packetery
  */
@@ -22,7 +23,8 @@ class ReturnSettings {
 
 	/**
 	 * Countries with Packeta internal pickup points (lowercase ISO 3166-1 alpha-2). A return is
-	 * physically handed over at a pickup point, so only these countries are serviceable.
+	 * physically handed over at a pickup point, so only these countries are serviceable. Used to gate
+	 * non-Packeta orders; Packeta orders are gated by the per-carrier flag.
 	 */
 	public const SERVICED_COUNTRIES = [ 'cz', 'sk', 'hu', 'ro' ];
 
@@ -36,9 +38,6 @@ class ReturnSettings {
 	private ?float $maxWeightKg;
 
 	/** @var string[] */
-	private array $allowedCarriers;
-
-	/** @var string[] */
 	private array $allowedCountries;
 
 	/** @var int[] */
@@ -49,8 +48,7 @@ class ReturnSettings {
 	 * @param bool       $excludeVirtual     Whether an order with a virtual/downloadable product is excluded.
 	 * @param float|null $maxOrderValue      Maximum total order value incl. tax; null means no limit.
 	 * @param float|null $maxWeightKg        Maximum total order weight in kg; null means no limit.
-	 * @param string[]   $allowedCarriers    Whitelist of carrier option ids; empty means all carriers.
-	 * @param string[]   $allowedCountries   Whitelist of delivery countries (ISO2); empty means all serviced.
+	 * @param string[]   $allowedCountries   Whitelist of delivery countries (ISO2) for non-Packeta orders; empty means all serviced.
 	 * @param int[]      $excludedCategories Blacklist of product category ids.
 	 */
 	public function __construct(
@@ -58,7 +56,6 @@ class ReturnSettings {
 		bool $excludeVirtual,
 		?float $maxOrderValue,
 		?float $maxWeightKg,
-		array $allowedCarriers,
 		array $allowedCountries,
 		array $excludedCategories
 	) {
@@ -66,7 +63,6 @@ class ReturnSettings {
 		$this->excludeVirtual     = $excludeVirtual;
 		$this->maxOrderValue      = $maxOrderValue;
 		$this->maxWeightKg        = $maxWeightKg;
-		$this->allowedCarriers    = $allowedCarriers;
 		$this->allowedCountries   = $allowedCountries;
 		$this->excludedCategories = $excludedCategories;
 	}
@@ -85,13 +81,6 @@ class ReturnSettings {
 
 	public function getMaxWeightKg(): ?float {
 		return $this->maxWeightKg;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getAllowedCarriers(): array {
-		return $this->allowedCarriers;
 	}
 
 	/**

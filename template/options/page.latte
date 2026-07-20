@@ -34,6 +34,12 @@
 			{$translations['advanced']}
 		</a>
 		<a
+				href="{$returnsTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_RETURNS} nav-tab-active{/if}"
+		>
+			{$translations['returns']}
+		</a>
+		<a
 				href="{$supportTabLink}"
 				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
 		>

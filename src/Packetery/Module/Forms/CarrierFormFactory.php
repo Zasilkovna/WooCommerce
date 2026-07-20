@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Forms;
 
 use Packetery\Core\Entity\Carrier;
+use Packetery\Core\Returns\ReturnSettings;
 use Packetery\Core\Rounder;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
@@ -192,6 +193,14 @@ class CarrierFormFactory {
 
 		// We don't expect id to be empty in this situation. This would indicate a data save error.
 		$carrier = $this->carrierRepository->getAnyById( $carrierId );
+
+		if (
+			$this->optionsProvider->isWcCarrierConfigEnabled()
+			&& $carrier !== null
+			&& in_array( $carrier->getCountry(), ReturnSettings::SERVICED_COUNTRIES, true )
+		) {
+			$form->addCheckbox( OptionsPage::FORM_FIELD_ALLOW_RETURNS, $this->wpAdapter->__( 'Allow returns', 'packeta' ) . ':' );
+		}
 
 		if ( $carrier !== null && $carrier->supportsCod() ) {
 			$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )

@@ -13,7 +13,7 @@ namespace Packetery\Core\Returns;
  * Pure, framework-agnostic engine deciding whether an order may be returned.
  *
  * Evaluation is order-level: a single disqualifying fact (excluded category, virtual product,
- * over-limit value/weight, unsupported country/carrier, expired window, not delivered) makes the
+ * over-limit value/weight, unsupported carrier/country, expired window, not delivered) makes the
  * whole order not returnable. Partial (per-item) returns are out of scope.
  *
  * @package Packetery
@@ -30,8 +30,7 @@ class ReturnEligibility {
 	): bool {
 		return $this->isDelivered( $order )
 			&& $this->isWithinWindow( $order, $settings, $now )
-			&& $this->isCountryAllowed( $order, $settings )
-			&& $this->isCarrierAllowed( $order, $settings )
+			&& $this->isCarrierAndCountryAllowed( $order, $settings )
 			&& $this->isValueWithinLimit( $order, $settings )
 			&& $this->isWeightWithinLimit( $order, $settings )
 			&& ! $this->hasExcludedCategory( $order, $settings )
@@ -58,7 +57,16 @@ class ReturnEligibility {
 		return $now <= $deadline;
 	}
 
-	private function isCountryAllowed( ReturnableOrderInfo $order, ReturnSettings $settings ): bool {
+	/**
+	 * Packeta orders are gated by the per-carrier "allow returns" flag (which implies a serviced
+	 * country, as it is only configurable for serviced-country carriers). Orders delivered by another
+	 * carrier are gated by the serviced-country whitelist configured for returns.
+	 */
+	private function isCarrierAndCountryAllowed( ReturnableOrderInfo $order, ReturnSettings $settings ): bool {
+		if ( $order->isPacketaOrder() ) {
+			return $order->carrierAllowsReturns();
+		}
+
 		$country = $order->getDeliveryCountry();
 		if ( $country === null ) {
 			return false;
@@ -75,20 +83,6 @@ class ReturnEligibility {
 		}
 
 		return in_array( $country, array_map( 'strtolower', $allowed ), true );
-	}
-
-	private function isCarrierAllowed( ReturnableOrderInfo $order, ReturnSettings $settings ): bool {
-		$allowed = $settings->getAllowedCarriers();
-		if ( $allowed === [] ) {
-			return true;
-		}
-
-		$carrierId = $order->getCarrierId();
-		if ( $carrierId === null ) {
-			return false;
-		}
-
-		return in_array( $carrierId, $allowed, true );
 	}
 
 	private function isValueWithinLimit( ReturnableOrderInfo $order, ReturnSettings $settings ): bool {

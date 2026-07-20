@@ -126,6 +126,11 @@
 						</tr>
 					{/if}
 
+					<tr n:ifset="$form['allow_returns']">
+						<th scope="row"><label n:name=allow_returns /></th>
+						<td><input n:name=allow_returns></td>
+					</tr>
+
 					{if $carrier->supportsCod()}
 						<tr>
 							<th scope="row">

@@ -51,41 +51,72 @@ class ReturnEligibilityTest extends TestCase {
 		self::assertTrue( $this->isEligible( [ 'completedAt' => null ] ) );
 	}
 
-	public function testUnservicedCountryIsNotEligible(): void {
-		self::assertFalse( $this->isEligible( [ 'deliveryCountry' => 'de' ] ) );
-	}
-
-	public function testMissingCountryIsNotEligible(): void {
-		self::assertFalse( $this->isEligible( [ 'deliveryCountry' => null ] ) );
-	}
-
-	public function testCountryNotOnWhitelistIsNotEligible(): void {
+	public function testPacketaOrderWithCarrierReturnsDisabledIsNotEligible(): void {
 		self::assertFalse(
-			$this->isEligible( [ 'deliveryCountry' => 'sk' ], [ 'allowedCountries' => [ 'CZ' ] ] )
+			$this->isEligible(
+				[
+					'isPacketaOrder'       => true,
+					'carrierAllowsReturns' => false,
+				]
+			)
 		);
 	}
 
-	public function testCountryOnWhitelistIsEligibleCaseInsensitive(): void {
+	public function testNonPacketaOrderInServicedCountryIsEligible(): void {
 		self::assertTrue(
-			$this->isEligible( [ 'deliveryCountry' => 'cz' ], [ 'allowedCountries' => [ 'CZ' ] ] )
+			$this->isEligible(
+				[
+					'isPacketaOrder'       => false,
+					'carrierAllowsReturns' => false,
+					'deliveryCountry'      => 'cz',
+				]
+			)
 		);
 	}
 
-	public function testCarrierNotOnWhitelistIsNotEligible(): void {
+	public function testNonPacketaOrderInUnservicedCountryIsNotEligible(): void {
 		self::assertFalse(
-			$this->isEligible( [ 'carrierId' => '999' ], [ 'allowedCarriers' => [ '123', '456' ] ] )
+			$this->isEligible(
+				[
+					'isPacketaOrder'  => false,
+					'deliveryCountry' => 'de',
+				]
+			)
 		);
 	}
 
-	public function testCarrierOnWhitelistIsEligible(): void {
+	public function testNonPacketaOrderWithMissingCountryIsNotEligible(): void {
+		self::assertFalse(
+			$this->isEligible(
+				[
+					'isPacketaOrder'  => false,
+					'deliveryCountry' => null,
+				]
+			)
+		);
+	}
+
+	public function testNonPacketaCountryNotOnWhitelistIsNotEligible(): void {
+		self::assertFalse(
+			$this->isEligible(
+				[
+					'isPacketaOrder'  => false,
+					'deliveryCountry' => 'sk',
+				],
+				[ 'allowedCountries' => [ 'CZ' ] ]
+			)
+		);
+	}
+
+	public function testNonPacketaCountryOnWhitelistIsEligibleCaseInsensitive(): void {
 		self::assertTrue(
-			$this->isEligible( [ 'carrierId' => '123' ], [ 'allowedCarriers' => [ '123', '456' ] ] )
-		);
-	}
-
-	public function testMissingCarrierWithWhitelistIsNotEligible(): void {
-		self::assertFalse(
-			$this->isEligible( [ 'carrierId' => null ], [ 'allowedCarriers' => [ '123' ] ] )
+			$this->isEligible(
+				[
+					'isPacketaOrder'  => false,
+					'deliveryCountry' => 'cz',
+				],
+				[ 'allowedCountries' => [ 'CZ' ] ]
+			)
 		);
 	}
 
@@ -152,22 +183,21 @@ class ReturnEligibilityTest extends TestCase {
 	}
 
 	/**
-	 * Builds a baseline-eligible order with optional overrides.
+	 * Builds a baseline-eligible order (Packeta carrier, returns allowed) with optional overrides.
 	 *
 	 * @param array<string, mixed> $o Overrides.
-	 *
-	 * @return ReturnableOrderInfo
 	 */
 	private function makeOrder( array $o = [] ): ReturnableOrderInfo {
 		$defaults = [
-			'orderStatus'     => 'completed',
-			'completedAt'     => $this->completedAt,
-			'deliveryCountry' => 'cz',
-			'carrierId'       => '123',
-			'totalValue'      => 100.0,
-			'totalWeightKg'   => 1.0,
-			'categoryIds'     => [ 10, 20 ],
-			'hasVirtualItem'  => false,
+			'orderStatus'          => 'completed',
+			'completedAt'          => $this->completedAt,
+			'deliveryCountry'      => 'cz',
+			'isPacketaOrder'       => true,
+			'carrierAllowsReturns' => true,
+			'totalValue'           => 100.0,
+			'totalWeightKg'        => 1.0,
+			'categoryIds'          => [ 10, 20 ],
+			'hasVirtualItem'       => false,
 		];
 		$v        = array_merge( $defaults, $o );
 
@@ -175,7 +205,8 @@ class ReturnEligibilityTest extends TestCase {
 			$v['orderStatus'],
 			$v['completedAt'],
 			$v['deliveryCountry'],
-			$v['carrierId'],
+			$v['isPacketaOrder'],
+			$v['carrierAllowsReturns'],
 			$v['totalValue'],
 			$v['totalWeightKg'],
 			$v['categoryIds'],
@@ -187,8 +218,6 @@ class ReturnEligibilityTest extends TestCase {
 	 * Builds baseline (unrestricted) settings with optional overrides.
 	 *
 	 * @param array<string, mixed> $s Overrides.
-	 *
-	 * @return ReturnSettings
 	 */
 	private function makeSettings( array $s = [] ): ReturnSettings {
 		$defaults = [
@@ -196,7 +225,6 @@ class ReturnEligibilityTest extends TestCase {
 			'excludeVirtual'     => true,
 			'maxOrderValue'      => null,
 			'maxWeightKg'        => null,
-			'allowedCarriers'    => [],
 			'allowedCountries'   => [],
 			'excludedCategories' => [],
 		];
@@ -207,7 +235,6 @@ class ReturnEligibilityTest extends TestCase {
 			$v['excludeVirtual'],
 			$v['maxOrderValue'],
 			$v['maxWeightKg'],
-			$v['allowedCarriers'],
 			$v['allowedCountries'],
 			$v['excludedCategories']
 		);
