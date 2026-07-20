@@ -211,6 +211,7 @@ class Page {
 			Record::ACTION_CARRIER_NUMBER_RETRIEVING => $this->wpAdapter->__( 'Getting external carrier tracking number', 'packeta' ),
 			Record::ACTION_CARRIER_TABLE_NOT_CREATED => $this->wpAdapter->__( 'Database carrier table was not created.', 'packeta' ),
 			Record::ACTION_ORDER_TABLE_NOT_CREATED   => $this->wpAdapter->__( 'Database order table was not created.', 'packeta' ),
+			Record::ACTION_RETURN_TABLE_NOT_CREATED  => $this->wpAdapter->__( 'Database return table was not created.', 'packeta' ),
 			Record::ACTION_SENDER_VALIDATION         => $this->wpAdapter->__( 'Sender validation', 'packeta' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => $this->wpAdapter->__( 'Packet status synchronization', 'packeta' ),
 			Record::ACTION_PACKET_CANCEL             => $this->wpAdapter->__( 'Packet cancel', 'packeta' ),

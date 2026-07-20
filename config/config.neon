@@ -91,6 +91,7 @@ services:
 	- Packetery\Module\Order\PacketClaimSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
+	- Packetery\Module\EntityFactory\PacketReturn
 	- Packetery\Module\EntityFactory\SizeFactory
 	- Packetery\Module\Order\LabelNoteResolver
 	- Packetery\Module\Order\Builder
@@ -101,6 +102,7 @@ services:
 	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\CustomsDeclaration\Repository
+	- Packetery\Module\Returns\Repository
 	- Packetery\Module\Api\Internal\OrderController
 	- Packetery\Module\Api\Internal\OrderRouter
 	- Packetery\Module\Api\Internal\CheckoutController
@@ -118,6 +120,7 @@ services:
 	- @requestFactory::createHttpRequest()
 	- Packetery\Module\Upgrade
 	- Packetery\Module\Upgrade\Version_1_4_2
+	- Packetery\Module\Upgrade\Version_2_4_0
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
 	- Packetery\Module\Checkout\CurrencySwitcherService

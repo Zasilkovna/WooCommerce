@@ -28,6 +28,7 @@ class Record {
 	public const ACTION_ORDER_TABLE_NOT_CREATED                    = 'order-table-not-created';
 	public const ACTION_CUSTOMS_DECLARATION_TABLE_NOT_CREATED      = 'customs-declaration-table-not-created';
 	public const ACTION_CUSTOMS_DECLARATION_ITEM_TABLE_NOT_CREATED = 'customs-declaration-item-table-not-created';
+	public const ACTION_RETURN_TABLE_NOT_CREATED                   = 'return-table-not-created';
 	public const ACTION_SENDER_VALIDATION                          = 'sender-validation';
 	public const ACTION_PACKET_STATUS_SYNC                         = 'packet-status-sync';
 	public const ACTION_PACKET_CANCEL                              = 'packet-cancel';

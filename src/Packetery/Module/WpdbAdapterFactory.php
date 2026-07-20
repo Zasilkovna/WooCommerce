@@ -26,6 +26,7 @@ class WpdbAdapterFactory {
 		$instance->packeteryLog                    = sprintf( '%slog', $instance->getPacketeryPrefix() );
 		$instance->packeteryCustomsDeclaration     = sprintf( '%scustoms_declaration', $instance->getPacketeryPrefix() );
 		$instance->packeteryCustomsDeclarationItem = sprintf( '%scustoms_declaration_item', $instance->getPacketeryPrefix() );
+		$instance->packeteryReturn                 = sprintf( '%sreturn', $instance->getPacketeryPrefix() );
 		$instance->wcOrders                        = sprintf( '%swc_orders', $wpdb->prefix );
 		$instance->posts                           = $wpdb->posts;
 		$instance->options                         = $wpdb->options;

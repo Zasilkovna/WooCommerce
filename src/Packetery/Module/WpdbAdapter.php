@@ -59,6 +59,13 @@ class WpdbAdapter {
 	 *
 	 * @var string
 	 */
+	public $packeteryReturn;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
 	public $wcOrders;
 
 	/**

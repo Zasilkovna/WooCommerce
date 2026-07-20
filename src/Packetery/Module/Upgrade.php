@@ -16,6 +16,7 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Upgrade\Version_1_4_2;
+use Packetery\Module\Upgrade\Version_2_4_0;
 
 /**
  * Class Upgrade.
@@ -82,6 +83,7 @@ class Upgrade {
 	 * @var CustomsDeclaration\Repository
 	 */
 	private $customsDeclarationRepository;
+	private Returns\Repository $returnRepository;
 
 	/**
 	 * WpdbAdapter.
@@ -110,6 +112,7 @@ class Upgrade {
 		WpdbAdapter $wpdbAdapter,
 		Carrier\Repository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
+		Returns\Repository $returnRepository,
 		OptionsProvider $optionsProvider,
 		EntityRepository $carrierEntityRepository
 	) {
@@ -120,6 +123,7 @@ class Upgrade {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
+		$this->returnRepository             = $returnRepository;
 		$this->optionsProvider              = $optionsProvider;
 		$this->carrierEntityRepository      = $carrierEntityRepository;
 	}
@@ -230,6 +234,10 @@ class Upgrade {
 				add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 0 );
 				add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET, 0 );
 			}
+
+			if ( is_string( $oldVersion ) && version_compare( $oldVersion, '2.4.0', '<' ) ) {
+				( new Version_2_4_0( $this->wpdbAdapter ) )->run();
+			}
 		} else {
 			add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 1 );
 			add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET, 1 );
@@ -243,8 +251,9 @@ class Upgrade {
 		$carrier = $this->createCarrierTable();
 		$order   = $this->createOrderTable();
 		$customs = $this->createCustomsDeclarationTables();
+		$return  = $this->createReturnTable();
 
-		return $log && $carrier && $order && $customs;
+		return $log && $carrier && $order && $customs && $return;
 	}
 
 	/**
@@ -461,6 +470,16 @@ class Upgrade {
 
 		if ( $this->customsDeclarationRepository->createOrAlterItemTable() === false ) {
 			$this->flashAndLog( 'customs_declaration_item', Record::ACTION_CUSTOMS_DECLARATION_ITEM_TABLE_NOT_CREATED );
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private function createReturnTable(): bool {
+		if ( $this->returnRepository->createOrAlterTable() === false ) {
+			$this->flashAndLog( 'return', Record::ACTION_RETURN_TABLE_NOT_CREATED );
 
 			return false;
 		}
