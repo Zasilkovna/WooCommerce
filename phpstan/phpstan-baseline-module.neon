@@ -1879,12 +1879,6 @@ parameters:
 			path: ../src/Packetery/Module/Order/Metabox.php
 
 		-
-			message: '#^Offset bool\|string might not exist on non\-empty\-array\<string, float\|int\|string\|true\|null\>\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: ../src/Packetery/Module/Order/Metabox.php
-
-		-
 			message: '#^Only booleans are allowed in &&, float\|int\|string\|true\|null given on the left side\.$#'
 			identifier: booleanAnd.leftNotBoolean
 			count: 1

@@ -17,6 +17,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
+use Packetery\Module\Returns\Repository as ReturnRepository;
 use Packetery\Module\Transients;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Nette\Forms;
@@ -115,6 +116,11 @@ class Metabox {
 	 */
 	private $packetStatusResolver;
 
+	/**
+	 * @var ReturnRepository
+	 */
+	private $returnRepository;
+
 	public function __construct(
 		Engine $latteEngine,
 		MessageManager $messageManager,
@@ -131,7 +137,8 @@ class Metabox {
 		Form $orderForm,
 		CarrierModal $carrierModal,
 		WpAdapter $wpAdapter,
-		PacketStatusResolver $packetStatusResolver
+		PacketStatusResolver $packetStatusResolver,
+		ReturnRepository $returnRepository
 	) {
 		$this->latteEngine          = $latteEngine;
 		$this->messageManager       = $messageManager;
@@ -149,6 +156,7 @@ class Metabox {
 		$this->carrierModal         = $carrierModal;
 		$this->wpAdapter            = $wpAdapter;
 		$this->packetStatusResolver = $packetStatusResolver;
+		$this->returnRepository     = $returnRepository;
 	}
 
 	public function register(): void {
@@ -298,6 +306,21 @@ class Metabox {
 			$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 			$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
+			$dateFormat     = $this->wpAdapter->getOption( 'date_format' );
+			$timeFormat     = $this->wpAdapter->getOption( 'time_format' );
+			$dateTimeFormat = ( is_string( $dateFormat ) ? $dateFormat : 'Y-m-d' ) . ' ' . ( is_string( $timeFormat ) ? $timeFormat : 'H:i' );
+
+			$returnRows = [];
+			foreach ( $this->returnRepository->getByOrderId( (string) $order->getNumber() ) as $return ) {
+				$claimId      = $return->getPacketClaimId();
+				$returnRows[] = [
+					'barcode'     => $claimId !== null ? 'Z' . $claimId : null,
+					'trackingUrl' => $claimId !== null ? $this->coreHelper->getTrackingUrl( $claimId ) : null,
+					'status'      => $return->getStatus(),
+					'createdAt'   => $this->wpAdapter->date( $dateTimeFormat, $return->getCreatedAt()->getTimestamp() ),
+				];
+			}
+
 			$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
@@ -316,6 +339,7 @@ class Metabox {
 					'runWizardUrl'               => $runWizardUrl,
 					'showRunWizardButton'        => $showRunWizardButton,
 					'storedUntil'                => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
+					'returnRows'                 => $returnRows,
 					'translations'               => [
 						'packetTrackingOnline'      => $this->wpAdapter->__( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => $this->wpAdapter->__( 'Packet claim tracking', 'packeta' ),
@@ -325,17 +349,24 @@ class Metabox {
 						// translators: %s: Packet number.
 						'reallyCancelPacket'        => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
 						// translators: %s: Packet claim number.
-						'reallyCancelPacketClaim'   => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
+						'reallyCancelPacketClaim'   => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel return number %s?', 'packeta' ), $order->getPacketClaimId() ),
 
 						'cancelPacket'              => $this->wpAdapter->__( 'Cancel packet', 'packeta' ),
-						'createPacketClaim'         => $this->wpAdapter->__( 'Create packet claim', 'packeta' ),
+						'createPacketClaim'         => $this->wpAdapter->__( 'Create return', 'packeta' ),
 						'printPacketLabel'          => $this->wpAdapter->__( 'Print packet label', 'packeta' ),
 						'printPacketClaimLabel'     => $this->wpAdapter->__( 'Print packet claim label', 'packeta' ),
-						'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
+						'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel return', 'packeta' ),
 						'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
 						'setStoredUntil'            => $this->wpAdapter->__( 'Set the pickup date extension', 'packeta' ),
 						'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
+						'returnsHeading'            => $this->wpAdapter->__( 'Returns', 'packeta' ),
+						'returnStatuses'            => [
+							Entity\PacketReturn::STATUS_PENDING   => $this->wpAdapter->__( 'Pending', 'packeta' ),
+							Entity\PacketReturn::STATUS_CREATED   => $this->wpAdapter->__( 'Created', 'packeta' ),
+							Entity\PacketReturn::STATUS_CANCELLED => $this->wpAdapter->__( 'Cancelled', 'packeta' ),
+							Entity\PacketReturn::STATUS_REJECTED  => $this->wpAdapter->__( 'Rejected', 'packeta' ),
+						],
 					],
 				]
 			);
@@ -461,13 +492,13 @@ class Metabox {
 					'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					'packetClaimTrackingOnline' => $this->wpAdapter->__( 'Packet claim tracking', 'packeta' ),
 					'printPacketClaimLabel'     => $this->wpAdapter->__( 'Print packet claim label', 'packeta' ),
-					'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
+					'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel return', 'packeta' ),
 					'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 					'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
 					// translators: %s: Order number.
 					'reallyCancelPacketHeading' => sprintf( $this->wpAdapter->__( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 					// translators: %s: Packet claim number.
-					'reallyCancelPacketClaim'   => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
+					'reallyCancelPacketClaim'   => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel return number %s?', 'packeta' ), $order->getPacketClaimId() ),
 				],
 			]
 		);

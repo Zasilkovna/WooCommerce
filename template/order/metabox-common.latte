@@ -18,6 +18,15 @@
 	</li>
 </ul>
 
+<ul class="packetery-metabox-overview-info packetery-returns-list" n:if="$returnRows">
+	<li class="packetery-returns-list-heading">{$translations['returnsHeading']}:</li>
+	<li n:foreach="$returnRows as $returnRow" class="packetery-returns-list-item">
+		<a n:if="$returnRow['trackingUrl'] !== null" href="{$returnRow['trackingUrl']}" target="_blank">{$returnRow['barcode']}</a>
+		{$translations['returnStatuses'][$returnRow['status']]}
+		{$returnRow['createdAt']}
+	</li>
+</ul>
+
 <div class="packetery-metabox-overview-buttons">
 	<div n:if="isset($packetSubmitUrl)" class="packetery-metabox-button-wrapper packetery-js-wizard-metabox-button-submit-packet">
 		<a
