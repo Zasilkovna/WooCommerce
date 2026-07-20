@@ -87,7 +87,7 @@ class CreatePacketClaimWithPassword {
 		$this->currency            = $order->getCurrency();
 		$this->eshop               = $order->getEshop();
 		$this->consignCountry      = $order->getShippingCountry();
-		$this->sendEmailToCustomer = false;
+		$this->sendEmailToCustomer = true;
 	}
 
 	/**

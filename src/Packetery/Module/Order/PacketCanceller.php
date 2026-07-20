@@ -17,6 +17,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Returns\Repository as ReturnRepository;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -93,6 +94,7 @@ class PacketCanceller {
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
+	private ReturnRepository $returnRepository;
 
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -104,18 +106,20 @@ class PacketCanceller {
 		PacketActionsCommonLogic $commonLogic,
 		WcOrderActions $wcOrderActions,
 		ModuleHelper $moduleHelper,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		ReturnRepository $returnRepository
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
-		$this->request         = $request;
-		$this->optionsProvider = $optionsProvider;
-		$this->messageManager  = $messageManager;
-		$this->commonLogic     = $commonLogic;
-		$this->wcOrderActions  = $wcOrderActions;
-		$this->moduleHelper    = $moduleHelper;
-		$this->wpAdapter       = $wpAdapter;
+		$this->soapApiClient    = $soapApiClient;
+		$this->logger           = $logger;
+		$this->orderRepository  = $orderRepository;
+		$this->request          = $request;
+		$this->optionsProvider  = $optionsProvider;
+		$this->messageManager   = $messageManager;
+		$this->commonLogic      = $commonLogic;
+		$this->wcOrderActions   = $wcOrderActions;
+		$this->moduleHelper     = $moduleHelper;
+		$this->wpAdapter        = $wpAdapter;
+		$this->returnRepository = $returnRepository;
 	}
 
 	/**
@@ -268,6 +272,8 @@ class PacketCanceller {
 		}
 
 		if ( $packetId === $order->getPacketClaimId() && $this->shouldRevertSubmission( $result ) ) {
+			$this->markReturnCancelled( (string) $order->getNumber(), $packetId );
+
 			$order->setPacketClaimId( null );
 			$order->setPacketClaimTrackingUrl( null );
 			$order->setPacketClaimPassword( null );
@@ -287,6 +293,21 @@ class PacketCanceller {
 		}
 
 		return $this->orderRepository->save( $order );
+	}
+
+	/**
+	 * Marks the return that holds the given claim as cancelled.
+	 *
+	 * @param string $orderId       WC order ID.
+	 * @param string $packetClaimId Cancelled claim ID.
+	 */
+	private function markReturnCancelled( string $orderId, string $packetClaimId ): void {
+		foreach ( $this->returnRepository->getByOrderId( $orderId ) as $packetReturn ) {
+			if ( $packetReturn->getPacketClaimId() === $packetClaimId ) {
+				$packetReturn->setStatus( Entity\PacketReturn::STATUS_CANCELLED );
+				$this->returnRepository->save( $packetReturn );
+			}
+		}
 	}
 
 	/**

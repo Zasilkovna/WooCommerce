@@ -1999,24 +1999,6 @@ parameters:
 			path: ../src/Packetery/Module/Order/PacketCanceller.php
 
 		-
-			message: '#^Parameter \#1 \$redirectTo of method Packetery\\Module\\Order\\PacketActionsCommonLogic\:\:redirectTo\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: ../src/Packetery/Module/Order/PacketClaimSubmitter.php
-
-		-
-			message: '#^Parameter \#1 \$trackingUrl of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/PacketClaimSubmitter.php
-
-		-
-			message: '#^Parameter \#2 \$text of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Order/PacketClaimSubmitter.php
-
-		-
 			message: '#^Parameter \#1 \$packetId of class Packetery\\Core\\Api\\Soap\\Request\\PacketSetStoredUntil constructor expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1

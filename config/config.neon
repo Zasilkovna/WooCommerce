@@ -103,6 +103,7 @@ services:
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\CustomsDeclaration\Repository
 	- Packetery\Module\Returns\Repository
+	- Packetery\Module\Returns\ReturnService
 	- Packetery\Module\Api\Internal\OrderController
 	- Packetery\Module\Api\Internal\OrderRouter
 	- Packetery\Module\Api\Internal\CheckoutController

@@ -4,31 +4,20 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Api\Soap;
-use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\PacketReturn;
 use Packetery\Core\Log;
 use Packetery\Module;
-use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Returns\ReturnService;
 use Packetery\Nette\Http\Request;
 
 class PacketClaimSubmitter {
 
 	/**
-	 * @var Soap\Client
-	 */
-	private $soapApiClient;
-
-	/**
 	 * @var Log\ILogger
 	 */
 	private $logger;
-
-	/**
-	 * @var Repository
-	 */
-	private $orderRepository;
 
 	/**
 	 * @var Request
@@ -54,39 +43,24 @@ class PacketClaimSubmitter {
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
-
-	/**
-	 * @var CoreHelper
-	 */
-	private $coreHelper;
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
+	private ReturnService $returnService;
 
 	public function __construct(
-		Soap\Client $soapApiClient,
 		Log\ILogger $logger,
-		Repository $orderRepository,
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		ModuleHelper $moduleHelper,
-		CoreHelper $coreHelper,
-		WpAdapter $wpAdapter
+		ReturnService $returnService
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
-		$this->request         = $request;
-		$this->messageManager  = $messageManager;
-		$this->logPage         = $logPage;
-		$this->commonLogic     = $commonLogic;
-		$this->moduleHelper    = $moduleHelper;
-		$this->coreHelper      = $coreHelper;
-		$this->wpAdapter       = $wpAdapter;
+		$this->logger         = $logger;
+		$this->request        = $request;
+		$this->messageManager = $messageManager;
+		$this->logPage        = $logPage;
+		$this->commonLogic    = $commonLogic;
+		$this->moduleHelper   = $moduleHelper;
+		$this->returnService  = $returnService;
 	}
 
 	/**
@@ -95,8 +69,9 @@ class PacketClaimSubmitter {
 	 * @return void
 	 */
 	public function processAction(): void {
-		$order      = $this->commonLogic->getOrder();
-		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		$order         = $this->commonLogic->getOrder();
+		$redirectToRaw = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		$redirectTo    = is_string( $redirectToRaw ) ? $redirectToRaw : '';
 
 		$record         = new Log\Record();
 		$record->action = Log\Record::ACTION_PACKET_CLAIM_SENDING;
@@ -148,17 +123,9 @@ class PacketClaimSubmitter {
 			return;
 		}
 
-		$request  = new Soap\Request\CreatePacketClaimWithPassword( $order );
-		$response = $this->soapApiClient->createPacketClaimWithPassword( $request );
-		if ( $response->hasFault() ) {
-			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet claim could not be created.', 'packeta' );
-			$record->params = [
-				'request'      => $request->getSubmittableData(),
-				'errorMessage' => $response->getFaultString(),
-				'errors'       => $response->getValidationErrors(),
-			];
+		$result = $this->returnService->createReturn( $order, PacketReturn::SOURCE_ADMIN );
 
+		if ( $result->hasFault() ) {
 			$faultFlashMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'Packet claim could not be created. %1$sShow logs%2$s', 'packeta' ),
 				...$this->moduleHelper->createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
@@ -170,52 +137,29 @@ class PacketClaimSubmitter {
 					->setText( $faultFlashMessage )
 					->setEscape( false )
 			);
-		} else {
-			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Packet claim was successfully created.', 'packeta' );
-			$record->params = [
-				'request'  => $request->getSubmittableData(),
-				'packetId' => $response->getId(),
-			];
+			$this->commonLogic->redirectTo( $redirectTo, $order );
 
-			$order->setPacketClaimId( $response->getId() );
-			$order->setPacketClaimTrackingUrl( $this->coreHelper->getTrackingUrl( $response->getId() ) );
-			$order->setPacketClaimPassword( $response->getPassword() );
-			$updatedRowCount = $this->orderRepository->save( $order );
-			if ( $updatedRowCount === false ) {
-				$this->messageManager->flash_message(
-					(string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
-					MessageManager::TYPE_ERROR
-				);
-			}
+			return;
+		}
 
-			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
-			if ( $wcOrder !== null ) {
-				$wcOrder->add_order_note(
-					sprintf(
-						// translators: %s represents a packet tracking link.
-						__( 'Packeta: Packet claim %s has been created', 'packeta' ),
-						$this->moduleHelper->createHtmlLink( $order->getPacketClaimTrackingUrl(), $order->getPacketClaimBarcode() )
-					)
-				);
-				$wcOrder->save();
-			}
-
-			$flashMessage = sprintf( // translators: 1: link start 2: link end.
-				esc_html__( 'Packet claim submitted. %1$sShow logs%2$s', 'packeta' ),
-				...$this->moduleHelper->createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
-			);
-
-			$this->messageManager->flashMessageObject(
-				Module\Message::create()
-					->setText( $flashMessage )
-					->setEscape( false )
+		if ( $result->isOrderSaved() === false ) {
+			$this->messageManager->flash_message(
+				__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
 			);
 		}
 
-		$this->logger->add( $record );
+		$flashMessage = sprintf( // translators: 1: link start 2: link end.
+			esc_html__( 'Packet claim submitted. %1$sShow logs%2$s', 'packeta' ),
+			...$this->moduleHelper->createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
+		);
 
-		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		$this->messageManager->flashMessageObject(
+			Module\Message::create()
+				->setText( $flashMessage )
+				->setEscape( false )
+		);
+
 		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 }
