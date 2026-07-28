@@ -725,6 +725,10 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::PICKUP_POINT_VALIDATION_ENABLED_DEFAULT );
 
+		$container->addCheckbox( 'show_consign_password_for_z_box', __( 'Show consignment code', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::SHOW_CONSIGN_PASSWORD_FOR_Z_BOX_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( OptionNames::PACKETERY ) ) {
@@ -799,6 +803,9 @@ class Page {
 		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
 		if ( ! isset( $options['auto_email_info_insertion'] ) ) {
 			$options['auto_email_info_insertion'] = false;
+		}
+		if ( ! isset( $options['show_consign_password_for_z_box'] ) ) {
+			$options['show_consign_password_for_z_box'] = false;
 		}
 		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {

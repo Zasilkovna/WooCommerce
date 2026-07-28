@@ -27,4 +27,16 @@ trait ActionSchedulerTrait {
 	public function asScheduleSingleAction( int $timestamp, string $hook, array $args = [] ): void {
 		as_schedule_single_action( $timestamp, $hook, $args );
 	}
+
+	/**
+	 * @param string                  $hook
+	 * @param array<array-key, mixed> $args
+	 */
+	public function asEnqueueAsyncAction( string $hook, array $args = [] ): void {
+		as_enqueue_async_action( $hook, $args );
+	}
+
+	public function isActionSchedulerEnqueueAvailable(): bool {
+		return function_exists( 'as_enqueue_async_action' );
+	}
 }

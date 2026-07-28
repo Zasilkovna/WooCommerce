@@ -213,6 +213,7 @@ class Page {
 			Record::ACTION_ORDER_TABLE_NOT_CREATED   => $this->wpAdapter->__( 'Database order table was not created.', 'packeta' ),
 			Record::ACTION_SENDER_VALIDATION         => $this->wpAdapter->__( 'Sender validation', 'packeta' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => $this->wpAdapter->__( 'Packet status synchronization', 'packeta' ),
+			Record::ACTION_PACKET_INFO               => $this->wpAdapter->__( 'Packet info', 'packeta' ),
 			Record::ACTION_PACKET_CANCEL             => $this->wpAdapter->__( 'Packet cancel', 'packeta' ),
 			Record::ACTION_PICKUP_POINT_VALIDATE     => $this->wpAdapter->__( 'Pickup point validation', 'packeta' ),
 			Record::ACTION_ORDER_STATUS_CHANGE       => $this->wpAdapter->__( 'Order status change', 'packeta' ),

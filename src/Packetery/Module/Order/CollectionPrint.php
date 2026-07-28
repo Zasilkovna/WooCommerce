@@ -17,6 +17,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\Transients;
 use Packetery\Module\Views\UrlBuilder;
@@ -86,6 +87,11 @@ class CollectionPrint {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var OptionsProvider
+	 */
+	private $optionsProvider;
+
 	public function __construct(
 		Engine $latteEngine,
 		Http\Request $httpRequest,
@@ -94,7 +100,8 @@ class CollectionPrint {
 		EntityFactory\Address $addressFactory,
 		Repository $orderRepository,
 		PacketActionsCommonLogic $packetActionsCommonLogic,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		OptionsProvider $optionsProvider
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
@@ -104,6 +111,7 @@ class CollectionPrint {
 		$this->orderRepository = $orderRepository;
 		$this->commonLogic     = $packetActionsCommonLogic;
 		$this->urlBuilder      = $urlBuilder;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -173,17 +181,18 @@ class CollectionPrint {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/collection-print.latte',
 			[
-				'storeAddress'        => $storeAddress,
-				'storeName'           => get_option( 'blogname', '' ),
-				'shipmentBarcodeText' => $shipmentResult->getSimpleBarcodeText(),
-				'shipmentBarcode'     => $shipmentBarcodeResult->getImageContent(),
-				'orders'              => $orders,
-				'packetIds'           => $packetIds,
-				'wpOrders'            => $wpOrders,
-				'orderCount'          => count( $packetIds ),
-				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
-				'stylesheet'          => $this->urlBuilder->buildAssetUrl( 'public/css/order-collection-print.css' ),
-				'translations'        => [
+				'storeAddress'               => $storeAddress,
+				'storeName'                  => get_option( 'blogname', '' ),
+				'shipmentBarcodeText'        => $shipmentResult->getSimpleBarcodeText(),
+				'shipmentBarcode'            => $shipmentBarcodeResult->getImageContent(),
+				'orders'                     => $orders,
+				'packetIds'                  => $packetIds,
+				'wpOrders'                   => $wpOrders,
+				'orderCount'                 => count( $packetIds ),
+				'printedAt'                  => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
+				'stylesheet'                 => $this->urlBuilder->buildAssetUrl( 'public/css/order-collection-print.css' ),
+				'showConsignPasswordForZBox' => $this->optionsProvider->isShowConsignPasswordForZBoxEnabled(),
+				'translations'               => [
 					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
 					'packetCount'            => __( 'Packet count', 'packeta' ),
 					'printedAt'              => __( 'Printed at', 'packeta' ),
@@ -191,6 +200,7 @@ class CollectionPrint {
 					'recipient'              => __( 'Recipient', 'packeta' ),
 					'orderNumber'            => __( 'Order number', 'packeta' ),
 					'barcode'                => __( 'Barcode', 'packeta' ),
+					'zboxConsignPassword'    => __( 'Consignment code', 'packeta' ),
 					'created'                => __( 'Created', 'packeta' ),
 					'nameAndSurname'         => __( 'Name and surname', 'packeta' ),
 					'cod'                    => __( 'C.O.D.', 'packeta' ),

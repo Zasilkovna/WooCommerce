@@ -302,6 +302,7 @@ class Metabox {
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                      => $order,
+					'showConsignPasswordForZBox' => $this->optionsProvider->isShowConsignPasswordForZBoxEnabled(),
 					'packetStatusTranslatedName' => $packetStatusTranslatedName,
 					'statusClass'                => $statusClass,
 					'isPacketSubmissionPossible' => false,
@@ -334,6 +335,7 @@ class Metabox {
 						'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
 						'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
+						'zboxConsignPassword'       => $this->wpAdapter->__( 'Consignment code', 'packeta' ),
 						'setStoredUntil'            => $this->wpAdapter->__( 'Set the pickup date extension', 'packeta' ),
 						'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					],
@@ -424,6 +426,7 @@ class Metabox {
 			[
 				'form'                       => $this->form,
 				'order'                      => $order,
+				'showConsignPasswordForZBox' => $this->optionsProvider->isShowConsignPasswordForZBoxEnabled(),
 				'showWidgetButton'           => $showWidgetButton,
 				'widgetButtonError'          => $widgetButtonError,
 				'showHdWidget'               => $showHdWidget,
@@ -464,6 +467,7 @@ class Metabox {
 					'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
 					'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 					'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
+					'zboxConsignPassword'       => $this->wpAdapter->__( 'Z-BOX consign password', 'packeta' ),
 					// translators: %s: Order number.
 					'reallyCancelPacketHeading' => sprintf( $this->wpAdapter->__( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 					// translators: %s: Packet claim number.

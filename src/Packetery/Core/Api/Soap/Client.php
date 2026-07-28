@@ -170,6 +170,29 @@ class Client {
 	}
 
 	/**
+	 * Retrieves packet detail including optional consign password.
+	 *
+	 * @param Request\PacketInfo $request Packet attributes.
+	 *
+	 * @return Response\PacketInfo
+	 */
+	public function packetInfo( Request\PacketInfo $request ): Response\PacketInfo {
+		$response = new Response\PacketInfo();
+		try {
+			$soapClient = new SoapClient( $this->wsdlUrl );
+			$result     = $soapClient->packetInfo( $this->apiPassword, $request->getPacketId() );
+			if ( isset( $result->consignPassword ) && is_string( $result->consignPassword ) && $result->consignPassword !== '' ) {
+				$response->setConsignPassword( $result->consignPassword );
+			}
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Create shipment.
 	 *
 	 * @param Request\CreateShipment $request Request.

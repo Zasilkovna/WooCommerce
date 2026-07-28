@@ -239,6 +239,10 @@ class WizardAssetManager {
 				'title'       => $this->wpAdapter->__( 'Validate the pickup point using the API before accepting the order', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'If enabled, selected pickup point will be validated using the API to prevent bypassing widget restrictions.', 'packeta' ),
 			],
+			'showConsignPasswordForZBox'   => [
+				'title'       => $this->wpAdapter->__( 'Show consignment code', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'If enabled, the consignment code will be fetched after packet creation and displayed in the order metabox and on the AWB printout.', 'packeta' ),
+			],
 		];
 
 		$this->enqueueTourScript( 'admin-wizard-general-settings.js', array_merge( $translations, $basicTranslations ) );
@@ -346,91 +350,95 @@ class WizardAssetManager {
 
 	private function createOrderDetailEditPacketTour( array $basicTranslations ): void {
 		$translations = [
-			'weight'             => [
+			'weight'              => [
 				'title'       => $this->wpAdapter->__( 'Weight', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you see the shipment weight, calculated from the products in the order. If products don’t have a weight, the default value set in the plugin settings will be used. You can also adjust it manually.', 'packeta' ),
 			],
-			'length'             => [
+			'length'              => [
 				'title'       => $this->wpAdapter->__( 'Length', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Enter the shipment length in mm or cm, depending on plugin settings. The length of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
-			'width'              => [
+			'width'               => [
 				'title'       => $this->wpAdapter->__( 'Width', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Enter the shipment width in mm or cm, depending on plugin settings. The width of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
-			'height'             => [
+			'height'              => [
 				'title'       => $this->wpAdapter->__( 'Height', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Enter the shipment height in mm or cm, depending on plugin settings. The height of the largest product in the order is used. If the product has no dimensions, the default from plugin settings is used. You can also adjust it manually.', 'packeta' ),
 			],
-			'adultContent'       => [
+			'adultContent'        => [
 				'title'       => $this->wpAdapter->__( 'Adult content', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Automatically checked for orders with adult products.', 'packeta' ),
 			],
-			'cod'                => [
+			'cod'                 => [
 				'title'       => $this->wpAdapter->__( 'COD', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'You can edit the cash on delivery manually, otherwise the total order value is used.', 'packeta' ),
 			],
-			'value'              => [
+			'value'               => [
 				'title'       => $this->wpAdapter->__( 'Value', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'You can edit the packet value manually, otherwise the total order price is used.', 'packeta' ),
 			],
-			'deliverOn'          => [
+			'deliverOn'           => [
 				'title'       => $this->wpAdapter->__( 'Deliver on', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Deferred delivery date – if set, the packet will be ready for pickup from this date onward.', 'packeta' ),
 			],
-			'pickupPoint'        => [
+			'pickupPoint'         => [
 				'title'       => $this->wpAdapter->__( 'Pickup point', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can change the pickup point where the packet will be delivered.', 'packeta' ),
 			],
-			'pickupAddress'      => [
+			'pickupAddress'       => [
 				'title'       => $this->wpAdapter->__( 'Pickup address', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can change the delivery address of the packet via the widget.', 'packeta' ),
 			],
-			'trackingUrl'        => [
+			'trackingUrl'         => [
 				'title'       => $this->wpAdapter->__( 'Tracking url', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the packet, you can click through to online tracking.', 'packeta' ),
 			],
-			'claimTrackingUrl'   => [
+			'zboxConsignPassword' => [
+				'title'       => $this->wpAdapter->__( 'Consignment code', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Consignment code for submitting the packet. Shown only when enabled in general settings and after the consignment code has been fetched from Packeta.', 'packeta' ),
+			],
+			'claimTrackingUrl'    => [
 				'title'       => $this->wpAdapter->__( 'Claim tracking url', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the claim packet (Claim Assistant), you can click through to online tracking.', 'packeta' ),
 			],
-			'claimPassword'      => [
+			'claimPassword'       => [
 				'title'       => $this->wpAdapter->__( 'Claim password', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Password required to submit the packet via Claim Assistant.', 'packeta' ),
 			],
-			'buttonSubmitPacket' => [
+			'buttonSubmitPacket'  => [
 				'title'       => $this->wpAdapter->__( 'Submit', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Use this button to submit the packet. Clicking it will send the packet to the Packeta system', 'packeta' ),
 			],
-			'buttonCancel'       => [
+			'buttonCancel'        => [
 				'title'       => $this->wpAdapter->__( 'Cancel', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Button to cancel the packet. Clicking it will cancel the packet in the Packeta system, allowing you to submit it again.', 'packeta' ),
 			],
-			'print'              => [
+			'print'               => [
 				'title'       => $this->wpAdapter->__( 'Print', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Clicking this button opens a PDF of the label ready for printing.', 'packeta' ),
 			],
-			'storedUnitl'        => [
+			'storedUnitl'         => [
 				'title'       => $this->wpAdapter->__( 'Stored until', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can see the date until which the packet can be picked up (shown if shipment tracking is enabled and the packet is ready for pickup).', 'packeta' ),
 			],
-			'claimUrl'           => [
+			'claimUrl'            => [
 				'title'       => $this->wpAdapter->__( 'Claim url', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the packet, you can click through to online tracking.', 'packeta' ),
 			],
-			'claimLabel'         => [
+			'claimLabel'          => [
 				'title'       => $this->wpAdapter->__( 'Claim label', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can find the URL to track the claim packet (claim assistant), you can click through to online tracking.', 'packeta' ),
 			],
-			'cancelClaim'        => [
+			'cancelClaim'         => [
 				'title'       => $this->wpAdapter->__( 'Cancel claim', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Button to cancel a claim assistant packet. Clicking it will cancel the packet in the Packeta system, and you’ll be able to submit it again.', 'packeta' ),
 			],
-			'packetStatus'       => [
+			'packetStatus'        => [
 				'title'       => $this->wpAdapter->__( 'Packet status', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Here you can see the current stage of the packet (shown only if this option is enabled in the plugin settings).', 'packeta' ),
 			],
-			'logsLink'           => [
+			'logsLink'            => [
 				'title'       => $this->wpAdapter->__( 'Logs', 'packeta' ),
 				'description' => $this->wpAdapter->__( 'Button that, when clicked, shows the logs for this order. This lets you easily check what actions have been taken on the order in the system.', 'packeta' ),
 			],
