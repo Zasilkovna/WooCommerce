@@ -1,0 +1,38 @@
+{varType string $orderId}
+{varType string $email}
+{varType string $phone}
+{varType bool $canCreate}
+{varType array $returnRows}
+{varType array $translations}
+
+<section class="packetery-order-return">
+	<h2 class="woocommerce-order-details__title">{$translations['heading']}</h2>
+
+	<ul class="packetery-order-return-list" n:if="$returnRows">
+		<li n:foreach="$returnRows as $returnRow" class="packetery-order-return-list-item">
+			<span>{$translations['existingReturn']}</span>
+			{if $returnRow['trackingUrl'] !== null}
+				<a href="{$returnRow['trackingUrl']}" target="_blank">{$returnRow['barcode']}</a>
+			{/if}
+			<span>{$translations['returnStatuses'][$returnRow['status']] ?? $returnRow['status']}</span>
+		</li>
+	</ul>
+
+	{if $canCreate}
+		<form class="packetery-order-return-form">
+			<input type="hidden" name="orderId" value="{$orderId}">
+			<p class="form-row">
+				<label>{$translations['emailLabel']}
+					<input type="email" name="email" value="{$email}" required>
+				</label>
+			</p>
+			<p class="form-row">
+				<label>{$translations['phoneLabel']}
+					<input type="tel" name="phone" value="{$phone}">
+				</label>
+			</p>
+			<button type="submit" class="button">{$translations['submit']}</button>
+			<span class="packetery-order-return-message" role="status"></span>
+		</form>
+	{/if}
+</section>

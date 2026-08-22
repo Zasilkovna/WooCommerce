@@ -24,6 +24,7 @@ class ReturnableOrderInfo {
 	private ?\DateTimeImmutable $completedAt;
 	private ?string $deliveryCountry;
 	private bool $isPacketaOrder;
+	private bool $isPacketDelivered;
 	private bool $carrierAllowsReturns;
 	private ?float $totalValue;
 	private ?float $totalWeightKg;
@@ -37,6 +38,7 @@ class ReturnableOrderInfo {
 	 * @param \DateTimeImmutable|null $completedAt          Moment the order became delivered/completed.
 	 * @param string|null             $deliveryCountry     Delivery country as lowercase ISO 3166-1 alpha-2.
 	 * @param bool                    $isPacketaOrder      Whether the order was delivered by a Packeta carrier.
+	 * @param bool                    $isPacketDelivered   Whether the Packeta packet has been delivered (only meaningful for Packeta orders).
 	 * @param bool                    $carrierAllowsReturns Whether the order's Packeta carrier allows returns (only meaningful for Packeta orders).
 	 * @param float|null              $totalValue          Total order value incl. tax.
 	 * @param float|null              $totalWeightKg       Total order weight in kg.
@@ -48,6 +50,7 @@ class ReturnableOrderInfo {
 		?\DateTimeImmutable $completedAt,
 		?string $deliveryCountry,
 		bool $isPacketaOrder,
+		bool $isPacketDelivered,
 		bool $carrierAllowsReturns,
 		?float $totalValue,
 		?float $totalWeightKg,
@@ -58,6 +61,7 @@ class ReturnableOrderInfo {
 		$this->completedAt          = $completedAt;
 		$this->deliveryCountry      = $deliveryCountry;
 		$this->isPacketaOrder       = $isPacketaOrder;
+		$this->isPacketDelivered    = $isPacketDelivered;
 		$this->carrierAllowsReturns = $carrierAllowsReturns;
 		$this->totalValue           = $totalValue;
 		$this->totalWeightKg        = $totalWeightKg;
@@ -79,6 +83,10 @@ class ReturnableOrderInfo {
 
 	public function isPacketaOrder(): bool {
 		return $this->isPacketaOrder;
+	}
+
+	public function isPacketDelivered(): bool {
+		return $this->isPacketDelivered;
 	}
 
 	public function carrierAllowsReturns(): bool {

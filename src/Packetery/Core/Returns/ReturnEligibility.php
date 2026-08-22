@@ -20,7 +20,7 @@ namespace Packetery\Core\Returns;
  */
 class ReturnEligibility {
 
-	/** WC order status (without the "wc-" prefix) that counts as "delivered". */
+	/** WC order status (without the "wc-" prefix) that counts as "delivered" for non-Packeta orders. */
 	public const DELIVERED_ORDER_STATUS = 'completed';
 
 	public function isEligible(
@@ -37,7 +37,16 @@ class ReturnEligibility {
 			&& ! ( $settings->isExcludeVirtual() && $order->hasVirtualItem() );
 	}
 
+	/**
+	 * "Delivered" differs by order type: a Packeta order is delivered once its packet is delivered
+	 * (the admin claim flow has always gated on this and e-shops are used to it), while a non-Packeta
+	 * order has no packet status, so its WC "completed" status stands in for delivery.
+	 */
 	private function isDelivered( ReturnableOrderInfo $order ): bool {
+		if ( $order->isPacketaOrder() ) {
+			return $order->isPacketDelivered();
+		}
+
 		return $order->getOrderStatus() === self::DELIVERED_ORDER_STATUS;
 	}
 

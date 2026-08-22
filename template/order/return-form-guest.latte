@@ -1,0 +1,21 @@
+{varType array $translations}
+
+<form class="packetery-order-return-form">
+	<p class="form-row">
+		<label>{$translations['orderNumberLabel']}
+			<input type="text" name="orderNumber" required>
+		</label>
+	</p>
+	<p class="form-row">
+		<label>{$translations['emailLabel']}
+			<input type="email" name="email" required>
+		</label>
+	</p>
+	<p class="form-row">
+		<label>{$translations['phoneLabel']}
+			<input type="tel" name="phone">
+		</label>
+	</p>
+	<button type="submit" class="button">{$translations['submit']}</button>
+	<span class="packetery-order-return-message" role="status"></span>
+</form>

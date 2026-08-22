@@ -38,6 +38,7 @@ use Packetery\Module\Product\ProductGridExtender;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\ProductCategory\CategoryGridExtender;
 use Packetery\Module\QueryProcessor;
+use Packetery\Module\Returns\ReturnFormShortcode;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\Upgrade;
@@ -267,6 +268,7 @@ class HookRegistrar {
 	 * @var EmailShortcodes
 	 */
 	private $shortcodes;
+	private ReturnFormShortcode $returnFormShortcode;
 
 	/**
 	 * @var DiagnosticsLogger
@@ -319,6 +321,7 @@ class HookRegistrar {
 		WizardAssetManager $wizardAssetManager,
 		DashboardPage $dashboardPage,
 		EmailShortcodes $shortcodes,
+		ReturnFormShortcode $returnFormShortcode,
 		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->messageManager            = $messageManager;
@@ -366,6 +369,7 @@ class HookRegistrar {
 		$this->wizardAssetManager        = $wizardAssetManager;
 		$this->dashboardPage             = $dashboardPage;
 		$this->shortcodes                = $shortcodes;
+		$this->returnFormShortcode       = $returnFormShortcode;
 		$this->diagnosticsLogger         = $diagnosticsLogger;
 	}
 
@@ -412,6 +416,7 @@ class HookRegistrar {
 		$this->packetSubmitter->registerCronAction();
 		$this->packetSynchronizer->register();
 		$this->shortcodes->register();
+		$this->returnFormShortcode->register();
 
 		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
 

@@ -104,10 +104,15 @@ services:
 	- Packetery\Module\CustomsDeclaration\Repository
 	- Packetery\Module\Returns\Repository
 	- Packetery\Module\Returns\ReturnService
+	- Packetery\Core\Returns\ReturnEligibility
+	- Packetery\Module\Returns\ReturnEligibilityService
+	- Packetery\Module\Returns\ReturnFormShortcode
 	- Packetery\Module\Api\Internal\OrderController
 	- Packetery\Module\Api\Internal\OrderRouter
 	- Packetery\Module\Api\Internal\CheckoutController
 	- Packetery\Module\Api\Internal\CheckoutRouter
+	- Packetery\Module\Api\Internal\ReturnController
+	- Packetery\Module\Api\Internal\ReturnRouter
 	- Packetery\Module\Api\Registrar
 	- Packetery\Module\Order\Modal
 	- Packetery\Module\Order\LabelPrintModal

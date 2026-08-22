@@ -30,8 +30,42 @@ class ReturnEligibilityTest extends TestCase {
 		self::assertTrue( $this->isEligible() );
 	}
 
-	public function testNotDeliveredOrderIsNotEligible(): void {
-		self::assertFalse( $this->isEligible( [ 'orderStatus' => 'processing' ] ) );
+	public function testPacketaOrderWithUndeliveredPacketIsNotEligible(): void {
+		self::assertFalse( $this->isEligible( [ 'isPacketDelivered' => false ] ) );
+	}
+
+	public function testPacketaOrderIgnoresWcStatusForDelivery(): void {
+		// A Packeta order is gated by packet delivery, not by the WC order status.
+		self::assertTrue(
+			$this->isEligible(
+				[
+					'orderStatus'       => 'processing',
+					'isPacketDelivered' => true,
+				]
+			)
+		);
+	}
+
+	public function testNonPacketaOrderNotCompletedIsNotEligible(): void {
+		self::assertFalse(
+			$this->isEligible(
+				[
+					'isPacketaOrder' => false,
+					'orderStatus'    => 'processing',
+				]
+			)
+		);
+	}
+
+	public function testNonPacketaOrderCompletedIsEligible(): void {
+		self::assertTrue(
+			$this->isEligible(
+				[
+					'isPacketaOrder' => false,
+					'orderStatus'    => 'completed',
+				]
+			)
+		);
 	}
 
 	public function testOrderPastReturnWindowIsNotEligible(): void {
@@ -193,6 +227,7 @@ class ReturnEligibilityTest extends TestCase {
 			'completedAt'          => $this->completedAt,
 			'deliveryCountry'      => 'cz',
 			'isPacketaOrder'       => true,
+			'isPacketDelivered'    => true,
 			'carrierAllowsReturns' => true,
 			'totalValue'           => 100.0,
 			'totalWeightKg'        => 1.0,
@@ -206,6 +241,7 @@ class ReturnEligibilityTest extends TestCase {
 			$v['completedAt'],
 			$v['deliveryCountry'],
 			$v['isPacketaOrder'],
+			$v['isPacketDelivered'],
 			$v['carrierAllowsReturns'],
 			$v['totalValue'],
 			$v['totalWeightKg'],

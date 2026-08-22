@@ -135,6 +135,10 @@ class WpAdapter {
 		return is_user_logged_in();
 	}
 
+	public function getCurrentUserId(): int {
+		return get_current_user_id();
+	}
+
 	public function getSessionToken(): string {
 		return wp_get_session_token();
 	}
@@ -242,6 +246,17 @@ class WpAdapter {
 
 	public function sanitizeEmail( string $email ): string {
 		return sanitize_email( $email );
+	}
+
+	public function sanitizeTextField( string $value ): string {
+		return sanitize_text_field( $value );
+	}
+
+	/**
+	 * @return string|false
+	 */
+	public function isEmail( string $email ) {
+		return is_email( $email );
 	}
 
 	public function wpKsesPost( string $content ): string {

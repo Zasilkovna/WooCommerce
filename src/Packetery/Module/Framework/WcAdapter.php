@@ -79,6 +79,10 @@ class WcAdapter {
 		return is_checkout();
 	}
 
+	public function isAccountPage(): bool {
+		return is_account_page();
+	}
+
 	public function featuresUtilDeclareCompatibility( string $featureId, string $pluginFile, bool $positiveCompatibility = true ): void {
 		FeaturesUtil::declare_compatibility( $featureId, $pluginFile, $positiveCompatibility );
 	}

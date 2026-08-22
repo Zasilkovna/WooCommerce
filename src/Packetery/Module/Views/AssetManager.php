@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Views;
 
 use Packetery\Core\CoreHelper;
+use Packetery\Module\Api\Internal\ReturnRouter;
 use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutSettings;
@@ -62,6 +63,8 @@ class AssetManager {
 	 * @var WidgetUrlResolver
 	 */
 	private $widgetUrlResolver;
+	private Options\OptionsProvider $optionsProvider;
+	private ReturnRouter $returnRouter;
 
 	public function __construct(
 		ContextResolver $contextResolver,
@@ -71,7 +74,9 @@ class AssetManager {
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
 		CheckoutService $checkoutService,
-		WidgetUrlResolver $widgetUrlResolver
+		WidgetUrlResolver $widgetUrlResolver,
+		Options\OptionsProvider $optionsProvider,
+		ReturnRouter $returnRouter
 	) {
 		$this->contextResolver   = $contextResolver;
 		$this->orderMetabox      = $orderMetabox;
@@ -81,6 +86,8 @@ class AssetManager {
 		$this->wcAdapter         = $wcAdapter;
 		$this->checkoutService   = $checkoutService;
 		$this->widgetUrlResolver = $widgetUrlResolver;
+		$this->optionsProvider   = $optionsProvider;
+		$this->returnRouter      = $returnRouter;
 	}
 
 	/**
@@ -120,6 +127,9 @@ class AssetManager {
 	 * Enqueues javascript files and stylesheets for checkout.
 	 */
 	public function enqueueFrontAssets(): void {
+		if ( $this->wcAdapter->isAccountPage() ) {
+			$this->enqueueReturnFormAssets();
+		}
 		if ( ! $this->wcAdapter->isCheckout() ) {
 			return;
 		}
@@ -149,6 +159,30 @@ class AssetManager {
 			$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
 			$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkoutSettings->createSettings() );
 		}
+	}
+
+	/**
+	 * Enqueues the customer return form script on the My Account order detail page.
+	 */
+	private function enqueueReturnFormAssets(): void {
+		if ( $this->wpAdapter->doingAjax() !== false || ! $this->optionsProvider->isReturnsEnabled() ) {
+			return;
+		}
+
+		$this->enqueueScript( 'packetery-front-return', 'public/js/front-return.js', true );
+		$this->wpAdapter->localizeScript(
+			'packetery-front-return',
+			'packeteryReturnFormSettings',
+			[
+				'createUrl'    => $this->returnRouter->getCreateUrl(),
+				'nonce'        => (string) $this->wpAdapter->createNonce( 'wp_rest' ),
+				'translations' => [
+					'sending' => $this->wpAdapter->__( 'Sending…', 'packeta' ),
+					'created' => $this->wpAdapter->__( 'Return created:', 'packeta' ),
+					'error'   => $this->wpAdapter->__( 'The return could not be created. Please try again later.', 'packeta' ),
+				],
+			]
+		);
 	}
 
 	/**
