@@ -65,6 +65,7 @@ Please contact us at e-commerce.support@packeta.com .
 == Changelog ==
 = 2.3.2 =
 Added: Romanian Post carriers (home delivery and pickup points).
+Fixed: The widget used the billing country instead of the shipping country when the shipping address form was hidden in the checkout.
 
 = 2.3.1 =
 Fixed: Database structure was not updated after updating the plugin.
