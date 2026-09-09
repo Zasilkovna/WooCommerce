@@ -38,7 +38,7 @@ class ShippingProviderTest extends TestCase {
 		$shippingProviderReflection = new ReflectionClass( ShippingProvider::class );
 		$property                   = $shippingProviderReflection->getProperty( 'sortedMethodsCache' );
 		$property->setAccessible( true );
-		$property->setValue( [] );
+		$property->setValue( null, [] );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class ShippingProviderTest extends TestCase {
 		$shippingProviderReflection = new ReflectionClass( ShippingProvider::class );
 		$property                   = $shippingProviderReflection->getProperty( 'sortedMethodsCache' );
 		$property->setAccessible( true );
-		$property->setValue( [ $cacheKey => [ 'dummyMethodId' => 'dummyMethodClass' ] ] );
+		$property->setValue( null, [ $cacheKey => [ 'dummyMethodId' => 'dummyMethodClass' ] ] );
 
 		$this->contextResolver->expects( $this->never() )->method( 'getShippingZoneId' );
 		$this->shippingZoneRepository->expects( $this->never() )->method( 'getCountryCodesForShippingZone' );
