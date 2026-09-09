@@ -7,6 +7,18 @@ parameters:
 			path: ../src/Packetery/Module/Api/BaseRouter.php
 
 		-
+			message: '#^Parameter \#1 \$route_namespace of function register_rest_route expects non\-falsy\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Api/BaseRouter.php
+
+		-
+			message: '#^Parameter \#2 \$route of function register_rest_route expects non\-falsy\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Api/BaseRouter.php
+
+		-
 			message: '#^Cannot access offset mixed on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -39,18 +51,6 @@ parameters:
 		-
 			message: '#^Method Packetery\\Module\\Blocks\\WidgetIntegration\:\:__construct\(\) has parameter \$settings with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
-
-		-
-			message: '#^Path in require_once\(\) "\.//woocommerce/packages/woocommerce\-blocks/src/Integrations/IntegrationInterface\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
-			count: 1
-			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
-
-		-
-			message: '#^Path in require_once\(\) "\.//woocommerce/src/Blocks/Integrations/IntegrationInterface\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
 			count: 1
 			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
 
@@ -552,7 +552,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Checkout/CartService.php
 
-
 		-
 			message: '#^Parameter \#2 \$taxClass of method Packetery\\Module\\Checkout\\Checkout\:\:calcTaxExclusiveFeeAmount\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
@@ -745,7 +744,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Checkout/RateCalculator.php
 
-
 		-
 			message: '#^Method Packetery\\Module\\Checkout\\RateCalculator\:\:getCODSurcharge\(\) has parameter \$carrierOptions with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
@@ -764,10 +762,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Checkout/SessionService.php
 
-
-
-
-
 		-
 			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRates\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
@@ -779,7 +773,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
-
 
 		-
 			message: '#^Parameter \#4 \$taxes of method Packetery\\Module\\Checkout\\RateCalculator\:\:createShippingRate\(\) expects array\<float\>\|null, array\<mixed\>\|null given\.$#'
@@ -985,7 +978,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Framework/WcAdapter.php
 
-
 		-
 			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:storeApiRegisterUpdateCallback\(\) has parameter \$args with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
@@ -1035,6 +1027,12 @@ parameters:
 			path: ../src/Packetery/Module/Framework/WpAdapter.php
 
 		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:getPostField\(\) should return string but returns array\<int\>\|int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
 			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:localizeScript\(\) has parameter \$l10n with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1065,7 +1063,19 @@ parameters:
 			path: ../src/Packetery/Module/Framework/WpAdapter.php
 
 		-
+			message: '#^Parameter \#1 \$hook_name of function apply_filters expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
 			message: '#^Parameter \#1 \$maybeint of function absint expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Parameter \#1 \$tag of function add_shortcode expects non\-empty\-string, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Framework/WpAdapter.php
@@ -1227,7 +1237,7 @@ parameters:
 			path: ../src/Packetery/Module/Log/Repository.php
 
 		-
-			message: '#^Method Packetery\\Module\\Message\:\:toArray\(\) should return array\<string, bool\|string\> but returns array\<string, mixed\>\.$#'
+			message: '#^Method Packetery\\Module\\Message\:\:toArray\(\) should return array\<string, bool\|string\> but returns array\<mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: ../src/Packetery/Module/Message.php
@@ -1271,12 +1281,6 @@ parameters:
 		-
 			message: '#^Method Packetery\\Module\\ModuleHelper\:\:getOrderGridUrl\(\) has parameter \$queryVars with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/ModuleHelper.php
-
-		-
-			message: '#^Path in require_once\(\) "\./wp\-admin/includes/plugin\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
 			count: 1
 			path: ../src/Packetery/Module/ModuleHelper.php
 
@@ -1451,6 +1455,12 @@ parameters:
 		-
 			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:sanitizePaymentGatewayId\(\) should return string but returns string\|null\.$#'
 			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Parameter \#1 \$arr1 of function array_intersect expects an array of values castable to string, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../src/Packetery/Module/Options/OptionsProvider.php
 
@@ -2055,6 +2065,12 @@ parameters:
 			path: ../src/Packetery/Module/Order/Metabox.php
 
 		-
+			message: '#^Offset bool\|string might not exist on non\-empty\-array\<string, float\|int\|string\|true\|null\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
 			message: '#^Only booleans are allowed in &&, float\|int\|string\|true\|null given on the left side\.$#'
 			identifier: booleanAnd.leftNotBoolean
 			count: 1
@@ -2271,13 +2287,13 @@ parameters:
 			path: ../src/Packetery/Module/Order/Repository.php
 
 		-
-			message: '#^Offset ''file'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\}\.$#'
+			message: '#^Offset ''file'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: list\<mixed\>, object\?\: object\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../src/Packetery/Module/Order/Repository.php
 
 		-
-			message: '#^Offset ''line'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\}\.$#'
+			message: '#^Offset ''line'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: list\<mixed\>, object\?\: object\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: ../src/Packetery/Module/Order/Repository.php
@@ -2396,7 +2412,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
 
-
 		-
 			message: '#^Property Packetery\\Module\\Shipping\\BaseShippingMethod\:\:\$options \(array\<string, string\|null\>\|false\|null\) does not accept mixed\.$#'
 			identifier: assign.propertyType
@@ -2418,12 +2433,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property object\:\:\$method_title\.$#'
 			identifier: property.notFound
-			count: 2
-			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
-
-		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
 			count: 2
 			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
 
@@ -2706,12 +2715,6 @@ parameters:
 		-
 			message: '#^Parameter \#4 \$type of method wpdb\:\:_insert_replace_helper\(\) expects ''INSERT''\|''REPLACE'', string given\.$#'
 			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/WpdbAdapter.php
-
-		-
-			message: '#^Path in require_once\(\) "\./wp\-admin/includes/upgrade\.php" is not a file or it does not exist\.$#'
-			identifier: requireOnce.fileNotFound
 			count: 1
 			path: ../src/Packetery/Module/WpdbAdapter.php
 
