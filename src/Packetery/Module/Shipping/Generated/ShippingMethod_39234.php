@@ -11,9 +11,9 @@ namespace Packetery\Module\Shipping\Generated;
 use Packetery\Module\Shipping\BaseShippingMethod;
 
 /**
- * IE An Post HD
+ * RO Romanian Post PP
  */
-class ShippingMethod_9990 extends BaseShippingMethod
+class ShippingMethod_39234 extends BaseShippingMethod
 {
-	public const CARRIER_ID = '9990';
+	public const CARRIER_ID = '39234';
 }
