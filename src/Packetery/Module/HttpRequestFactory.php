@@ -45,7 +45,7 @@ final class HttpRequestFactory {
 
 		try {
 			return $this->originalHttpRequestFactory->fromGlobals();
-		} catch ( InvalidArgumentException $e ) {
+		} catch ( InvalidArgumentException $exception ) {
 			// Nette refuses a REQUEST_URI whose path has no slash ('', '?foo=1', 'wp-cron.php'), which is what some cron runners pass.
 			$urlScript = new UrlScript( '/', '/' );
 

@@ -27,8 +27,7 @@ if ( PHP_SAPI !== 'cli' ) {
 	} catch ( InvalidStateException $invalidStateException ) {
 		$disableGetPostCookieParsing = true;
 	} catch ( InvalidArgumentException $invalidArgumentException ) {
-		// A request URI that yields a path without a slash breaks the URL parser; HttpRequestFactory substitutes a neutral one later.
-		$disableGetPostCookieParsing = false;
+		// A slashless request URI path breaks the URL parser; unlike the InvalidStateException branch this must not switch on binary mode, since HttpRequestFactory substitutes a neutral URL later.
 	}
 }
 
