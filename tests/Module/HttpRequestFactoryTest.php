@@ -1,5 +1,7 @@
 <?php
 
+declare( strict_types=1 );
+
 namespace Tests\Module;
 
 use Packetery\Module\HttpRequestFactory;
@@ -60,7 +62,7 @@ class HttpRequestFactoryTest extends TestCase {
 	}
 
 	public function testConsoleModeSkipsGlobals(): void {
-		$_SERVER['REQUEST_URI'] = '';
+		$_SERVER['REQUEST_URI'] = '/wp-cron.php';
 
 		$factory = new HttpRequestFactory( true, false, new RequestFactory() );
 
