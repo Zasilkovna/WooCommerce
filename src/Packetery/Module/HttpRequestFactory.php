@@ -6,6 +6,7 @@ namespace Packetery\Module;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Http\RequestFactory;
 use Packetery\Nette\Http\UrlScript;
+use Packetery\Nette\InvalidArgumentException;
 
 final class HttpRequestFactory {
 	/**
@@ -42,6 +43,13 @@ final class HttpRequestFactory {
 
 		$this->originalHttpRequestFactory->setBinary( $this->binary );
 
-		return $this->originalHttpRequestFactory->fromGlobals();
+		try {
+			return $this->originalHttpRequestFactory->fromGlobals();
+		} catch ( InvalidArgumentException $e ) {
+			// Nette refuses a REQUEST_URI whose path has no slash ('', '?foo=1', 'wp-cron.php'), which is what some cron runners pass.
+			$urlScript = new UrlScript( '/', '/' );
+
+			return new Request( $urlScript );
+		}
 	}
 }
