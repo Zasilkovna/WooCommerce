@@ -53,9 +53,15 @@ class TransientPurger {
 	}
 
 	private function purgeForSite(): void {
-		$transients = $this->optionsRepository->getExpiredTransientsByPrefix( Transients::CHECKOUT_DATA_PREFIX );
-		foreach ( $transients as $transient ) {
-			$this->wpAdapter->deleteTransient( $transient );
+		$prefixes = [
+			Transients::CHECKOUT_DATA_PREFIX,
+			Transients::RATE_DIAGNOSTICS_PREFIX,
+		];
+		foreach ( $prefixes as $prefix ) {
+			$transients = $this->optionsRepository->getExpiredTransientsByPrefix( $prefix );
+			foreach ( $transients as $transient ) {
+				$this->wpAdapter->deleteTransient( $transient );
+			}
 		}
 	}
 }

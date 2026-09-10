@@ -547,22 +547,11 @@ parameters:
 			path: ../src/Packetery/Module/Checkout/CartService.php
 
 		-
-			message: '#^Method Packetery\\Module\\Checkout\\CartService\:\:getDisallowedShippingRateIds\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Checkout/CartService.php
-
-		-
 			message: '#^Method Packetery\\Module\\Checkout\\CartService\:\:isShippingRateRestrictedByProductsCategory\(\) has parameter \$cartProducts with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../src/Packetery/Module/Checkout/CartService.php
 
-		-
-			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Checkout/CartService.php
 
 		-
 			message: '#^Parameter \#2 \$taxClass of method Packetery\\Module\\Checkout\\Checkout\:\:calcTaxExclusiveFeeAmount\(\) expects string, string\|null given\.$#'
@@ -756,11 +745,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Checkout/RateCalculator.php
 
-		-
-			message: '#^Method Packetery\\Module\\Checkout\\RateCalculator\:\:createShippingRate\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Checkout/RateCalculator.php
 
 		-
 			message: '#^Method Packetery\\Module\\Checkout\\RateCalculator\:\:getCODSurcharge\(\) has parameter \$carrierOptions with no value type specified in iterable type array\.$#'
@@ -780,29 +764,9 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Checkout/SessionService.php
 
-		-
-			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:canCreateShippingRate\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
 
-		-
-			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateAndApplyTaxes\(\) should return array\{label\: string, id\: string, cost\: float, taxes\: array\<int, float\>, calc_tax\: string\} but returns array\<string, array\|float\|string\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
 
-		-
-			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateOfCarrier\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
 
-		-
-			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateOfCarrier\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
 
 		-
 			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRates\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
@@ -816,11 +780,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
 
-		-
-			message: '#^Parameter \#4 \$rateId of method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateOfCarrier\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
 
 		-
 			message: '#^Parameter \#4 \$taxes of method Packetery\\Module\\Checkout\\RateCalculator\:\:createShippingRate\(\) expects array\<float\>\|null, array\<mixed\>\|null given\.$#'
@@ -1026,11 +985,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Framework/WcAdapter.php
 
-		-
-			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:shippingZonesGetZoneMatchingPackage\(\) has parameter \$package with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Framework/WcAdapter.php
 
 		-
 			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:storeApiRegisterUpdateCallback\(\) has parameter \$args with no value type specified in iterable type array\.$#'
@@ -2442,11 +2396,6 @@ parameters:
 			count: 1
 			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
 
-		-
-			message: '#^Parameter \#1 \$package of method Packetery\\Module\\Framework\\WcAdapter\:\:shippingZonesGetZoneMatchingPackage\(\) expects array\{contents\: array\<string, array\<string, mixed\>\>, contents_cost\: float, applied_coupons\: array, user\: array\{ID\: int\}, destination\: array\<string, string\>, cart_subtotal\: float, packetery_payment_method\: mixed, rates\: array\<string, WC_Shipping_Rate\>\}, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
 
 		-
 			message: '#^Property Packetery\\Module\\Shipping\\BaseShippingMethod\:\:\$options \(array\<string, string\|null\>\|false\|null\) does not accept mixed\.$#'

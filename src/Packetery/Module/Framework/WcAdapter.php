@@ -126,12 +126,105 @@ class WcAdapter {
 	}
 
 	/**
-	 * @param array{contents: array<string, array<string, mixed>>, contents_cost: float, applied_coupons: array, user: array{ID: int}, destination: array<string, string>, cart_subtotal: float, packetery_payment_method: mixed, rates: array<string, WC_Shipping_Rate>} $package
+	 * Rates WooCommerce ended up with, after the woocommerce_package_rates filter every third party
+	 * can remove or reprice rates through - not the ones our shipping method returned. A rate id
+	 * repeated across packages keeps the last package, which is what the checkout charges last.
+	 *
+	 * @return array<string, WC_Shipping_Rate>
+	 */
+	public function getFinalShippingRates(): array {
+		$rates = [];
+		foreach ( WC()->shipping()->get_packages() as $package ) {
+			foreach ( $package['rates'] ?? [] as $rateId => $rate ) {
+				$rates[ (string) $rateId ] = $rate;
+			}
+		}
+
+		return $rates;
+	}
+
+	/**
+	 * WooCommerce drops every other rate of the package when the cart qualifies for free shipping and
+	 * the shop asks for it (class-wc-shipping.php), which happens before the woocommerce_package_rates
+	 * filter and is the only removal we can attribute to anyone.
+	 *
+	 * It decides per package, while the rates we compare against are merged across all of them, so a
+	 * cart split into several packages cannot tell which package the free shipping came from - and
+	 * blaming the shop setting for a rate dropped elsewhere would be as wrong as blaming a plugin.
+	 */
+	public function areOtherRatesHiddenByFreeShipping(): bool {
+		if ( get_option( 'woocommerce_shipping_hide_rates_when_free' ) !== 'yes' ) {
+			return false;
+		}
+
+		$packages = WC()->shipping()->get_packages();
+		if ( count( $packages ) !== 1 ) {
+			return false;
+		}
+
+		foreach ( reset( $packages )['rates'] ?? [] as $rate ) {
+			if ( $rate->get_method_id() === 'free_shipping' ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Whether the cart shows shipping with tax included, which is what the client compares the
+	 * diagnostics against. Honours customer tax exemption, unlike the raw woocommerce_tax_display_cart.
+	 */
+	public function cartDisplayPricesIncludingTax(): bool {
+		return WC()->cart->display_prices_including_tax();
+	}
+
+	/**
+	 * @param float $price Price.
+	 *
+	 * @return string Formatted price including the shop currency, as HTML.
+	 */
+	public function price( float $price ): string {
+		return wc_price( $price );
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	public function countriesGetShippingCountries(): array {
+		return WC()->countries->get_shipping_countries();
+	}
+
+	/**
+	 * @param array<string, mixed> $package
 	 *
 	 * @return WC_Shipping_Zone
 	 */
 	public function shippingZonesGetZoneMatchingPackage( array $package ): WC_Shipping_Zone {
 		return WC_Shipping_Zones::get_zone_matching_package( $package );
+	}
+
+	/**
+	 * Methods the zone has in the database, including those whose class is not registered - a carrier
+	 * turned off in Packeta settings never registers its class, yet its row in the zone stays, and
+	 * that row is the only record of the client having wanted the carrier in the checkout.
+	 *
+	 * @return array<string, bool> Shipping method id => enabled in the zone.
+	 */
+	public function shippingZoneGetMethodStates( WC_Shipping_Zone $zone ): array {
+		/** @var WC_Shipping_Zone_Data_Store_Interface $dataStore */
+		$dataStore = $zone->get_data_store();
+
+		$states = [];
+		foreach ( $dataStore->get_methods( $zone->get_id(), false ) as $method ) {
+			$row       = (array) $method;
+			$methodId  = (string) $row['method_id'];
+			$isEnabled = (bool) (int) $row['is_enabled'];
+
+			$states[ $methodId ] = ( $states[ $methodId ] ?? false ) || $isEnabled;
+		}
+
+		return $states;
 	}
 
 	public function hasBlockInPage( int $page, string $blockName ): bool {

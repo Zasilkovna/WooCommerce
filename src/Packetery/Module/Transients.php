@@ -6,6 +6,7 @@ namespace Packetery\Module;
 
 class Transients {
 	public const CHECKOUT_DATA_PREFIX                    = 'packeta_checkout_data_';
+	public const RATE_DIAGNOSTICS_PREFIX                 = 'packeta_rate_diagnostics_';
 	public const MESSAGE_MANAGER_MESSAGES_PREFIX         = 'packetery_message_manager_messages_';
 	public const ORDER_COLLECTION_PRINT_ORDER_IDS_PREFIX = 'packetery_order_collection_print_order_ids_';
 	public const LABEL_PRINT_ORDER_IDS_PREFIX            = 'packetery_label_print_order_ids_';

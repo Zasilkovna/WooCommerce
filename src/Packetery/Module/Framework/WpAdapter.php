@@ -53,6 +53,20 @@ class WpAdapter {
 		return get_term( $termId );
 	}
 
+	public function getEditTermLink( int $termId, string $taxonomy ): ?string {
+		$link = get_edit_term_link( $termId, $taxonomy );
+
+		return is_string( $link ) ? $link : null;
+	}
+
+	public function getCurrentUserId(): int {
+		return get_current_user_id();
+	}
+
+	public function currentUserCan( string $capability ): bool {
+		return current_user_can( $capability );
+	}
+
 	/**
 	 * Checks whether the given variable is an instance of the `WP_Error` class.
 	 *

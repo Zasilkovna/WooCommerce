@@ -161,74 +161,6 @@ class CartServiceTest extends TestCase {
 		$this->assertSame( $totalProductPrice, $this->cartService->getTotalCartProductValue() );
 	}
 
-	public function testGetDisallowedShippingRateIdsWithPhysicalProduct(): void {
-		$this->createCartServiceMock();
-
-		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
-			[
-				[ 'product_id' => 1 ],
-			]
-		);
-
-		$productMock = $this->createMock( Product\Entity::class );
-		$productMock->method( 'isPhysical' )->willReturn( true );
-		$productMock->method( 'getDisallowedShippingRateIds' )->willReturn( [ 1, 2, 3 ] );
-
-		$this->productEntityFactory->method( 'fromPostId' )->willReturn( $productMock );
-		$this->assertEquals( [ 1, 2, 3 ], $this->cartService->getDisallowedShippingRateIds() );
-	}
-
-	public function testGetDisallowedShippingRateIdsWithNonPhysicalProduct(): void {
-		$this->createCartServiceMock();
-
-		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
-			[
-				[ 'product_id' => 1 ],
-			]
-		);
-
-		$productMock = $this->createMock( Product\Entity::class );
-		$productMock->method( 'isPhysical' )->willReturn( false );
-		$productMock->method( 'getDisallowedShippingRateIds' )->willReturn( [ 1, 2, 3 ] );
-
-		$this->productEntityFactory->method( 'fromPostId' )->willReturn( $productMock );
-		$this->assertEquals( [], $this->cartService->getDisallowedShippingRateIds() );
-	}
-
-	public function testGetDisallowedShippingRateIdsCombined(): void {
-		$this->createCartServiceMock();
-
-		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
-			[
-				[ 'product_id' => 1 ],
-				[ 'product_id' => 2 ],
-			]
-		);
-
-		$productMockPhysical = $this->createMock( Product\Entity::class );
-		$productMockPhysical->method( 'isPhysical' )->willReturn( true );
-		$productMockPhysical->method( 'getDisallowedShippingRateIds' )->willReturn( [ 1, 2 ] );
-
-		$productMockNonPhysical = $this->createMock( Product\Entity::class );
-		$productMockNonPhysical->method( 'isPhysical' )->willReturn( false );
-		$productMockNonPhysical->method( 'getDisallowedShippingRateIds' )->willReturn( [ 2, 3 ] );
-
-		$this->productEntityFactory->method( 'fromPostId' )
-									->willReturnCallback(
-										function ( $id ) use ( $productMockPhysical, $productMockNonPhysical ) {
-											if ( $id === 1 ) {
-												return $productMockPhysical;
-											}
-											if ( $id === 2 ) {
-												return $productMockNonPhysical;
-											}
-
-											return null;
-										}
-									);
-		$this->assertEquals( [ 1, 2 ], $this->cartService->getDisallowedShippingRateIds() );
-	}
-
 	public function testGetTaxClassWithMaxRateWithInvalidProduct(): void {
 		$this->createCartServiceMock();
 		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
@@ -497,7 +429,7 @@ class CartServiceTest extends TestCase {
 		);
 	}
 
-	public static function cartContainsProductOversizedForCarrier(): array {
+	public static function oversizedProductProvider(): array {
 		return [
 			'all-ok'                            => [
 				'sizeRestrictions'   => [
@@ -633,10 +565,55 @@ class CartServiceTest extends TestCase {
 		];
 	}
 
+	public static function disallowingProductProvider(): array {
+		return [
+			'no product disallows the rate'      => [ [ 'other-rate' ], [ 'other-rate' ], true, true, null ],
+			'second product disallows the rate'  => [ [ 'other-rate' ], [ 'zpoint-cz' ], true, true, 2 ],
+			'first product wins over the second' => [ [ 'zpoint-cz' ], [ 'zpoint-cz' ], true, true, 1 ],
+			'virtual product is not consulted'   => [ [ 'zpoint-cz' ], [ 'other-rate' ], false, true, null ],
+		];
+	}
+
 	/**
-	 * @dataProvider cartContainsProductOversizedForCarrier
+	 * @dataProvider disallowingProductProvider
+	 *
+	 * @param string[] $disallowedByFirst  Rate ids disabled on the first cart product.
+	 * @param string[] $disallowedBySecond Rate ids disabled on the second cart product.
 	 */
-	public function testCartContainsProductOversizedForCarrier(
+	public function testFindProductDisallowingRate(
+		array $disallowedByFirst,
+		array $disallowedBySecond,
+		bool $isFirstPhysical,
+		bool $isSecondPhysical,
+		?int $expectedProductId
+	): void {
+		$this->createCartServiceMock();
+
+		$productMock1 = $this->createMock( Product\Entity::class );
+		$productMock1->method( 'isPhysical' )->willReturn( $isFirstPhysical );
+		$productMock1->method( 'getDisallowedShippingRateIds' )->willReturn( $disallowedByFirst );
+
+		$productMock2 = $this->createMock( Product\Entity::class );
+		$productMock2->method( 'isPhysical' )->willReturn( $isSecondPhysical );
+		$productMock2->method( 'getDisallowedShippingRateIds' )->willReturn( $disallowedBySecond );
+
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+				[ 'product_id' => 2 ],
+			]
+		);
+		$this->productEntityFactory
+			->method( 'fromPostId' )
+			->willReturnOnConsecutiveCalls( $productMock1, $productMock2 );
+
+		self::assertSame( $expectedProductId, $this->cartService->findProductDisallowingRate( 'zpoint-cz' ) );
+	}
+
+	/**
+	 * @dataProvider oversizedProductProvider
+	 */
+	public function testFindOversizedProductForCarrier(
 		array $sizeRestrictions,
 		array $productDimensions1,
 		array $productDimensions2,
@@ -670,7 +647,15 @@ class CartServiceTest extends TestCase {
 
 		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
 
-		$result = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptionsMock );
-		$this->assertSame( $result, $expectedResult );
+		$oversizedProduct = $this->cartService->findOversizedProductForCarrier( $carrierOptionsMock );
+
+		$this->assertSame( $oversizedProduct !== null, $expectedResult );
+		if ( $oversizedProduct !== null ) {
+			// The payload is what the client acts on, so it must carry the culprit and both numbers.
+			$this->assertSame(
+				[ 'productId', 'restriction', 'measured', 'limit' ],
+				array_keys( $oversizedProduct )
+			);
+		}
 	}
 }

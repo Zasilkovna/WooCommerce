@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
+use Packetery\Module\Checkout\ShippingRateDiagnostics;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
@@ -101,6 +102,11 @@ class OptionsPage {
 	private $urlBuilder;
 
 	/**
+	 * @var ShippingRateDiagnostics
+	 */
+	private $shippingRateDiagnostics;
+
+	/**
 	 * @var WcAdapter
 	 */
 	private $wcAdapter;
@@ -122,22 +128,24 @@ class OptionsPage {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
+		ShippingRateDiagnostics $shippingRateDiagnostics,
 		WcAdapter $wcAdapter,
 		WpAdapter $wpAdapter
 	) {
-		$this->latteEngine           = $latteEngine;
-		$this->carrierRepository     = $carrierRepository;
-		$this->formFactory           = $formFactory;
-		$this->httpRequest           = $httpRequest;
-		$this->countryListingPage    = $countryListingPage;
-		$this->messageManager        = $messageManager;
-		$this->pickupPointsConfig    = $pickupPointsConfig;
-		$this->carDeliveryConfig     = $carDeliveryConfig;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->moduleHelper          = $moduleHelper;
-		$this->wcAdapter             = $wcAdapter;
-		$this->urlBuilder            = $urlBuilder;
-		$this->wpAdapter             = $wpAdapter;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->formFactory             = $formFactory;
+		$this->httpRequest             = $httpRequest;
+		$this->countryListingPage      = $countryListingPage;
+		$this->messageManager          = $messageManager;
+		$this->pickupPointsConfig      = $pickupPointsConfig;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->shippingRateDiagnostics = $shippingRateDiagnostics;
+		$this->wcAdapter               = $wcAdapter;
+		$this->moduleHelper            = $moduleHelper;
+		$this->urlBuilder              = $urlBuilder;
+		$this->wpAdapter               = $wpAdapter;
 	}
 
 	/**
@@ -523,6 +531,7 @@ class OptionsPage {
 		// would keep serving the rates it cached before this change - charging the old shipping price
 		// until the customer's cart or address changes.
 		$this->wcAdapter->refreshShippingCacheVersion();
+		$this->shippingRateDiagnostics->discardSnapshot();
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
