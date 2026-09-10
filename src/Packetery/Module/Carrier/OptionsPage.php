@@ -16,6 +16,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -100,6 +101,11 @@ class OptionsPage {
 	private $urlBuilder;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
@@ -116,6 +122,7 @@ class OptionsPage {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
+		WcAdapter $wcAdapter,
 		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine           = $latteEngine;
@@ -128,6 +135,7 @@ class OptionsPage {
 		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->moduleHelper          = $moduleHelper;
+		$this->wcAdapter             = $wcAdapter;
 		$this->urlBuilder            = $urlBuilder;
 		$this->wpAdapter             = $wpAdapter;
 	}
@@ -511,6 +519,10 @@ class OptionsPage {
 		}
 
 		update_option( OptionPrefixer::getOptionId( $options['id'] ), $options );
+		// The address and the cart did not change, so the package hash stays the same and WooCommerce
+		// would keep serving the rates it cached before this change - charging the old shipping price
+		// until the customer's cart or address changes.
+		$this->wcAdapter->refreshShippingCacheVersion();
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(

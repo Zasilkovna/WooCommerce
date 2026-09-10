@@ -14,6 +14,7 @@ use Automattic\WooCommerce\Utilities\LoggingUtil;
 use stdClass;
 use WC_Admin_Status;
 use WC_Blocks_Utils;
+use WC_Cache_Helper;
 use WC_Data_Store;
 use WC_Logger;
 use WC_Logger_Interface;
@@ -114,6 +115,14 @@ class WcAdapter {
 	 */
 	public function countriesGetContinents(): array {
 		return WC()->countries->get_continents();
+	}
+
+	/**
+	 * Tells WooCommerce the shipping configuration changed, so the rates it cached per customer
+	 * session are dropped. Core calls it exactly like this when zones or shipping settings are saved.
+	 */
+	public function refreshShippingCacheVersion(): void {
+		WC_Cache_Helper::get_transient_version( 'shipping', true );
 	}
 
 	/**
