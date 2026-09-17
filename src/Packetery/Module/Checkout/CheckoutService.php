@@ -218,22 +218,30 @@ class CheckoutService {
 	}
 
 	/**
-	 * Gets customer country from WC cart.
-	 *
-	 * @return string|null
+	 * @return string|null Lowercase ISO2 of the shipping address, or of the billing one when the
+	 *                     shipping address has no country. Null when neither has one.
 	 */
 	public function getCustomerCountry(): ?string {
-		$shippingCountry = $this->wcAdapter->customerGetShippingCountry();
+		$shippingCountry = $this->normalizeCountry( $this->wcAdapter->customerGetShippingCountry() );
 		if ( $shippingCountry !== null ) {
-			return strtolower( $shippingCountry );
+			return $shippingCountry;
 		}
 
-		$billingCountry = $this->wcAdapter->customerGetBillingCountry();
-		if ( $billingCountry !== null ) {
-			return strtolower( $billingCountry );
+		return $this->normalizeCountry( $this->wcAdapter->customerGetBillingCountry() );
+	}
+
+	/**
+	 * An address WooCommerce has no country for holds an empty string, never null
+	 * (WC_Customer::get_shipping_country()). Without normalizing it the nullable return type above
+	 * would be a lie, the fallback to the billing address would never run and every caller checking
+	 * for null would be dead code.
+	 */
+	private function normalizeCountry( ?string $country ): ?string {
+		if ( $country === null || $country === '' ) {
+			return null;
 		}
 
-		return null;
+		return strtolower( $country );
 	}
 
 	/**
