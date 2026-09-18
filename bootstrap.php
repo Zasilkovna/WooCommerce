@@ -12,6 +12,7 @@ use Packetery\Module\Plugin;
 use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Nette\Http\RequestFactory;
+use Packetery\Nette\InvalidArgumentException;
 use Packetery\Nette\InvalidStateException;
 use Packetery\Nette\Utils\FileSystem;
 use Packetery\Tracy\Debugger;
@@ -25,6 +26,8 @@ if ( PHP_SAPI !== 'cli' ) {
 		( new RequestFactory() )->fromGlobals();
 	} catch ( InvalidStateException $invalidStateException ) {
 		$disableGetPostCookieParsing = true;
+	} catch ( InvalidArgumentException $invalidArgumentException ) {
+		// A slashless request URI path breaks the URL parser; unlike the InvalidStateException branch this must not switch on binary mode, since HttpRequestFactory substitutes a neutral URL later.
 	}
 }
 
