@@ -18,6 +18,10 @@ class CartService {
 	private const CRITERIA_BY_LENGTH = 1;
 	public const CRITERIA_BY_SUM     = 2;
 
+	public const SIZE_RESTRICTION_MAXIMUM_LENGTH = 'maximum_length';
+	public const SIZE_RESTRICTION_DIMENSIONS_SUM = 'dimensions_sum';
+	public const SIZE_RESTRICTION_DIMENSIONS     = 'dimensions';
+
 	/**
 	 * @var WpAdapter
 	 */
@@ -103,23 +107,23 @@ class CartService {
 	}
 
 	/**
+	 * @return int|null Id of the first cart product that disallows the rate.
 	 * @throws ProductNotFoundException
 	 */
-	public function getDisallowedShippingRateIds(): array {
-		$cartProducts = $this->wcAdapter->cartGetCartContent();
-
-		$disallowedShippingRateIds = [];
-		foreach ( $cartProducts as $cartProduct ) {
+	public function findProductDisallowingRate( string $shippingRate ): ?int {
+		foreach ( $this->wcAdapter->cartGetCartContent() as $cartProduct ) {
 			$productEntity = $this->productEntityFactory->fromPostId( $cartProduct['product_id'] );
 
 			if ( $productEntity->isPhysical() === false ) {
 				continue;
 			}
 
-			$disallowedShippingRateIds[] = $productEntity->getDisallowedShippingRateIds();
+			if ( in_array( $shippingRate, $productEntity->getDisallowedShippingRateIds(), true ) ) {
+				return (int) $cartProduct['product_id'];
+			}
 		}
 
-		return array_unique( array_merge( [], ...$disallowedShippingRateIds ) );
+		return null;
 	}
 
 	/**
@@ -179,39 +183,60 @@ class CartService {
 	 * @throws ProductNotFoundException
 	 */
 	public function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
-		if ( count( $cartProducts ) === 0 ) {
-			return false;
-		}
+		return $this->findCategoryRestrictingRate( $shippingRate, $cartProducts ) !== null;
+	}
 
+	/**
+	 * @param string                   $shippingRate Carrier option id.
+	 * @param array<int|string, mixed> $cartProducts Cart contents as WooCommerce hands them over.
+	 *
+	 * @return array{productId: int, categoryId: int}|null
+	 * @throws ProductNotFoundException
+	 */
+	public function findCategoryRestrictingRate( string $shippingRate, array $cartProducts ): ?array {
 		foreach ( $cartProducts as $cartProduct ) {
-			if ( ! isset( $cartProduct['product_id'] ) ) {
+			$productId = is_array( $cartProduct ) ? ( $cartProduct['product_id'] ?? null ) : null;
+			if ( is_numeric( $productId ) === false ) {
 				continue;
 			}
-			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			$productId = (int) $productId;
+			$product   = $this->wcAdapter->productFactoryGetProduct( $productId );
 			if ( ! ( $product instanceof WC_Product ) ) {
-				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
+				throw new ProductNotFoundException( "Product {$productId} not found." );
 			}
-			$productCategoryIds = $product->get_category_ids();
 
-			foreach ( $productCategoryIds as $productCategoryId ) {
-				$productCategoryEntity           = $this->productCategoryEntityFactory->fromTermId( (int) $productCategoryId );
-				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRateIds();
-				if ( in_array( $shippingRate, $disallowedCategoryShippingRates, true ) ) {
-					return true;
+			foreach ( $product->get_category_ids() as $productCategoryId ) {
+				$productCategoryEntity = $this->productCategoryEntityFactory->fromTermId( (int) $productCategoryId );
+				if ( in_array( $shippingRate, $productCategoryEntity->getDisallowedShippingRateIds(), true ) ) {
+					return [
+						'productId'  => $productId,
+						'categoryId' => (int) $productCategoryId,
+					];
 				}
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	public function getBiggestProductSize( int $mode = self::CRITERIA_BY_LENGTH ): ?array {
+		$biggestProduct = $this->findBiggestProduct( $mode );
+
+		return $biggestProduct === null ? null : $biggestProduct['sizes'];
+	}
+
+	/**
+	 * @return array{productId: int, sizes: array{length: float|int, width: float|int, depth: float|int}}|null
+	 * @throws ProductNotFoundException
+	 */
+	private function findBiggestProduct( int $mode = self::CRITERIA_BY_LENGTH ): ?array {
 		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
 			return null;
 		}
 
-		$products = $this->wcAdapter->cartGetCartContent();
-		$maxSizes = [
+		$products  = $this->wcAdapter->cartGetCartContent();
+		$productId = null;
+		$maxSizes  = [
 			'length' => 0,
 			'width'  => 0,
 			'depth'  => 0,
@@ -231,7 +256,8 @@ class CartService {
 						$productEntity->getWidthInCm( $this->wpAdapter ) +
 						$productEntity->getHeightInCm( $this->wpAdapter );
 					if ( $productSizeSum > array_sum( $maxSizes ) ) {
-						$maxSizes = [
+						$productId = (int) $product['product_id'];
+						$maxSizes  = [
 							'length' => $productEntity->getLengthInCm( $this->wpAdapter ),
 							'width'  => $productEntity->getWidthInCm( $this->wpAdapter ),
 							'depth'  => $productEntity->getHeightInCm( $this->wpAdapter ),
@@ -245,7 +271,8 @@ class CartService {
 					];
 					rsort( $productSizes, SORT_NUMERIC );
 					if ( $productSizes[0] > $maxSizes['length'] ) {
-						$maxSizes = [
+						$productId = (int) $product['product_id'];
+						$maxSizes  = [
 							'length' => $productSizes[0],
 							'width'  => $productSizes[1],
 							'depth'  => $productSizes[2],
@@ -255,34 +282,54 @@ class CartService {
 			}
 		}
 
-		if ( $maxSizes['length'] === 0 ) {
+		if ( $productId === null || $maxSizes['length'] === 0 ) {
 			return null;
 		}
 
-		return $maxSizes;
+		return [
+			'productId' => $productId,
+			'sizes'     => $maxSizes,
+		];
 	}
 
-	public function cartContainsProductOversizedForCarrier( Carrier\Options $carrierOptions ): bool {
+	/**
+	 * Names the product the size check actually compared, which is the cart-wide biggest one - with
+	 * restriction "dimensions" that need not be every product breaching the limit.
+	 *
+	 * @return array{productId: int, restriction: string, measured: float|int, limit: float}|null
+	 * @throws ProductNotFoundException
+	 */
+	public function findOversizedProductForCarrier( Carrier\Options $carrierOptions ): ?array {
 		$sizeRestrictions = $carrierOptions->getSizeRestrictions();
 		if ( $sizeRestrictions === null ) {
-			return false;
+			return null;
 		}
-		$biggestProductSizeBySum    = $this->getBiggestProductSize( self::CRITERIA_BY_SUM );
-		$biggestProductSizeByLength = $this->getBiggestProductSize();
-		if ( $biggestProductSizeBySum === null || $biggestProductSizeByLength === null ) {
-			return false;
+		$biggestBySum    = $this->findBiggestProduct( self::CRITERIA_BY_SUM );
+		$biggestByLength = $this->findBiggestProduct();
+		if ( $biggestBySum === null || $biggestByLength === null ) {
+			return null;
 		}
 
 		if ( isset( $sizeRestrictions['maximum_length'] ) && is_numeric( trim( (string) $sizeRestrictions['maximum_length'] ) ) ) {
-			$productMax = max( $biggestProductSizeByLength );
+			$productMax = max( $biggestByLength['sizes'] );
 			if ( $productMax > $sizeRestrictions['maximum_length'] ) {
-				return true;
+				return [
+					'productId'   => $biggestByLength['productId'],
+					'restriction' => self::SIZE_RESTRICTION_MAXIMUM_LENGTH,
+					'measured'    => $productMax,
+					'limit'       => (float) $sizeRestrictions['maximum_length'],
+				];
 			}
 		}
 		if ( isset( $sizeRestrictions['dimensions_sum'] ) && is_numeric( trim( (string) $sizeRestrictions['dimensions_sum'] ) ) ) {
-			$productSum = array_sum( $biggestProductSizeBySum );
+			$productSum = array_sum( $biggestBySum['sizes'] );
 			if ( $productSum > $sizeRestrictions['dimensions_sum'] ) {
-				return true;
+				return [
+					'productId'   => $biggestBySum['productId'],
+					'restriction' => self::SIZE_RESTRICTION_DIMENSIONS_SUM,
+					'measured'    => $productSum,
+					'limit'       => (float) $sizeRestrictions['dimensions_sum'],
+				];
 			}
 		}
 
@@ -298,15 +345,21 @@ class CartService {
 				$sizeRestrictions['height'],
 			];
 			rsort( $dimensions, SORT_NUMERIC );
-			rsort( $biggestProductSizeByLength, SORT_NUMERIC );
+			$productSizes = $biggestByLength['sizes'];
+			rsort( $productSizes, SORT_NUMERIC );
 
 			foreach ( $dimensions as $index => $dimension ) {
-				if ( $biggestProductSizeByLength[ $index ] > $dimension ) {
-					return true;
+				if ( $productSizes[ $index ] > $dimension ) {
+					return [
+						'productId'   => $biggestByLength['productId'],
+						'restriction' => self::SIZE_RESTRICTION_DIMENSIONS,
+						'measured'    => $productSizes[ $index ],
+						'limit'       => (float) $dimension,
+					];
 				}
 			}
 		}
 
-		return false;
+		return null;
 	}
 }

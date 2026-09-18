@@ -69,6 +69,8 @@ services:
 	- Packetery\Module\Checkout\CartService
 	- Packetery\Module\Checkout\SessionService
 	- Packetery\Module\Checkout\ShippingRateFactory
+	- Packetery\Module\Checkout\ShippingRateDiagnostics
+	- Packetery\Module\Checkout\RateUnavailabilityPresenter
 	- Packetery\Module\Checkout\OrderUpdater
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory

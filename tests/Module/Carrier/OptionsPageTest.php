@@ -13,7 +13,9 @@ use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Checkout\ShippingRateDiagnostics;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -51,6 +53,8 @@ class OptionsPageTest extends TestCase {
 			$this->createMock( CarrierOptionsFactory::class ),
 			$this->createMock( ModuleHelper::class ),
 			$this->createMock( UrlBuilder::class ),
+			$this->createMock( ShippingRateDiagnostics::class ),
+			$this->createMock( WcAdapter::class ),
 			$this->createMock( WpAdapter::class ),
 		);
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointcz' ) );

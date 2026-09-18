@@ -16,11 +16,14 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
+use Packetery\Module\Checkout\RateUnavailabilityPresenter;
+use Packetery\Module\Checkout\ShippingRateDiagnostics;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DiagnosticsLogger\DiagnosticsLogger;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Forms\BugReportForm;
 use Packetery\Module\Forms\DiagnosticsLoggingFormFactory;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -125,6 +128,11 @@ class Page {
 	private $packetSynchronizer;
 
 	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
@@ -144,6 +152,16 @@ class Page {
 	 */
 	private $diagnosticsLoggingFormFactory;
 
+	/**
+	 * @var ShippingRateDiagnostics
+	 */
+	private $shippingRateDiagnostics;
+
+	/**
+	 * @var RateUnavailabilityPresenter
+	 */
+	private $rateUnavailabilityPresenter;
+
 	/** @var DiagnosticsLogger  */
 	private $diagnosticsLogger;
 
@@ -158,10 +176,13 @@ class Page {
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
 		PacketSynchronizer $packetSynchronizer,
+		WcAdapter $wcAdapter,
 		WpAdapter $wpAdapter,
 		string $supportEmailAddress,
 		BugReportForm $bugReportForm,
 		DiagnosticsLoggingFormFactory $diagnosticsLoggingFormFactory,
+		ShippingRateDiagnostics $shippingRateDiagnostics,
+		RateUnavailabilityPresenter $rateUnavailabilityPresenter,
 		DiagnosticsLogger $diagnosticsLogger
 	) {
 		$this->latteEngine                   = $latteEngine;
@@ -175,9 +196,12 @@ class Page {
 		$this->urlBuilder                    = $urlBuilder;
 		$this->packetSynchronizer            = $packetSynchronizer;
 		$this->supportEmailAddress           = $supportEmailAddress;
+		$this->wcAdapter                     = $wcAdapter;
 		$this->wpAdapter                     = $wpAdapter;
 		$this->bugReportForm                 = $bugReportForm;
 		$this->diagnosticsLoggingFormFactory = $diagnosticsLoggingFormFactory;
+		$this->shippingRateDiagnostics       = $shippingRateDiagnostics;
+		$this->rateUnavailabilityPresenter   = $rateUnavailabilityPresenter;
 		$this->diagnosticsLogger             = $diagnosticsLogger;
 	}
 
@@ -959,6 +983,70 @@ class Page {
 		}
 	}
 
+	private function getCheckoutDetectionLabel( string $checkoutDetection ): string {
+		if ( $checkoutDetection === OptionsProvider::BLOCK_CHECKOUT_DETECTION ) {
+			return $this->wpAdapter->__( 'Block checkout', 'packeta' );
+		}
+		if ( $checkoutDetection === OptionsProvider::CLASSIC_CHECKOUT_DETECTION ) {
+			return $this->wpAdapter->__( 'Classic checkout', 'packeta' );
+		}
+
+		return $this->wpAdapter->__( 'Detected automatically', 'packeta' );
+	}
+
+	/**
+	 * Flattens the stored snapshot into rows the template can print, resolving every reason to a
+	 * sentence and a link at render time rather than at collection time.
+	 *
+	 * @return array<string, mixed>|null
+	 */
+	private function getRateDiagnosticsForView(): ?array {
+		// A stored record must not be read as the current state: while collection is off nothing
+		// rewrites it, so it would keep claiming a carrier is shown after the settings changed.
+		if ( $this->shippingRateDiagnostics->isActive() === false ) {
+			return null;
+		}
+
+		$snapshot = $this->shippingRateDiagnostics->getSnapshot();
+		if ( $snapshot === null ) {
+			return null;
+		}
+
+		$carriers = [];
+		foreach ( $snapshot['carriers'] as $carrier ) {
+			$reasons = [];
+			foreach ( $carrier['unavailabilities'] as $unavailability ) {
+				$reasons[] = $this->rateUnavailabilityPresenter->present( $unavailability, $carrier['carrierId'] );
+			}
+			$carriers[] = [
+				'carrierName' => $carrier['carrierName'],
+				'isOffered'   => $carrier['isOffered'],
+				'cost'        => $carrier['costInCheckout'] === null
+					? null
+					: $this->wcAdapter->price( $carrier['costInCheckout'] ),
+				'reasons'     => $reasons,
+			];
+		}
+
+		$packageReasons = [];
+		foreach ( $snapshot['packageUnavailabilities'] as $unavailability ) {
+			$packageReasons[] = $this->rateUnavailabilityPresenter->present( $unavailability, '' );
+		}
+
+		return [
+			'generatedAt'       => $snapshot['generatedAt'],
+			'methodRan'         => $snapshot['methodRan'],
+			'customerCountry'   => $snapshot['customerCountry'],
+			'cartWeightKg'      => $snapshot['cartWeightKg'],
+			'totalProductValue' => $this->wcAdapter->price( $snapshot['totalProductValue'] ),
+			'cartTotal'         => $this->wcAdapter->price( $snapshot['cartTotal'] ),
+			'itemCount'         => $snapshot['itemCount'],
+			'checkoutDetection' => $this->getCheckoutDetectionLabel( $snapshot['checkoutDetection'] ),
+			'packageReasons'    => $packageReasons,
+			'carriers'          => $carriers,
+		];
+	}
+
 	/**
 	 *  Renders page.
 	 */
@@ -980,6 +1068,7 @@ class Page {
 				'bugReportForm'          => $this->bugReportForm->createForm(),
 				'diagnosticsLoggingForm' => $this->diagnosticsLoggingFormFactory->createForm(),
 				'hasPacketaLog'          => is_file( $this->diagnosticsLogger->getPacketaLogPath() ),
+				'rateDiagnostics'        => $this->getRateDiagnosticsForView(),
 			];
 		}
 
@@ -1102,6 +1191,23 @@ class Page {
 			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
 			'diagnosticsLoggingDescription'          => $this->wpAdapter->__( 'If some plugin functionality is not working correctly, you can enable diagnostic logging. After enabling it, please repeat the action that is not working as expected. The log will then record important function calls, passed parameters, and their results. Once you have reproduced the issue, disable diagnostic logging again. This information can help developers troubleshoot the problem. You can find the log in the packeta.log file, which is stored by default in wp-content/plugins/packeta/log.', 'packeta' ),
 			'diagnosticsLoggingLink'                 => $this->wpAdapter->__( 'Delete log', 'packeta' ),
+			'rateDiagnosticsTitle'                   => $this->wpAdapter->__( 'Why a carrier is not shown in checkout', 'packeta' ),
+			'rateDiagnosticsDescription'             => $this->wpAdapter->__( 'Enable the logging above, build a new cart and open the checkout - the evaluation of every Packeta carrier then appears here. Stay signed in as an administrator or shop manager in the same browser; nothing is recorded for customers.', 'packeta' ),
+			'rateDiagnosticsEmpty'                   => $this->wpAdapter->__( 'No evaluation recorded yet. Enable the logging above, build a new cart and open the checkout while signed in as an administrator or shop manager.', 'packeta' ),
+			'rateDiagnosticsCarrier'                 => $this->wpAdapter->__( 'Carrier', 'packeta' ),
+			'rateDiagnosticsState'                   => $this->wpAdapter->__( 'State', 'packeta' ),
+			'rateDiagnosticsReasons'                 => $this->wpAdapter->__( 'Reason it is not offered', 'packeta' ),
+			'rateDiagnosticsOffered'                 => $this->wpAdapter->__( 'Shown', 'packeta' ),
+			'rateDiagnosticsHidden'                  => $this->wpAdapter->__( 'Hidden', 'packeta' ),
+			'rateDiagnosticsCart'                    => $this->wpAdapter->__( 'Evaluated cart', 'packeta' ),
+			'rateDiagnosticsRecordedAt'              => $this->wpAdapter->__( 'Recorded at', 'packeta' ),
+			'rateDiagnosticsCountry'                 => $this->wpAdapter->__( 'Delivery country', 'packeta' ),
+			'rateDiagnosticsWeight'                  => $this->wpAdapter->__( 'Cart weight - decides the weight rules', 'packeta' ),
+			'rateDiagnosticsProductValue'            => $this->wpAdapter->__( 'Product value - decides the product value rules', 'packeta' ),
+			'rateDiagnosticsCartTotal'               => $this->wpAdapter->__( 'Cart total incl. tax - decides the free shipping limit', 'packeta' ),
+			'rateDiagnosticsItemCount'               => $this->wpAdapter->__( 'Number of items in the cart', 'packeta' ),
+			'rateDiagnosticsCheckoutType'            => $this->wpAdapter->__( 'Checkout type in Packeta settings', 'packeta' ),
+			'rateDiagnosticsNotEvaluated'            => $this->wpAdapter->__( 'Nothing was evaluated when this record was taken.', 'packeta' ),
 			'bugReportScreenshotsTitle'              => $this->wpAdapter->__( 'If possible, please provide screenshots showing the problem. You can do it this way:', 'packeta' ),
 			'bugReportScreenshotsFirstStep'          => sprintf(
 			/* translators: 1: ImgBB link start 2: ImgBB link end */

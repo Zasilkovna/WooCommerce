@@ -10,6 +10,7 @@ use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Checkout\Checkout;
 use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\Checkout\CheckoutStorage;
+use Packetery\Module\Checkout\ShippingRateDiagnostics;
 use Packetery\Module\CronService;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
@@ -256,6 +257,11 @@ class HookRegistrar {
 	private $checkoutStorage;
 
 	/**
+	 * @var ShippingRateDiagnostics
+	 */
+	private $shippingRateDiagnostics;
+
+	/**
 	 * @var WizardAssetManager
 	 */
 	private $wizardAssetManager;
@@ -317,6 +323,7 @@ class HookRegistrar {
 		ModuleHelper $moduleHelper,
 		ShippingProvider $shippingProvider,
 		CheckoutStorage $checkoutStorage,
+		ShippingRateDiagnostics $shippingRateDiagnostics,
 		WizardAssetManager $wizardAssetManager,
 		DashboardPage $dashboardPage,
 		EmailShortcodes $shortcodes,
@@ -363,6 +370,7 @@ class HookRegistrar {
 		$this->moduleHelper                = $moduleHelper;
 		$this->shippingProvider            = $shippingProvider;
 		$this->checkoutStorage             = $checkoutStorage;
+		$this->shippingRateDiagnostics     = $shippingRateDiagnostics;
 		$this->wizardAssetManager          = $wizardAssetManager;
 		$this->dashboardPage               = $dashboardPage;
 		$this->shortcodes                  = $shortcodes;
@@ -405,6 +413,11 @@ class HookRegistrar {
 		}
 
 		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethods' ] );
+
+		$this->wpAdapter->addAction(
+			'woocommerce_after_calculate_totals',
+			[ $this->shippingRateDiagnostics, 'saveSnapshot' ]
+		);
 		$this->cronService->register();
 		$this->packetAutoSubmitter->register();
 		$this->apiExtender->register();

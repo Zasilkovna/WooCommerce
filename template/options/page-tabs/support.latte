@@ -1,5 +1,6 @@
 {varType array $translations}
 {varType bool $hasPacketaLog}
+{varType array|null $rateDiagnostics}
 {varType string $deleteDiagnosticsLogsLink}
 {varType string $exportLink}
 {varType null|string $lastExport}
@@ -27,6 +28,93 @@
 
 {if $hasPacketaLog === true}
 	<p><a href="{$deleteDiagnosticsLogsLink}" class="button js-packetery-delete-log">{$translations['diagnosticsLoggingLink']}</a></p>
+{/if}
+<hr class="packetery-section-divider">
+
+<h3>{$translations['rateDiagnosticsTitle']}</h3>
+<p>{$translations['rateDiagnosticsDescription']}</p>
+
+{if $rateDiagnostics === null}
+	<p><em>{$translations['rateDiagnosticsEmpty']}</em></p>
+{else}
+	<p><strong>{$translations['rateDiagnosticsCart']}</strong></p>
+	<table id="packeta-rate-diagnostics-cart" class="wp-list-table widefat striped" style="max-width: 640px; margin-bottom: 1em">
+		<tbody>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsRecordedAt']}</th>
+			<td>{$rateDiagnostics['generatedAt']}</td>
+		</tr>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsCountry']}</th>
+			<td>{$rateDiagnostics['customerCountry']|upper}</td>
+		</tr>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsWeight']}</th>
+			<td>{$rateDiagnostics['cartWeightKg']} kg</td>
+		</tr>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsProductValue']}</th>
+			<td>{$rateDiagnostics['totalProductValue']|noescape}</td>
+		</tr>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsCartTotal']}</th>
+			<td>{$rateDiagnostics['cartTotal']|noescape}</td>
+		</tr>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsItemCount']}</th>
+			<td>{$rateDiagnostics['itemCount']}</td>
+		</tr>
+		<tr>
+			<th scope="row">{$translations['rateDiagnosticsCheckoutType']}</th>
+			<td>{$rateDiagnostics['checkoutDetection']}</td>
+		</tr>
+		</tbody>
+	</table>
+
+	{if $rateDiagnostics['methodRan'] === false && count($rateDiagnostics['packageReasons']) === 0}
+		<p><em>{$translations['rateDiagnosticsNotEvaluated']}</em></p>
+	{/if}
+
+	{if count($rateDiagnostics['packageReasons']) > 0}
+		<ul>
+			<li n:foreach="$rateDiagnostics['packageReasons'] as $reason">
+				{$reason['text']}
+				{if $reason['link'] !== null}<a href="{$reason['link']}">{$reason['linkText']}</a>{/if}
+			</li>
+		</ul>
+	{/if}
+
+	{if count($rateDiagnostics['carriers']) > 0}
+		<table id="packeta-rate-diagnostics-carriers" class="wp-list-table widefat striped">
+			<thead>
+			<tr>
+				<th>{$translations['rateDiagnosticsCarrier']}</th>
+				<th>{$translations['rateDiagnosticsState']}</th>
+				<th>{$translations['rateDiagnosticsReasons']}</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr n:foreach="$rateDiagnostics['carriers'] as $carrier">
+				<td>{$carrier['carrierName']}</td>
+				<td>
+					{if $carrier['isOffered'] === true}
+						{$translations['rateDiagnosticsOffered']} ({$carrier['cost']|noescape})
+					{else}
+						{$translations['rateDiagnosticsHidden']}
+					{/if}
+				</td>
+				<td>
+					<ul n:if="count($carrier['reasons']) > 0" style="margin: 0">
+						<li n:foreach="$carrier['reasons'] as $reason">
+							{$reason['text']}
+							{if $reason['link'] !== null}<a href="{$reason['link']}">{$reason['linkText']}</a>{/if}
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	{/if}
 {/if}
 <hr class="packetery-section-divider">
 

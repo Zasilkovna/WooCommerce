@@ -74,6 +74,15 @@ trait WcCartTrait {
 		return WC()->cart;
 	}
 
+	/**
+	 * @return array<int|string, array<string, mixed>> Shipping packages as WooCommerce builds them.
+	 */
+	public function cartGetShippingPackages(): array {
+		$cart = $this->cart();
+
+		return $cart === null ? [] : $cart->get_shipping_packages();
+	}
+
 	public function cartCalculateTotals(): void {
 		WC()->cart->calculate_totals();
 	}

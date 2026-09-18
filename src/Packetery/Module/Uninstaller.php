@@ -77,6 +77,7 @@ class Uninstaller {
 		$transientsToDelete = $this->optionsRepository->getAllTransientsByPrefixes(
 			[
 				Transients::CHECKOUT_DATA_PREFIX,
+				Transients::RATE_DIAGNOSTICS_PREFIX,
 				Transients::MESSAGE_MANAGER_MESSAGES_PREFIX,
 				Transients::ORDER_COLLECTION_PRINT_ORDER_IDS_PREFIX,
 				Transients::LABEL_PRINT_ORDER_IDS_PREFIX,
