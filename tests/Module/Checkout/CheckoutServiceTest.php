@@ -252,32 +252,42 @@ class CheckoutServiceTest extends TestCase {
 		$this->assertFalse( $this->checkoutService->isCarDeliveryOrder() );
 	}
 
-	public function testGetCustomerCountryWhenCustomerShippingCountryIsNotNull(): void {
-		$this->createCheckoutServiceMock();
-
-		$expectedCountry = 'cz';
-		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( strtoupper( $expectedCountry ) );
-
-		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
+	/**
+	 * WooCommerce holds an empty string for an address with no country, never null, so the empty
+	 * string is the value the checkout really passes.
+	 *
+	 * @return array<string, array{string|null, string|null, string|null}>
+	 */
+	public static function customerCountryProvider(): array {
+		return [
+			'shipping country wins'                        => [ 'CZ', null, 'cz' ],
+			'shipping country is not overruled by billing' => [ 'CZ', 'SK', 'cz' ],
+			'null shipping country falls back to billing'  => [ null, 'CZ', 'cz' ],
+			'empty shipping country falls back to billing' => [ '', 'CZ', 'cz' ],
+			'both null'                                    => [ null, null, null ],
+			'both empty'                                   => [ '', '', null ],
+			'empty shipping, null billing'                 => [ '', null, null ],
+		];
 	}
 
-	public function testGetCustomerCountryWhenCustomerShippingCountryIsNull(): void {
+	/**
+	 * @dataProvider customerCountryProvider
+	 *
+	 * @param string|null $shippingCountry Country of the shipping address, as WooCommerce returns it.
+	 * @param string|null $billingCountry  Country of the billing address, as WooCommerce returns it.
+	 * @param string|null $expectedCountry Lowercase ISO2, or null when neither address has a country.
+	 */
+	public function testGetCustomerCountry(
+		?string $shippingCountry,
+		?string $billingCountry,
+		?string $expectedCountry
+	): void {
 		$this->createCheckoutServiceMock();
 
-		$expectedCountry = 'cz';
-		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
-		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( strtoupper( $expectedCountry ) );
+		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( $shippingCountry );
+		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( $billingCountry );
 
-		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
-	}
-
-	public function testGetCustomerCountryWhenCustomerShippingCountryAndCustomerBillingCountryAreNull(): void {
-		$this->createCheckoutServiceMock();
-
-		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
-		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( null );
-
-		$this->assertEquals( '', $this->checkoutService->getCustomerCountry() );
+		$this->assertSame( $expectedCountry, $this->checkoutService->getCustomerCountry() );
 	}
 
 	public function testAreBlocksUsedInCheckoutBlockDetection(): void {
