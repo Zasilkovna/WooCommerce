@@ -149,7 +149,7 @@ woocommerce applies these mechanisms across its modules.
 |---|---|---|
 | Scheduled jobs | Carrier feed, packet status, log deletion and transient purge, all through the Action Scheduler | [VERIFY: src/Packetery/Module/CronService.php#deactivate] |
 | Logging | Every API result and every carrier change | [VERIFY: src/Packetery/Module/Log/DbLogger.php#DbLogger] |
-| Platform adapters | Every call of a WordPress or WooCommerce function | [VERIFY: src/Packetery/Module/Framework/WpAdapter.php#WpAdapter] |
+| Platform adapters | Most calls of a WordPress or WooCommerce function | [VERIFY: src/Packetery/Module/Framework/WpAdapter.php#WpAdapter] |
 | Order storage modes | The classic storage and the High Performance Order Storage | [VERIFY: src/Packetery/Module/ModuleHelper.php#isHposEnabled] |
 | Flash messages | The result of an admin action | [VERIFY: src/Packetery/Module/MessageManager.php#flash_message] |
 

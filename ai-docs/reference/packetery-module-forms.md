@@ -23,8 +23,10 @@ the stored until form and the bug report form
 [VERIFY: src/Packetery/Module/Forms/ShippingClassFormFactory.php#createFromClassAndCarrier].
 
 packetery-module-forms holds 9 files, 1066 lines of logic and 37 public methods. The module writes
-the carrier settings to the WordPress option of that carrier, and every other value belongs to the
-module that asked for the form [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#updateOptions].
+the carrier settings to the WordPress option of that carrier
+[VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#updateOptions], and it writes the switch
+of the diagnostic logging [VERIFY: src/Packetery/Module/Forms/DiagnosticsLoggingFormFactory.php#onFormSuccess].
+Every other value belongs to the module that asked for the form.
 
 > ⚠ add business context (elicitation)
 
@@ -56,7 +58,7 @@ pricing type decides whether the table holds weight limits or order value limits
 |---|---|---|---|
 | `active`, `name` | Always | The switch and the name that the checkout shows | [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm] |
 | `weight_limits`, `product_value_limits` | The selected pricing type | Repeatable rows of a limit and a price | [VERIFY: src/Packetery/Module/Forms/ShippingFormHelper.php#addWeightLimit] |
-| `free_shipping_limit`, `coupon_free_shipping` | Always | The order value that makes the delivery free, and the coupon rules | [VERIFY: src/Packetery/Module/Forms/ShippingFormHelper.php#addProductValueLimit] |
+| `free_shipping_limit`, `coupon_free_shipping` | Always | The order value that makes the delivery free, and the coupon rules | [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createFormTemplate] |
 | `default_COD_surcharge`, `surcharge_limits`, `cod_rounding` | The carrier supports cash on delivery | The surcharge table and the rounding rule | [VERIFY: src/Packetery/Module/Forms/ShippingFormHelper.php#addSurchargeLimit] |
 | `dimensions_restrictions` | Always | Either the three dimensions, or the longest side and the sum of the sides | [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm] |
 | `vendor_groups` | The carrier is a compound carrier | One checkbox for each vendor group of the country | [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#getAvailableVendors] |
@@ -65,9 +67,9 @@ pricing type decides whether the table holds weight limits or order value limits
 | `days_until_shipping`, `shipping_time_cut_off` | The carrier is a car delivery carrier | The shipping day and the time of the day | [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm] |
 | `max_cart_value`, `class_calculation_type` | The shop uses the carrier configuration of WooCommerce | The cart limit and the rule for several shipping classes | [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm] |
 
-The validation rejects two limits of one table that overlap, and it rejects a compound carrier with
-fewer vendor groups than the minimum
-[VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#isAvailableVendorsCountLowerThanRequiredMinimum].
+The validation rejects two limits of one table that overlap, and it rejects a compound carrier whose
+form offers enough vendor groups but whose user selected fewer than the minimum
+[VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#validateOptions].
 The save merges the new limits with the stored ones, sorts them and keeps the per class section of
 the settings [VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#updateOptions].
 
@@ -81,23 +83,25 @@ references → packetery-module-carrier
 references → packetery-module-options
 references → packetery-module-order
 references → packetery-module-email
+references → packetery-module-framework
 
-The carrier form reads and writes the settings of `packetery-module-carrier`, and it uses the option
-name convention of that module
-[VERIFY: src/Packetery/Module/Forms/ShippingFormHelper.php#createUrl]. The currency rates form takes
+The carrier form reads and writes the settings of `packetery-module-carrier`, and that module builds
+the option name of a carrier
+[VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm]. The currency rates form takes
 the currency list from `packetery-module-order`, and it takes the stored rates from
 `packetery-module-options` [VERIFY: src/Packetery/Module/Forms/CurrencyRatesFormFactory.php#createForm].
 The bug report form hands the message to `packetery-module-email`
-[VERIFY: src/Packetery/Module/Forms/BugReportForm.php#onFormValidate]. The forms themselves come from
+[VERIFY: src/Packetery/Module/Forms/BugReportForm.php#onFormSuccess]. The forms themselves come from
 the form factory of `packetery-module-root`, which holds the validation messages
 [VERIFY: src/Packetery/Module/Forms/StoredUntilFormFactory.php#createForm].
 
 ## packetery-module-forms: known limitations
 
-packetery-module-forms has these limitations evidenced in the code. The names of most carrier
-settings are string literals of the factory, and only the fields of the price table have constants
-[VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm]. A change of one key needs a
-change in the factory and in the settings object of the carrier module.
+packetery-module-forms has these limitations evidenced in the code. The names of the surcharge
+fields, of the size restrictions and of the coupon rules are string literals of the factory, while
+the fields of the price table have constants in the carrier module
+[VERIFY: src/Packetery/Module/Forms/CarrierFormFactory.php#createForm]. A change of one such key
+needs a change in the factory and in the settings object of the carrier module.
 
 The data object of the order form has no reader in this module, so its use lives elsewhere
 [VERIFY: src/Packetery/Module/Forms/FormData/OrderFormData.php#OrderFormData]. The shipping classes

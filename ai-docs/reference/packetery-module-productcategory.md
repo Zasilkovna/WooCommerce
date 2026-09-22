@@ -24,8 +24,8 @@ packetery-module-productcategory holds the same rule as the product module, one 
 module holds 4 files, 213 lines of logic and 14 public methods, and it owns the `category-settings`
 in one metadata key of a category [VERIFY: src/Packetery/Module/ProductCategory/Entity.php#META_DISALLOWED_SHIPPING_RATES].
 A category rule covers every product of that category, so a shop with many products sets the rule
-once instead of on each product
-[VERIFY: src/Packetery/Module/ProductCategory/ProductCategoryEntityFactory.php#fromTermId].
+once instead of on each product. The cart reads the categories of every item and applies the rule
+there [VERIFY: src/Packetery/Module/ProductCategory/ProductCategoryEntityFactory.php#fromTermId].
 
 > ⚠ add business context (elicitation)
 
@@ -47,7 +47,9 @@ column.
 
 The metadata key of the category differs from the key of the product, so the two settings never mix
 [VERIFY: src/Packetery/Module/ProductCategory/Entity.php#META_DISALLOWED_SHIPPING_RATES]. The save
-ignores the quick edit of the category list and accepts only the `product_cat` taxonomy
+ignores the quick edit of the category list
+[VERIFY: src/Packetery/Module/ProductCategory/FormFields.php#saveData] and accepts only the
+`product_cat` taxonomy
 [VERIFY: src/Packetery/Module/ProductCategory/Entity.php#TAXONOMY_NAME].
 
 ## packetery-module-productcategory: dependencies
@@ -58,6 +60,7 @@ Structured lines:
 references → packetery-module-root
 references → packetery-module-carrier
 references → packetery-module-log
+references → packetery-module-framework
 
 The checkbox list holds the active carriers of `packetery-module-carrier`, and it leaves out the car
 delivery carriers that the shop disabled

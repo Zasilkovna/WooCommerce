@@ -61,11 +61,12 @@ Settings that affect the start of the plugin:
 | `packetery` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions] |
 | `packetery_version` | `src/Packetery/Module/Upgrade.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#VERSION] | [VERIFY: src/Packetery/Module/Upgrade.php#check] |
 | `packetery_advanced` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY_ADVANCED] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#isWcCarrierConfigEnabled] |
-| `packeta_feature_flags` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#FEATURE_FLAGS] | [VERIFY: src/Packetery/Module/Options/OptionNames.php#FEATURE_FLAGS_ERROR_COUNTER] |
+| `packeta_feature_flags` | `src/Packetery/Module/Uninstaller.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#FEATURE_FLAGS] | [VERIFY: src/Packetery/Module/Uninstaller.php#cleanUp] |
 
 The API password and the sender of the shop live in the option `packetery`, and the plugin derives
-the API key from the password [VERIFY: src/Packetery/Module/Options/Page.php#sanitizePacketeryOptions].
-Never copy those values into a document.
+the API key from the password
+[VERIFY: src/Packetery/Module/Options/Page.php#sanitizePacketeryOptions]. This documentation names
+those keys and never carries their values.
 
 ## woocommerce: platform modules
 
@@ -75,7 +76,7 @@ their own, and the modules with a document use them.
 
 | Module | Behaviour | Anchor |
 |---|---|---|
-| packetery-module-framework | Wraps the functions of WordPress and of WooCommerce in two adapters and a set of traits, so no other module calls a global function | [VERIFY: src/Packetery/Module/Framework/WpAdapter.php#WpAdapter] |
+| packetery-module-framework | Wraps the functions of WordPress and of WooCommerce in two adapters and a set of traits, which most other modules use instead of a global function | [VERIFY: src/Packetery/Module/Framework/WpAdapter.php#WpAdapter] |
 | packetery-module-entityfactory | Builds the entities of the domain module from the data of WordPress and of the API | [VERIFY: src/Packetery/Module/EntityFactory/SizeFactory.php#SizeFactory] |
 | packetery-module-blocks | Integrates the Packeta widget into the block checkout of WooCommerce | [VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#WidgetIntegration] |
 
@@ -91,7 +92,7 @@ packetery-module-upgrade, packetery-module-exception and packetery-module-paymen
 |---|---|---|
 | packetery-module-diagnosticslogger | Writes a diagnostic file when the shop enables the diagnostic logging | [VERIFY: src/Packetery/Module/DiagnosticsLogger/DiagnosticsLogger.php#getPacketaLogPath] |
 | packetery-module-upgrade | Holds the one migration that belongs to a single plugin version | [VERIFY: src/Packetery/Module/Upgrade/Version_1_4_2.php#run] |
-| packetery-module-exception | Holds the exception classes of the plugin, and it carries no logic | [VERIFY: src/Packetery/Module/Exception/InvalidCarrierException.php#InvalidCarrierException] |
+| packetery-module-exception | Holds the exception classes of the plugin modules, and it carries no logic; the domain module has its own API exceptions | [VERIFY: src/Packetery/Module/Exception/InvalidCarrierException.php#InvalidCarrierException] |
 | packetery-module-payment | Answers whether a payment method is cash on delivery | [VERIFY: src/Packetery/Module/Payment/PaymentHelper.php#isCodPaymentMethod] |
 
 The upgrade module holds only the migration of one version. The upgrade of the schema and of the
