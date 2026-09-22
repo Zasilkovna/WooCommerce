@@ -1,0 +1,43 @@
+service: woocommerce
+source_commit: c5bc5fe5
+aliases: [packetery-module-labels]
+
+assumptions:
+  - "Generated on branch docs/teams at commit c5bc5fe5."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Labels; per-module counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded from the counts."
+  - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
+
+modules:
+  - name: packetery-module-labels
+    path: src/Packetery/Module/Labels
+    lines: 291
+    doc: reference/packetery-module-labels.md
+
+exposes:
+  - kind: library
+    name: getPacketaPacketIdsWithCourierNumbers
+    module: packetery-module-labels
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Labels/CarrierLabelService.php#getPacketaPacketIdsWithCourierNumbers
+    notes: "Gives the packet identifiers with their courier numbers for a carrier label print."
+  - kind: library
+    name: getOffset
+    module: packetery-module-labels
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Labels/LabelPrintParametersService.php#getOffset
+    notes: "Gives the first label field of the sheet that the print uses."
+
+calls:
+  - service: packeta-soap-api
+    kind: other
+    purpose: Reads the courier number of a packet.
+    module: packetery-module-labels
+    evidence: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiSuccess
+
+unknowns:
+  - question: Which code limits the print offset against the maximum offset of the label format.
+    checked: the parameter service of this module, which does no such check
+    resolved_by: packetery-module-order
+    blocks: "-"

@@ -1,0 +1,36 @@
+service: woocommerce
+source_commit: c5bc5fe5
+aliases: [packetery-module-email]
+
+assumptions:
+  - "Generated on branch docs/teams at commit c5bc5fe5."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Email; per-module counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded from the counts."
+  - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
+
+modules:
+  - name: packetery-module-email
+    path: src/Packetery/Module/Email
+    lines: 347
+    doc: reference/packetery-module-email.md
+
+exposes:
+  - kind: other
+    name: packeta_tracking_number
+    module: packetery-module-email
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Email/EmailShortcodes.php#trackingNumber
+    notes: "One of fourteen shortcodes for the email templates of the shop."
+  - kind: other
+    name: sendBugReport
+    module: packetery-module-email
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Email/BugReportEmail.php#sendBugReport
+    notes: "Sends the message of the administrator and the diagnostic archive to the Packeta support."
+
+unknowns:
+  - question: Whether the shortcode of the pickup point country must give the country of the point or of the customer.
+    checked: the method behind that shortcode, which reads the shipping country
+    resolved_by: a person owning the email templates
+    blocks: "exposes: packeta_tracking_number"
