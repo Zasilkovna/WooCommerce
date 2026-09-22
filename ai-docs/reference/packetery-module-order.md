@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 97720cfc
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Order]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-order, type-reference]
 ---
 
@@ -18,9 +18,13 @@ packetery-module-order keeps the Packeta data of each WooCommerce order and conn
 the Packeta API. The module owns one database table, and it builds the `Packetery\Core\Entity\Order`
 object from that table and from `WC_Order` [VERIFY: src/Packetery/Module/Order/Builder.php#build].
 The module gives the administrator all screens that work with a packet. These screens are the order
-metabox [VERIFY: src/Packetery/Module/Order/Metabox.php#add_meta_boxes], the columns and the bulk
-actions of the order grid [VERIFY: src/Packetery/Module/Order/GridExtender.php#addOrderListColumns],
-and the label print pages [VERIFY: src/Packetery/Module/Order/LabelPrint.php#outputLabelsPdf].
+metabox [VERIFY: src/Packetery/Module/Order/Metabox.php#add_meta_boxes] and the customs declaration
+metabox [VERIFY: src/Packetery/Module/Order/CustomsDeclarationMetabox.php#addMetaBoxes], the columns
+and the bulk actions of the order grid
+[VERIFY: src/Packetery/Module/Order/GridExtender.php#addOrderListColumns], the label print pages
+[VERIFY: src/Packetery/Module/Order/LabelPrint.php#outputLabelsPdf] with the handover protocol page
+[VERIFY: src/Packetery/Module/Order/CollectionPrint.php#requestShipment], and the modal windows of
+the order detail [VERIFY: src/Packetery/Module/Order/CarrierModal.php#canBeDisplayed].
 The module sends the packet to Packeta and reads the packet status back
 [VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket].
 
@@ -48,11 +52,13 @@ screens and packet actions. The module registers no REST route of its own.
 | REST response filter | `woocommerce_rest_prepare_shop_order_object` | Adds carrier, pickup point and packet id to the WooCommerce REST order | [VERIFY: src/Packetery/Module/Order/ApiExtender.php#extendResponse] |
 | Order repository | `Repository` | Reads, saves and deletes the Packeta row of an order, and extends the grid query | [VERIFY: src/Packetery/Module/Order/Repository.php#processClauses] |
 
-The module gives three extension filters to other code: `packeta_order_grid_links_settings`
+The module gives four extension filters to other code: `packeta_order_grid_links_settings`
 [VERIFY: src/Packetery/Module/Order/GridExtender.php#addFilterLinks], `packeta_create_packet`
 [VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket] and
 `packetery_exclude_orders_with_status`
-[VERIFY: src/Packetery/Module/Order/Repository.php#applyCustomFilters]. The label print page and the
+[VERIFY: src/Packetery/Module/Order/Repository.php#applyCustomFilters] and
+`packeta_order_detail_show_run_wizard_button`
+[VERIFY: src/Packetery/Module/Order/Metabox.php#prepareMetaboxParts]. The label print page and the
 handover protocol page are WordPress submenu pages under the Packeta dashboard
 [VERIFY: src/Packetery/Module/Order/CollectionPrint.php#register]. Two modal windows save their data
 through the internal REST routes of `packetery-module-api`
@@ -69,6 +75,7 @@ references → packetery-module-options
 references → packetery-module-customsdeclaration
 references → packetery-module-labels
 references → packetery-module-framework
+references → packetery-module-api
 
 The module reads and writes `Packetery\Core\Entity\Order` and uses the SOAP client of
 `packetery-core` for every packet operation
@@ -98,7 +105,7 @@ the `WpdbAdapter` property `packeteryOrder`, and the schema statement is in the 
 | order | `delivery_address` | text, null | JSON with the keys `street`, `city`, `zip`, `houseNumber`, `longitude`, `latitude`, `county` | [VERIFY: src/Packetery/Module/Order/Builder.php#build] |
 | order | `weight`, `length`, `width`, `height` | float, null | Size and weight that the administrator can change | [VERIFY: src/Packetery/Module/Order/Form.php#FIELD_WEIGHT] |
 | order | `value`, `cod` | double, null | Order value and cash on delivery amount | [VERIFY: src/Packetery/Module/Order/CreatePacketMapper.php#fromOrderToArray] |
-| order | `packet_status`, `stored_until`, `deliver_on`, `carrier_number`, `car_delivery_id` | varchar and date, null | State that the synchronisation writes back | [VERIFY: src/Packetery/Module/Order/PacketSynchronizer.php#getPacketStatuses] |
+| order | `packet_status`, `stored_until`, `deliver_on`, `carrier_number`, `car_delivery_id` | varchar and date, null | The synchronisation writes `packet_status` and `stored_until`. The other three come from the metabox form, from the checkout and from a cancellation | [VERIFY: src/Packetery/Module/Order/PacketSynchronizer.php#getPacketStatuses] |
 | order | `api_error_message`, `api_error_date` | text and datetime, null | Last error that the Packeta API returned | [VERIFY: src/Packetery/Module/Order/Repository.php#orderToDbArray] |
 
 The mapping from the entity to the columns is one method

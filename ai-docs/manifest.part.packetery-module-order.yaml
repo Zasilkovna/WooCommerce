@@ -4,7 +4,8 @@ aliases: [packetery-module-order]
 
 assumptions:
   - "Generated on branch docs/teams at commit 97720cfc."
-  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Order; the committed ai-docs/ast/map.json was produced without --split-psr4, so per-module counts come from a --split-psr4 run of the same tool at the same commit."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Order; the committed ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so per-module counts come from a --split-psr4 run of the same tool. Test directories are excluded from the counts."
+  - "The admin screens of this module contain no capability check, so the auth field of every exposes entry is unknown."
   - "The module holds 5101 lines of logic, which is above the 3000 line limit of the split rule. The team decided to document it as one module and to postpone the split."
   - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
 
@@ -19,21 +20,21 @@ exposes:
     name: packetery_metabox
     module: packetery-module-order
     consumers: [woocommerce]
-    auth: wordpress-capability
+    auth: unknown
     evidence: src/Packetery/Module/Order/Metabox.php#add_meta_boxes
     notes: "Admin metabox on the order detail. It shows the Packeta form and saves its fields."
   - kind: html
     name: packetery_customs_declaration_metabox
     module: packetery-module-order
     consumers: [woocommerce]
-    auth: wordpress-capability
+    auth: unknown
     evidence: src/Packetery/Module/Order/CustomsDeclarationMetabox.php#addMetaBoxes
     notes: "Admin metabox for the customs declaration. It is shown only when the carrier needs one."
   - kind: html
     name: submit_to_api
     module: packetery-module-order
     consumers: [woocommerce]
-    auth: wordpress-capability
+    auth: unknown
     evidence: src/Packetery/Module/Order/BulkActions.php#addActions
     notes: "Bulk action of the order grid. It submits the packets of the selected orders."
   - kind: other
