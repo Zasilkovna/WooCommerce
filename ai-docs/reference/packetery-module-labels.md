@@ -46,7 +46,7 @@ and two small carriers of data.
 | Print item | `getOrder`, `getPacketId` | One order and its packet in the print list | [VERIFY: src/Packetery/Module/Labels/LabelPrintPacketDataItem.php#getPacketId] |
 
 The module asks Packeta for a courier number only when the order does not hold one
-[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiSuccess]. It then stores the
+[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#getExistingCarrierNumber]. It then stores the
 number on the order and adds a note to it. A wrong API password stops the whole run, and every other
 fault is written to the log and the run continues with the next order
 [VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiError].
@@ -60,17 +60,20 @@ references → packetery-core
 references → packetery-module-root
 references → packetery-module-order
 references → packetery-module-options
+references → packetery-module-framework
 
 calls → packeta-soap-api (sync, SOAP)
 
 The module reads the courier number over the SOAP client of `packetery-core`
-[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiSuccess]. It saves the number
+[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php:81]. It saves the number
 through the order repository of `packetery-module-order`, and it takes the label type from the print
 page of the same module [VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#getLabelFormat].
 The label formats and the maximum offset of each format come from `packetery-module-options`
-[VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#createForm]. The module writes
-a note to the WooCommerce order and a flash message to the administrator, both through
-`packetery-module-root` [VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiError].
+[VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#getLabelFormatByOrder]. The
+module writes a flash message to the administrator through `packetery-module-root`
+[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiError], and it writes a note
+to the WooCommerce order that `packetery-module-order` gives it
+[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php:134].
 The print list holds order entities of `packetery-core`, so a caller needs no second read of the
 database [VERIFY: src/Packetery/Module/Labels/LabelPrintPacketData.php#getItems].
 

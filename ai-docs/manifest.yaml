@@ -653,7 +653,7 @@ calls:
   kind: other
   purpose: Reads the courier number of a packet.
   module: packetery-module-labels
-  evidence: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiSuccess
+  evidence: src/Packetery/Module/Labels/CarrierLabelService.php:81
 - service: packeta-soap-api
   kind: other
   purpose: Validates the sender name of the shop over SOAP.
