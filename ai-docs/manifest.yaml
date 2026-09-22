@@ -309,7 +309,7 @@ exposes:
   - woocommerce
   auth: none
   evidence: src/Packetery/Module/Framework/WpAdapter.php#getTerm
-  notes: Wrapper of the WordPress functions. Every module takes it instead of a global
+  notes: Wrapper of the WordPress functions. Most modules take it instead of a global
     call.
 - kind: library
   name: WpdbAdapter

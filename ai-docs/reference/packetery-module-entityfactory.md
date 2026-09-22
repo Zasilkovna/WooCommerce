@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 43b25221
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/EntityFactory]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-entityfactory, type-reference]
 ---
 
@@ -36,7 +36,7 @@ packetery-module-entityfactory exposes four factories.
 | Shop address | `fromWcStoreOptions` | Builds the address entity from the store settings of WooCommerce | [VERIFY: src/Packetery/Module/EntityFactory/Address.php#fromWcStoreOptions] |
 | Feed carrier | `fromDbResult` | Builds the carrier entity from a row of the carrier table and types its columns | [VERIFY: src/Packetery/Module/EntityFactory/Carrier.php#fromDbResult] |
 | Internal carrier | `fromNonFeedCarrierData` | Builds the carrier entity of a pickup point provider that no feed contains | [VERIFY: src/Packetery/Module/EntityFactory/Carrier.php#fromNonFeedCarrierData] |
-| Customs declaration | `fromStandardizedStructure` | Builds the declaration entity from a row and the order number | [VERIFY: src/Packetery/Module/EntityFactory/CustomsDeclaration.php#fromStandardizedStructure] |
+| Customs declaration | `fromStandardizedStructure` | Builds the declaration entity from a row and the order identifier | [VERIFY: src/Packetery/Module/EntityFactory/CustomsDeclaration.php#fromStandardizedStructure] |
 | Declaration item | `createItemFromStandardizedStructure` | Builds one item of the declaration | [VERIFY: src/Packetery/Module/EntityFactory/CustomsDeclaration.php#createItemFromStandardizedStructure] |
 | Packet size | `createSizeInSetDimensionUnit` | Builds the size entity of an order in the unit that the shop selected | [VERIFY: src/Packetery/Module/EntityFactory/SizeFactory.php#createSizeInSetDimensionUnit] |
 | Default size | `createDefaultSizeForNewOrder` | Builds the size entity from the default dimensions of the plugin | [VERIFY: src/Packetery/Module/EntityFactory/SizeFactory.php#createDefaultSizeForNewOrder] |
@@ -53,15 +53,17 @@ Structured lines:
 
 references → packetery-core
 references → packetery-module-options
-references → packetery-module-framework
+references → packetery-module-root
 
 The factories return the address, the carrier, the customs declaration and the size entity of
 `packetery-core` [VERIFY: src/Packetery/Module/EntityFactory/SizeFactory.php#createDefaultSizeForNewOrder].
 The size factory reads the dimension unit and the default dimensions from
-`packetery-module-options`, and the address factory reads the store settings through the adapters of
-`packetery-module-framework` [VERIFY: src/Packetery/Module/EntityFactory/Address.php#fromWcStoreOptions].
-The carrier repository, the customs declaration repository and the order module call these
-factories [VERIFY: src/Packetery/Module/EntityFactory/Carrier.php#fromNonFeedCarrierData]. The
+`packetery-module-options`, and it converts the units with the helper of `packetery-module-root`
+[VERIFY: src/Packetery/Module/EntityFactory/SizeFactory.php#createSizeInSetDimensionUnit]. The
+address factory reads the store settings of WooCommerce with a direct call, and it uses no adapter
+[VERIFY: src/Packetery/Module/EntityFactory/Address.php#fromWcStoreOptions]. The carrier repository,
+the customs declaration repository, the order module and the checkout module call these factories
+[VERIFY: src/Packetery/Module/EntityFactory/Carrier.php#fromNonFeedCarrierData]. The
 module returns an entity and never writes one, so a caller that changes an entity saves it through
 its own repository.
 
@@ -72,7 +74,7 @@ that support age verification is a constant of the factory, so a new such carrie
 [VERIFY: src/Packetery/Module/EntityFactory/Carrier.php#AGE_VERIFIED_CARRIERS]. The weight limit and
 several flags of an internal carrier are fixed values of the same file
 [VERIFY: src/Packetery/Module/EntityFactory/Carrier.php#fromNonFeedCarrierData], so an internal
-carrier accepts the same packet size in every country.
+carrier carries the same weight limit in every country.
 
 The factories trust the shape of their input. A row with a missing column or a changed name gives no
 error of this module [VERIFY: src/Packetery/Module/EntityFactory/CustomsDeclaration.php#createItemFromStandardizedStructure].

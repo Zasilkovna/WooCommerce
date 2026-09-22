@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 43b25221
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Framework]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-framework, type-reference]
 ---
 
@@ -38,10 +38,10 @@ that group the platform by topic.
 | WooCommerce adapter | `WcAdapter` | Products, shipping zones and packages, currency, orders and the logger | [VERIFY: src/Packetery/Module/Framework/WcAdapter.php#productFactoryGetProduct] |
 | Hooks | `HookTrait` | Registers actions and filters and applies them | [VERIFY: src/Packetery/Module/Framework/HookTrait.php#HookTrait] |
 | Options and transients | `OptionTrait`, `TransientTrait` | Read and write the options and the transients of WordPress | [VERIFY: src/Packetery/Module/Framework/OptionTrait.php#OptionTrait] |
-| Posts and terms | `PostTrait` | Read the posts of WordPress | [VERIFY: src/Packetery/Module/Framework/PostTrait.php#PostTrait] |
+| Posts | `PostTrait` | Give the current post, its edit link and the reset of the post data; the terms live on the adapter itself | [VERIFY: src/Packetery/Module/Framework/PostTrait.php#PostTrait] |
 | Escaping and translation | `EscapingTrait`, `TranslationTrait` | Escape the output and translate the texts of the plugin | [VERIFY: src/Packetery/Module/Framework/EscapingTrait.php#EscapingTrait] |
 | Assets and HTTP | `AssetTrait`, `HttpTrait` | Register the scripts and the styles, and send the HTTP requests | [VERIFY: src/Packetery/Module/Framework/AssetTrait.php#AssetTrait] |
-| Cart and session | `WcCartTrait`, `WcSessionTrait` | Read the cart and read and write the session of WooCommerce | [VERIFY: src/Packetery/Module/Framework/WcCartTrait.php#WcCartTrait] |
+| Cart and session | `WcCartTrait`, `WcSessionTrait` | Read the cart, add a fee to it, recompute its totals, and read and write the session of WooCommerce | [VERIFY: src/Packetery/Module/Framework/WcCartTrait.php#WcCartTrait] |
 | Customer and taxes | `WcCustomerTrait`, `WcTaxTrait` | Read the customer and compute the taxes of a shipping rate | [VERIFY: src/Packetery/Module/Framework/WcTaxTrait.php#WcTaxTrait] |
 | Scheduled actions | `ActionSchedulerTrait` | Plans an action of the Action Scheduler | [VERIFY: src/Packetery/Module/Framework/ActionSchedulerTrait.php#ActionSchedulerTrait] |
 
@@ -54,8 +54,10 @@ called from → woocommerce
 
 The module holds no `use` statement of another Packeta namespace
 [VERIFY: src/Packetery/Module/Framework/WpAdapter.php#getTerm], so a change of a Packeta module
-never changes this one. Every other module of the plugin takes one or both adapters in its
-constructor [VERIFY: src/Packetery/Module/Framework/WcAdapter.php#getLogger]. The adapters
+never changes this one. Most other modules of the plugin take one or both adapters in their
+constructor, and five of them use none: the customs declaration, the entity factory, the
+exceptions, the payment helper and the upgrade
+[VERIFY: src/Packetery/Module/Framework/WcAdapter.php#productFactoryGetProduct]. The adapters
 themselves call the global functions and the static classes of the platform. The wrapper of the
 Action Scheduler is the one exception that reaches a plugin of the shop and not the platform
 [VERIFY: src/Packetery/Module/Framework/ActionSchedulerTrait.php#ActionSchedulerTrait], and the
@@ -68,11 +70,13 @@ the whole platform, and several modules still call a global function directly
 [VERIFY: src/Packetery/Module/Framework/HookTrait.php#HookTrait]. The wrapper is a convention, not a
 boundary that the code enforces.
 
-Three methods hold more than a pass through. One normalises the answer of the order query of
+Several methods hold more than a pass through. One normalises the answer of the order query of
 WooCommerce, which returns either a list or an object
 [VERIFY: src/Packetery/Module/Framework/WcAdapter.php#getOrdersWithoutPagination]. One returns
 nothing when the logging class of WooCommerce is missing
-[VERIFY: src/Packetery/Module/Framework/WcAdapter.php#loggingUtilGetLogDirectory]. One returns two
-possible types of the logger, and only the comment says so
-[VERIFY: src/Packetery/Module/Framework/WcAdapter.php#getLogger]. The module contains no TODO
+[VERIFY: src/Packetery/Module/Framework/WcAdapter.php#loggingUtilGetLogDirectory]. One returns
+nothing when the product of an identifier is of another type
+[VERIFY: src/Packetery/Module/Framework/WcAdapter.php#productFactoryGetProduct], and the session
+readers cast the stored value to keep the type of the caller
+[VERIFY: src/Packetery/Module/Framework/WcSessionTrait.php#WcSessionTrait]. The module contains no TODO
 comment and no FIXME comment.

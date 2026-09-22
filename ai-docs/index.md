@@ -79,7 +79,7 @@ tables of the verification record, without the rows of the class PENDING.
 | reference/packetery-module-product.md, -productcategory.md, -customsdeclaration.md | reviewed | 54/62, 44/48 and 49/51 CONFIRMED |
 | reference/packetery-module-email.md, -dashboard.md | reviewed | 36/41 and 35/42 CONFIRMED |
 | index.md, overview.md, architecture.md, dependencies.md | reviewed | 29/41, 39/44, 43/57 and 38/47 CONFIRMED |
-| reference/packetery-module-framework.md, -entityfactory.md, -blocks.md | draft | Written after the verification round; not yet verified |
+| reference/packetery-module-framework.md, -entityfactory.md, -blocks.md | reviewed | 30/38, 30/36 and 33/37 CONFIRMED |
 
 A document reaches `verified` only when every checked row is confirmed at the first verification.
 Every document of this repository needed a fix, so `reviewed` is its ceiling until the next

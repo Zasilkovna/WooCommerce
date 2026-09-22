@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 43b25221
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Blocks]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-blocks, type-reference]
 ---
 
@@ -40,11 +40,14 @@ packetery-module-blocks exposes the integration of the block checkout and its ho
 | Script registration | `initialize` | Registers the block script and takes its version from the build artefact | [VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#initialize] |
 | Script handles | `get_script_handles`, `get_editor_script_handles` | Give the script handle to the front end and to the editor | [VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#get_script_handles] |
 | Script data | `get_script_data` | Gives the widget settings of the checkout module to the browser | [VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#get_script_data] |
-| Script version | `get_file_version` | Gives the file time in debug mode and the plugin version otherwise | [VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#get_file_version] |
+
 
 The module registers two filters for the data attributes: the current one and the name that
 WooCommerce is expected to use later
-[VERIFY: src/Packetery/Module/Blocks/BlockHooks.php#register].
+[VERIFY: src/Packetery/Module/Blocks/BlockHooks.php#register]. The version of the script comes from
+a protected method, which gives the file time only in the debug mode of WordPress and when the file
+exists, and the plugin version in every other case
+[VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#get_file_version].
 
 ## packetery-module-blocks: dependencies
 
