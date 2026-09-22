@@ -3,7 +3,7 @@ source_commit: 6791c048
 aliases: [packetery-core]
 
 assumptions:
-  - "Generated on branch ai-docs at commit 6791c048."
+  - "Generated at commit 6791c048, on the branch that is now named docs/teams."
   - "Module boundary taken from the PSR-4 namespace Packetery\\Core; the committed ai-docs/ast/map.json was produced without --split-psr4, so per-module counts come from a --split-psr4 run of the same tool at the same commit."
   - "The STE plugin esterka@packeta-dev was not loaded in the generating session."
 

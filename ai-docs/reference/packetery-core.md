@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 6791c048
 last-generated: 2026-09-22
 covers: [src/Packetery/Core]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-core, type-reference]
 ---
 
@@ -22,8 +22,8 @@ implementations [VERIFY: src/Packetery/Core/Interfaces/IWebRequestClient.php#pos
 carries no persistence layer, no hooks and no user interface.
 
 The separation has one practical effect. A change of the Packeta API contract stays inside
-packetery-core, and a change of the WordPress integration stays outside it. The SOAP client is the
-single place where the API method names of Packeta appear
+packetery-core, and a change of the WordPress integration stays outside it. The SOAP client holds the request class and the response class of every
+API operation, and the modules of the plugin call those operations by name
 [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket].
 
 > ⚠ add business context (elicitation)
@@ -35,12 +35,12 @@ The table lists the classes that other modules construct and call.
 
 | Member | Signature / path | Behaviour | Anchor |
 |---|---|---|---|
-| `Api\Soap\Client` | `createPacket( $request )` | Sends one shipment to the Packeta SOAP API and returns the created packet or a fault. | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |
-| `Api\Soap\Client` | `packetStatus( $packetId )` | Reads the current delivery status of one packet. | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#packetStatus] |
+| `Api\Soap\Client` | `createPacket( array $requestData )` | Sends one shipment to the Packeta SOAP API and returns the created packet or a fault. | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |
+| `Api\Soap\Client` | `packetStatus( Request\PacketStatus $request )` | Reads the current delivery status of one packet. | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#packetStatus] |
 | `Api\Soap\Client` | `packetsLabelsPdf( $request )` | Returns label documents for a set of packets as PDF data. | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#packetsLabelsPdf] |
 | `Api\Rest\PickupPointValidate` | `validate( $request )` | Validates a chosen pickup point against the widget API. | [VERIFY: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate] |
 | `Validator\Order` | `isValid( $order )` | Decides whether an order has the data that a submission needs. | [VERIFY: src/Packetery/Core/Validator/Order.php#isValid] |
-| `Rounder` | `round( $value, $mode )` | Rounds a value up, down or not at all, by the mode constants. | [VERIFY: src/Packetery/Core/Rounder.php#ROUNDING_TYPES] |
+| `Rounder` | `round( float $amount, int $roundingType, int $precision )` | Rounds a value up, down or not at all, by the rounding type constants. | [VERIFY: src/Packetery/Core/Rounder.php#ROUNDING_TYPES] |
 | `CoreHelper` | `getTrackingUrl( $packetId )` | Builds the public tracking address of one packet. | [VERIFY: src/Packetery/Core/CoreHelper.php#getTrackingUrl] |
 
 The SOAP client reports a failure in two forms. A fault of the API is turned into a fault
@@ -56,17 +56,22 @@ Structured lines:
 
 calls → packeta-api (sync, SOAP/XML)
 calls → packeta-widget-api (sync, REST/JSON)
-called from → packetery-module
+called from → woocommerce
 
 packetery-core sends shipment data, label requests and status queries to the SOAP API of Packeta
 [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createShipment]. The module reads the WSDL address
 and the API password from its constructor, so the values live outside the module
 [VERIFY: src/Packetery/Core/Api/Soap/Client.php#setApiPassword].
 
-packetery-core declares two interfaces that it does not implement. `IWebRequestClient` performs the
-REST call [VERIFY: src/Packetery/Core/Interfaces/IWebRequestClient.php#post] and `ILogger` records
-what happened [VERIFY: src/Packetery/Core/Log/ILogger.php#add]. The WordPress module supplies both
-implementations, which keeps the HTTP stack and the database out of packetery-core.
+packetery-core declares four interfaces. Three of them get their implementation outside the module:
+`IWebRequestClient` performs the REST call
+[VERIFY: src/Packetery/Core/Interfaces/IWebRequestClient.php#post], `ILogger` records what happened
+[VERIFY: src/Packetery/Core/Log/ILogger.php#add], and `ValidatorTranslationsInterface` gives the
+texts of the validation errors
+[VERIFY: src/Packetery/Core/Interfaces/ValidatorTranslationsInterface.php#get]. The fourth,
+`ILabelResponse`, has its implementation inside the module
+[VERIFY: src/Packetery/Core/Api/Soap/ILabelResponse.php#ILabelResponse]. The WordPress module supplies the
+other three, which keeps the HTTP stack and the database out of packetery-core.
 
 ## packetery-core: data model
 
@@ -82,8 +87,8 @@ module stores nothing: another module maps them to the database of WordPress.
 | Carrier | `maxWeight` | float | The weight limit that the carrier accepts. | [VERIFY: src/Packetery/Core/Entity/Carrier.php#getMaxWeight] |
 | Size | — | entity | Holds length, width and height of one shipment. | [VERIFY: src/Packetery/Core/Entity/Size.php#Size] |
 
-The pickup point providers build the vendor structure that the widget needs. A compound provider
-joins several carriers into one selectable vendor
+The pickup point providers build the vendor structure that the widget needs. One compound provider
+holds several vendor codes of one country
 [VERIFY: src/Packetery/Core/PickupPointProvider/CompoundProvider.php#CompoundProvider].
 
 ## packetery-core: external links
