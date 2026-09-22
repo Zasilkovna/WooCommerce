@@ -1,0 +1,65 @@
+service: woocommerce
+source_commit: 33f911c4
+aliases: [packetery-module-options]
+
+assumptions:
+  - "Generated on branch docs/teams at commit 33f911c4."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Options; the committed ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so per-module counts come from a --split-psr4 run of the same tool. Test directories are excluded from the counts."
+  - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
+
+modules:
+  - name: packetery-module-options
+    path: src/Packetery/Module/Options
+    lines: 1593
+    doc: reference/packetery-module-options.md
+
+exposes:
+  - kind: html
+    name: packeta-options
+    module: packetery-module-options
+    consumers: [woocommerce]
+    auth: wordpress-capability
+    evidence: src/Packetery/Module/Options/Page.php#registerSubmenuPage
+    notes: "Admin settings page of the plugin. It needs the manage_options capability."
+  - kind: html
+    name: export-settings
+    module: packetery-module-options
+    consumers: [woocommerce]
+    auth: unknown
+    evidence: src/Packetery/Module/Options/Exporter.php#ACTION_EXPORT_SETTINGS
+    notes: "Query action that downloads the settings and the environment of the shop as a text file. The class checks no capability and no nonce."
+  - kind: library
+    name: getAllOptions
+    module: packetery-module-options
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions
+    notes: "Typed access to every plugin setting. All other modules read the settings through this provider."
+
+calls:
+  - service: packeta-api
+    kind: other
+    purpose: Validates the sender name of the shop over SOAP.
+    module: packetery-module-options
+    evidence: src/Packetery/Module/Options/Page.php#processActions
+
+owns_data:
+  - entity: settings
+    store: mysql
+    module: packetery-module-options
+    evidence: src/Packetery/Module/Options/Page.php#saveOptions
+    notes: "Five WordPress options hold the settings. More options hold the state of the plugin between requests."
+
+unknowns:
+  - question: Where WordPress schedules the purge of the expired checkout transients.
+    checked: every file of the namespace Packetery\Module\Options
+    resolved_by: the module that registers the cron service
+    blocks: "-"
+  - question: Whether a capability check protects the settings export outside this namespace.
+    checked: the export class and the page that builds its link
+    resolved_by: packetery-module-root
+    blocks: "exposes: export-settings"
+  - question: Which code migrates the two legacy settings that the provider keeps for the upgrade.
+    checked: the comments of the provider
+    resolved_by: packetery-module-upgrade
+    blocks: "-"
