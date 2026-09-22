@@ -35,7 +35,8 @@ packetery-module-email exposes fourteen shortcodes and the bug report.
 | Shortcode registration | `register` | Registers every Packeta shortcode of the email templates | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#register] |
 | Tracking | `packeta_tracking_number`, `packeta_tracking_url` | Give the packet barcode and the tracking address | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#trackingNumber] |
 | Pickup point | `packeta_pickup_point_id`, `packeta_pickup_point_name`, `packeta_pickup_point_address` | Give the identifier, the name and the full address of the pickup point | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#pickupPointAddress] |
-| Pickup point parts | `packeta_pickup_place`, `packeta_pickup_point_street`, `packeta_pickup_point_city`, `packeta_pickup_point_zip`, `packeta_pickup_point_country` | Give one part of the pickup point address | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#pickupPointStreet] |
+| Pickup point parts | `packeta_pickup_place`, `packeta_pickup_point_street`, `packeta_pickup_point_city`, `packeta_pickup_point_zip` | Give one part of the pickup point address | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#pickupPointStreet] |
+| Delivery country | `packeta_pickup_point_country` | Gives the shipping country of the order, although its name names the pickup point | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#pickupPointCountry] |
 | Carrier | `packeta_carrier_name` | Gives the name of the carrier of the order | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#carrierName] |
 | Conditions | `packeta_if_packet_submitted`, `packeta_if_pickup_point`, `packeta_if_carrier` | Show their content only when the order matches the condition | [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#ifPacketSubmitted] |
 | Bug report | `sendBugReport` | Sends the message of the administrator with the diagnostic archive | [VERIFY: src/Packetery/Module/Email/BugReportEmail.php#sendBugReport] |
@@ -52,7 +53,7 @@ empty when the installation has no archive extension of PHP
 packetery-module-email depends on the order data and on the diagnostic sources. Structured lines:
 
 references → packetery-core
-references → packetery-module-root
+references → packetery-module-framework
 references → packetery-module-order
 references → packetery-module-options
 references → packetery-module-log
@@ -63,11 +64,12 @@ The archive takes the settings export of `packetery-module-options` and the size
 diagnostic file of `packetery-module-log`
 [VERIFY: src/Packetery/Module/Email/BugReportAttachment.php#addTracyLogsToZip]. The address of the
 support comes to the email class as a constructor argument, so its value lives outside this module
-[VERIFY: src/Packetery/Module/Email/BugReportEmail.php#createEmailBody]. The email itself leaves the
+[VERIFY: src/Packetery/Module/Email/BugReportEmail.php#sendBugReport]. The email itself leaves the
 shop through WordPress, and the module adds the archive as an attachment and the address of the
 sender as the reply address [VERIFY: src/Packetery/Module/Email/BugReportEmail.php#sendBugReport].
-The shortcodes need no other module at runtime, because the order repository gives them the whole
-order entity [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#carrierName].
+The shortcodes need the order repository of `packetery-module-order` and the adapters of
+`packetery-module-framework`, and nothing else
+[VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#carrierName].
 
 ## packetery-module-email: known limitations
 

@@ -45,8 +45,10 @@ packetery-module-product exposes the product tab, the entity of a product and th
 | Grid columns | `addProductListColumns`, `fillCustomProductListColumns` | Add the two Packeta columns to the product list | [VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#addProductListColumns] |
 | Grid filters | `addProductFilters`, `processProductFilterClauses` | Add the two filters and join the metadata to the query | [VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#processProductFilterClauses] |
 
-The two columns are hidden by default, and a filter can switch them off
-[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#defaultHiddenColumns]. The checkbox
+The two columns are hidden by default
+[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#defaultHiddenColumns], and one filter
+of the plugin switches off the two grid filters
+[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#addProductFilters]. The checkbox
 list of the carriers comes from the active carriers of the carrier module
 [VERIFY: src/Packetery/Module/Product/DataTab.php#render].
 
@@ -75,17 +77,19 @@ references → packetery-module-root
 references → packetery-module-carrier
 references → packetery-module-log
 references → packetery-module-exception
+references → packetery-module-framework
 
-The tab and the grid read the active carriers of `packetery-module-carrier`, and they leave out the
-car delivery carriers that the shop disabled
-[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#addProductFilters]. The size
+The tab reads the active carriers of `packetery-module-carrier`, and it leaves out the car delivery
+carriers that the shop disabled [VERIFY: src/Packetery/Module/Product/DataTab.php#render]. The grid
+reads no carrier: it works with the two metadata keys alone
+[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#addProductListColumns]. The size
 conversion uses the helper of `packetery-core`
 [VERIFY: src/Packetery/Module/Product/Entity.php#getHeightInCm]. A missing product raises the
 exception of `packetery-module-exception`
 [VERIFY: src/Packetery/Module/Product/ProductEntityFactory.php#fromGlobals]. Wrong hook arguments go
 to the logger of `packetery-module-log`
-[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#fillCustomProductListColumns]. The
-checkout and the order builder read this module for every cart item.
+[VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#addProductListColumns]. The checkout
+reads this module for every cart item, and the order builder reads it for every item of a new order.
 
 ## packetery-module-product: known limitations
 
@@ -94,8 +98,8 @@ metadata against a serialised empty array written as a literal, so a change of t
 breaks the filter [VERIFY: src/Packetery/Module/Product/ProductGridExtender.php#processProductFilterClauses].
 The filter also builds its own join instead of a metadata query.
 
-The age verification flag is stored as a text value and compared against a text value, so a numeric
-value of the same meaning does not match
+The tab writes the age verification flag as a text value, and the reader compares the value as text
+after a cast, so both a text and a number match
 [VERIFY: src/Packetery/Module/Product/Entity.php#isAgeVerificationRequired]. The reader of the
 disallowed carriers validates only the type of the value, not its content
 [VERIFY: src/Packetery/Module/Product/Entity.php#getDisallowedShippingRateChoices]. The module
