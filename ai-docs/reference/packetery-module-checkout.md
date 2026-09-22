@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 3d44ef98
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Checkout]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-checkout, type-reference]
 ---
 
@@ -26,9 +26,12 @@ data to the order [VERIFY: src/Packetery/Module/Checkout/OrderUpdater.php#action
 
 packetery-module-checkout supports the classic checkout and the block checkout, and it detects which
 one the shop uses [VERIFY: src/Packetery/Module/Checkout/CheckoutService.php#areBlocksUsedInCheckout].
-The module holds 12 files, 2162 lines of logic and 69 public methods. One class registers all hooks
+The module holds 12 files, 2162 lines of logic and 69 public methods. One class registers most hooks
 of the namespace, and the other classes give the callbacks
-[VERIFY: src/Packetery/Module/Checkout/Checkout.php#registerHooks].
+[VERIFY: src/Packetery/Module/Checkout/Checkout.php#registerHooks]. Three callbacks of the namespace
+are registered outside this module: the cart fee callback and the guest session callback
+[VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerFrontEnd] and the widget settings AJAX
+callback [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerBackEnd].
 
 > ⚠ add business context (elicitation)
 
@@ -39,7 +42,7 @@ plugin. The module registers no REST route of its own.
 
 | Member | Signature / path | Behaviour | Anchor |
 |---|---|---|---|
-| Hook registration | `registerHooks` | Registers every checkout hook of the namespace | [VERIFY: src/Packetery/Module/Checkout/Checkout.php#registerHooks] |
+| Hook registration | `registerHooks` | Registers the checkout hooks of the namespace, except the three that the plugin registers | [VERIFY: src/Packetery/Module/Checkout/Checkout.php#registerHooks] |
 | Cart fees | `actionCalculateFees` | Adds the age verification fee and the cash on delivery surcharge | [VERIFY: src/Packetery/Module/Checkout/Checkout.php#actionCalculateFees] |
 | Payment gateway filter | `woocommerce_available_payment_gateways` | Removes the gateways that the selected carrier does not allow | [VERIFY: src/Packetery/Module/Checkout/Checkout.php#filterPaymentGateways] |
 | Shipping rates | `createShippingRates` | Builds one rate for each available Packeta carrier | [VERIFY: src/Packetery/Module/Checkout/ShippingRateFactory.php#createShippingRates] |
@@ -55,8 +58,10 @@ The module gives four extension filters to other code: `packeta_shipping_price`
 [VERIFY: src/Packetery/Module/Checkout/CurrencySwitcherService.php#getConvertedPrice],
 `packeta_widget_weight` and `packeta_widget_language`
 [VERIFY: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings]. The module also
-invalidates the WooCommerce rate cache when the customer changes the payment method
-[VERIFY: src/Packetery/Module/Checkout/SessionService.php#actionUpdateShippingRates].
+clears the cached shipping rates of every package when WooCommerce renders the order review
+[VERIFY: src/Packetery/Module/Checkout/SessionService.php#actionUpdateShippingRates]. The payment
+method enters the cache key of the package, so a change of the payment method gives new rates
+[VERIFY: src/Packetery/Module/Checkout/SessionService.php#filterUpdateShippingPackages].
 
 ## packetery-module-checkout: price and validation rules
 
@@ -68,7 +73,7 @@ does not exceed. When the carrier has per class options, the module groups the c
 shipping class, computes a price for each class, and then adds the prices or takes the most
 expensive one [VERIFY: src/Packetery/Module/Checkout/RateCalculator.php#getFinalShippingClassesCost].
 A free shipping limit or a free shipping coupon sets the price to zero
-[VERIFY: src/Packetery/Module/Checkout/ShippingRateFactory.php#formatCarrierNameWithFreeShipping].
+[VERIFY: src/Packetery/Module/Checkout/RateCalculator.php#getShippingRateCost].
 When no limit applies, the price stays `null` and the module does not offer that carrier.
 The cash on delivery surcharge follows the same first match rule over the surcharge limits
 [VERIFY: src/Packetery/Module/Checkout/RateCalculator.php#getCODSurcharge].
@@ -95,6 +100,14 @@ references → packetery-module-order
 references → packetery-module-options
 references → packetery-module-product
 references → packetery-module-framework
+references → packetery-module-api
+references → packetery-module-shipping
+references → packetery-module-diagnosticslogger
+references → packetery-module-exception
+references → packetery-module-views
+references → packetery-module-log
+references → packetery-module-productcategory
+references → packetery-module-payment
 calls → packeta-widget (sync, HTTPS)
 
 The module reads the carrier entity, the carrier options and the pickup point configuration from
@@ -104,7 +117,11 @@ of `packetery-module-order`, and it starts the automatic packet submission after
 [VERIFY: src/Packetery/Module/Checkout/OrderUpdater.php#getPropsFromCheckoutData]. The browser loads
 the Packeta widget, and the module gives the widget its settings, its translations and the URLs of
 the internal REST routes [VERIFY: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings].
-The module reads the cart and the session only through the adapters of `packetery-module-framework`
+The module uses the internal REST router of `packetery-module-api`, the shipping method classes of
+`packetery-module-shipping`, and the logger, the exceptions, the views and the product category
+helpers of the other Packeta modules
+[VERIFY: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings].
+The module reads the cart and the session through the adapters of `packetery-module-framework`
 [VERIFY: src/Packetery/Module/Checkout/SessionService.php#getChosenMethodFromSession]. One external
 currency switcher plugin is supported, and every other conversion goes through a filter
 [VERIFY: src/Packetery/Module/Checkout/CurrencySwitcherService.php#getConvertedPrice].

@@ -58,14 +58,10 @@ owns_data:
     notes: "One WordPress transient for each session. It keeps the selection of the customer until the order exists."
 
 unknowns:
-  - question: Where WordPress registers the AJAX callback that returns the widget settings.
-    checked: every file of the namespace Packetery\Module\Checkout
-    resolved_by: the module that builds the service container
-    blocks: "exposes: createSettings"
-  - question: Where the checkout script is enqueued and how the settings reach the browser.
-    checked: the namespace holds no enqueue call
-    resolved_by: packetery-module-root
-    blocks: "calls: packeta-widget"
+  - question: Which payment gateways the shops must disallow for a carrier by default.
+    checked: the carrier option that holds the disallowed gateways
+    resolved_by: a person owning the checkout
+    blocks: "-"
   - question: Which currency switcher plugins the shops must support.
     checked: the supported plugin list of this module
     resolved_by: a person owning the checkout
