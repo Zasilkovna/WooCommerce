@@ -4,12 +4,15 @@ description: The Packeta plugin for WooCommerce. It adds the Packeta carriers to
 aliases:
 - packetery-core
 - packetery-module-api
+- packetery-module-blocks
 - packetery-module-carrier
 - packetery-module-checkout
 - packetery-module-customsdeclaration
 - packetery-module-dashboard
 - packetery-module-email
+- packetery-module-entityfactory
 - packetery-module-forms
+- packetery-module-framework
 - packetery-module-hooks
 - packetery-module-labels
 - packetery-module-log
@@ -21,13 +24,14 @@ aliases:
 - packetery-module-shipping
 - packetery-module-views
 generated-by: skill:generate-docs@0.3.5
-source_commit: b34fe03c3d932c007f21b970c38acd8241184d07
+source_commit: 43b252213b240852f086d45bb14212573608a300
 last-generated: 2026-09-22
 assumptions:
 - Generated at commit 6791c048, on the branch that is now named docs/teams.
 - Generated on branch docs/teams at commit 2c742814.
 - Generated on branch docs/teams at commit 33f911c4.
 - Generated on branch docs/teams at commit 3d44ef98.
+- Generated on branch docs/teams at commit 43b25221.
 - Generated on branch docs/teams at commit 82e3a6c9.
 - Generated on branch docs/teams at commit 97720cfc.
 - Generated on branch docs/teams at commit b34fe03c.
@@ -41,6 +45,9 @@ assumptions:
   ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
   per-module counts come from a --split-psr4 run of the same tool. Test directories
   are excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Blocks; per-module
+  counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded
+  from the counts.
 - Module boundary taken from the PSR-4 namespace Packetery\Module\Carrier; the committed
   ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
   per-module counts come from a --split-psr4 run of the same tool. Test directories
@@ -58,7 +65,13 @@ assumptions:
 - Module boundary taken from the PSR-4 namespace Packetery\Module\Email; per-module
   counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded
   from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\EntityFactory; per-module
+  counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded
+  from the counts.
 - Module boundary taken from the PSR-4 namespace Packetery\Module\Forms; per-module
+  counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded
+  from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Framework; per-module
   counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded
   from the counts.
 - Module boundary taken from the PSR-4 namespace Packetery\Module\Hooks; the committed
@@ -104,8 +117,16 @@ assumptions:
   directories are excluded from the counts.
 - The counts hold the 144 generated carrier classes of the subdirectory Generated,
   which the repository keeps under version control.
+- The module holds 124 lines of logic, which is below the line threshold, and eleven
+  public members, which is above the member threshold. The team decided to give it
+  a document of its own.
+- The module holds 142 lines of logic, which is below the line threshold, and eight
+  public members, which is above the member threshold. The team decided to give it
+  a document of its own.
 - The module holds 5101 lines of logic, which is above the 3000 line limit of the
   split rule. The team decided to document it as one module and to postpone the split.
+- The module holds no Packeta rule. The team first kept it in overview.md and then
+  gave it a document of its own, because every other module depends on it.
 - The module holds the classes that stand directly in src/Packetery/Module, without
   the subdirectories. Each subdirectory is a module of its own.
 - The registration map lists the groups of hooks, not every hook. The class registers
@@ -122,7 +143,7 @@ modules:
 - name: packetery-module-blocks
   path: src/Packetery/Module/Blocks
   lines: 124
-  doc: overview.md
+  doc: reference/packetery-module-blocks.md
 - name: packetery-module-carrier
   path: src/Packetery/Module/Carrier
   lines: 1721
@@ -150,7 +171,7 @@ modules:
 - name: packetery-module-entityfactory
   path: src/Packetery/Module/EntityFactory
   lines: 142
-  doc: overview.md
+  doc: reference/packetery-module-entityfactory.md
 - name: packetery-module-exception
   path: src/Packetery/Module/Exception
   lines: 25
@@ -162,7 +183,7 @@ modules:
 - name: packetery-module-framework
   path: src/Packetery/Module/Framework
   lines: 537
-  doc: overview.md
+  doc: reference/packetery-module-framework.md
 - name: packetery-module-hooks
   path: src/Packetery/Module/Hooks
   lines: 562
@@ -274,6 +295,23 @@ exposes:
   evidence: src/Packetery/Core/Api/Soap/Client.php#createPacket
   notes: PHP classes only; the module registers no HTTP route and no CLI command.
 - kind: library
+  name: WcAdapter
+  module: packetery-module-framework
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Framework/WcAdapter.php#productFactoryGetProduct
+  notes: Wrapper of the WooCommerce functions and static classes.
+- kind: library
+  name: WpAdapter
+  module: packetery-module-framework
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Framework/WpAdapter.php#getTerm
+  notes: Wrapper of the WordPress functions. Every module takes it instead of a global
+    call.
+- kind: library
   name: WpdbAdapter
   module: packetery-module-root
   consumers:
@@ -374,6 +412,14 @@ exposes:
   auth: none
   evidence: src/Packetery/Module/Checkout/ShippingRateFactory.php#createShippingRates
   notes: Builds one WooCommerce shipping rate for each available Packeta carrier.
+- kind: library
+  name: createSizeInSetDimensionUnit
+  module: packetery-module-entityfactory
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/EntityFactory/SizeFactory.php#createSizeInSetDimensionUnit
+  notes: Builds the size entity of an order in the dimension unit of the shop.
 - kind: html
   name: export-settings
   module: packetery-module-options
@@ -383,6 +429,15 @@ exposes:
   evidence: src/Packetery/Module/Options/Exporter.php#ACTION_EXPORT_SETTINGS
   notes: Query action that downloads the settings and the environment of the shop
     as a text file. The class checks no capability and no nonce.
+- kind: library
+  name: fromDbResult
+  module: packetery-module-entityfactory
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/EntityFactory/Carrier.php#fromDbResult
+  notes: Builds the carrier entity of the domain module from a row of the carrier
+    table.
 - kind: library
   name: getAllOptions
   module: packetery-module-options
@@ -450,6 +505,14 @@ exposes:
   auth: none
   evidence: src/Packetery/Module/Shipping/ShippingProvider.php#getSortedCachedMethods
   notes: Gives WooCommerce the carrier methods that the zone allows.
+- kind: other
+  name: get_script_data
+  module: packetery-module-blocks
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Blocks/WidgetIntegration.php#get_script_data
+  notes: Gives the widget settings to the script of the block checkout.
 - kind: other
   name: handleActions
   module: packetery-module-hooks
@@ -580,6 +643,14 @@ exposes:
   evidence: src/Packetery/Module/Hooks/HookRegistrar.php:372
   notes: Entry point of the plugin. It registers the hooks of every module for the
     current request.
+- kind: other
+  name: registerCheckoutBlock
+  module: packetery-module-blocks
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Blocks/BlockHooks.php#registerCheckoutBlock
+  notes: Registers the Packeta integration in the block checkout of WooCommerce.
 - kind: html
   name: renderEmailFooter
   module: packetery-module-views
@@ -774,7 +845,8 @@ unknowns:
   resolved_by: the module that builds the service container
   blocks: '-'
 - question: Whether a capability check protects the settings export outside this namespace.
-  checked: the export class, the page that builds its link, and the hook module that registers it
+  checked: the export class, the page that builds its link, and the hook module that
+    registers it
   resolved_by: packetery-module-hooks
   blocks: 'exposes: export-settings'
 - question: Whether a category restriction must win over a product restriction.
@@ -802,6 +874,11 @@ unknowns:
     version
   resolved_by: a person owning the plugin release
   blocks: '-'
+- question: Whether the plugin must forbid a direct call of a platform function outside
+    this module.
+  checked: the modules that still call a global function
+  resolved_by: a person owning the coding standard
+  blocks: '-'
 - question: Whether the schedules of the background jobs fit the load of a large shop.
   checked: the five schedules of the cron service
   resolved_by: a person owning the plugin operation
@@ -815,9 +892,22 @@ unknowns:
   checked: constructor arguments of the SOAP client
   resolved_by: the WordPress module that constructs the client, or Packeta API documentation
   blocks: 'calls: packeta-soap-api'
+- question: Which WooCommerce releases the manual include of the integration interface
+    must cover.
+  checked: the two paths that the module tries
+  resolved_by: a person owning the plugin release
+  blocks: '-'
 - question: Which callbacks the plugin must keep active when WooCommerce is not active.
   checked: the early return of the registration entry point
   resolved_by: a person owning the plugin
+  blocks: '-'
+- question: Which carriers support age verification, and who keeps that list current.
+  checked: the constant of the carrier factory
+  resolved_by: Packeta carrier documentation
+  blocks: 'exposes: fromDbResult'
+- question: Which code gives the size limit and the age limit of the diagnostic file.
+  checked: the constructor of the size limiter, which takes both values
+  resolved_by: the container configuration of the plugin, which stands outside src/Packetery
   blocks: '-'
 - question: Which code limits the print offset against the maximum offset of the label
     format.
@@ -848,11 +938,6 @@ unknowns:
 - question: Which internal REST routes save the modal data and the stored until date.
   checked: the modal classes of this module
   resolved_by: packetery-module-api
-  blocks: '-'
-- question: Which code gives the size limit and the age limit of the diagnostic
-    file.
-  checked: the constructor of the size limiter, which takes both values
-  resolved_by: the container configuration of the plugin, which stands outside src/Packetery
   blocks: '-'
 - question: Which module reads the data object of the order form.
   checked: every file of the namespace Packetery\Module\Forms

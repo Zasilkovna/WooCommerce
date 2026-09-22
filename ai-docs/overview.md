@@ -5,7 +5,7 @@ module: null
 generated-by: skill:generate-docs@0.3.5
 source-commit: b34fe03c
 last-generated: 2026-09-22
-covers: [packeta.php, src/Packetery/Module/Framework, src/Packetery/Module/EntityFactory, src/Packetery/Module/Blocks, src/Packetery/Module/DiagnosticsLogger, src/Packetery/Module/Upgrade, src/Packetery/Module/Exception, src/Packetery/Module/Payment]
+covers: [packeta.php, src/Packetery/Module/DiagnosticsLogger, src/Packetery/Module/Upgrade, src/Packetery/Module/Exception, src/Packetery/Module/Payment]
 confidence: reviewed
 tags: [ai-generated, repo-woocommerce, type-overview]
 ---
@@ -31,15 +31,12 @@ Performance Order Storage of WooCommerce
 
 ## woocommerce: modules
 
-woocommerce consists of 25 modules. Eighteen of them have a document in `reference/`, and
-[index.md](index.md) lists those documents. The seven modules below stayed under the threshold for
-a document of their own, and this page is their home.
+woocommerce consists of 25 modules. Twenty-one of them have a document in `reference/`, and
+[index.md](index.md) lists those documents. The four modules below stayed under the threshold for a
+document of their own, and this page is their home.
 
 | Module | Path | Lines of logic | Document |
 |---|---|---|---|
-| packetery-module-framework | `src/Packetery/Module/Framework` | 537 | below — the platform layer |
-| packetery-module-entityfactory | `src/Packetery/Module/EntityFactory` | 142 | below — the platform layer |
-| packetery-module-blocks | `src/Packetery/Module/Blocks` | 124 | below — the platform layer |
 | packetery-module-diagnosticslogger | `src/Packetery/Module/DiagnosticsLogger` | 65 | below — the small modules |
 | packetery-module-upgrade | `src/Packetery/Module/Upgrade` | 44 | below — the small modules |
 | packetery-module-exception | `src/Packetery/Module/Exception` | 25 | below — the small modules |
@@ -67,21 +64,6 @@ The API password and the sender of the shop live in the option `packetery`, and 
 the API key from the password
 [VERIFY: src/Packetery/Module/Options/Page.php#sanitizePacketeryOptions]. This documentation names
 those keys and never carries their values.
-
-## woocommerce: platform modules
-
-woocommerce groups its platform layer into three modules: packetery-module-framework,
-packetery-module-entityfactory and packetery-module-blocks. They hold no Packeta business rule of
-their own, and the modules with a document use them.
-
-| Module | Behaviour | Anchor |
-|---|---|---|
-| packetery-module-framework | Wraps the functions of WordPress and of WooCommerce in two adapters and a set of traits, which most other modules use instead of a global function | [VERIFY: src/Packetery/Module/Framework/WpAdapter.php#WpAdapter] |
-| packetery-module-entityfactory | Builds the entities of the domain module from the data of WordPress and of the API | [VERIFY: src/Packetery/Module/EntityFactory/SizeFactory.php#SizeFactory] |
-| packetery-module-blocks | Integrates the Packeta widget into the block checkout of WooCommerce | [VERIFY: src/Packetery/Module/Blocks/WidgetIntegration.php#WidgetIntegration] |
-
-The adapters of packetery-module-framework are the lowest layer of the plugin, and they depend on no
-other module [VERIFY: src/Packetery/Module/Framework/WcAdapter.php#WcAdapter].
 
 ## woocommerce: small modules
 

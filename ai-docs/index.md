@@ -23,12 +23,12 @@ sends the orders to Packeta as packets. The documentation of woocommerce is spli
 | [overview.md](overview.md) | What the plugin does, the start of the plugin and the seven modules without a document | You need orientation |
 | [architecture.md](architecture.md) | How the modules hold together, and the flows of an order, of the carrier list and of a label print | You trace a request or an order |
 | [dependencies.md](dependencies.md) | The Packeta services, the platform requirements and the links between modules | You look for what the plugin needs from outside |
-| `reference/` | Eighteen module documents, one for each module above the threshold; the table below lists them | You work in one module |
+| `reference/` | Twenty-one module documents, one for each documented module; the table below lists them | You work in one module |
 
 ## woocommerce: modules
 
-woocommerce contains 25 modules. Eighteen of them have a document in `reference/`, and the other
-seven are described in [overview.md](overview.md).
+woocommerce contains 25 modules. Twenty-one of them have a document in `reference/`, and the other
+four are described in [overview.md](overview.md).
 
 | Module | Path | Document |
 |---|---|---|
@@ -42,6 +42,7 @@ seven are described in [overview.md](overview.md).
 | packetery-module-views, packetery-module-forms, packetery-module-log | `src/Packetery/Module/{Views,Forms,Log}` | [reference/packetery-module-views.md](reference/packetery-module-views.md), [reference/packetery-module-forms.md](reference/packetery-module-forms.md), [reference/packetery-module-log.md](reference/packetery-module-log.md) |
 | packetery-module-product, packetery-module-productcategory, packetery-module-customsdeclaration | `src/Packetery/Module/{Product,ProductCategory,CustomsDeclaration}` | [reference/packetery-module-product.md](reference/packetery-module-product.md), [reference/packetery-module-productcategory.md](reference/packetery-module-productcategory.md), [reference/packetery-module-customsdeclaration.md](reference/packetery-module-customsdeclaration.md) |
 | packetery-module-email, packetery-module-dashboard, packetery-module-labels | `src/Packetery/Module/{Email,Dashboard,Labels}` | [reference/packetery-module-email.md](reference/packetery-module-email.md), [reference/packetery-module-dashboard.md](reference/packetery-module-dashboard.md), [reference/packetery-module-labels.md](reference/packetery-module-labels.md) |
+| packetery-module-framework, packetery-module-entityfactory, packetery-module-blocks | `src/Packetery/Module/{Framework,EntityFactory,Blocks}` | [reference/packetery-module-framework.md](reference/packetery-module-framework.md), [reference/packetery-module-entityfactory.md](reference/packetery-module-entityfactory.md), [reference/packetery-module-blocks.md](reference/packetery-module-blocks.md) |
 
 ## woocommerce: generation assumptions
 
@@ -51,6 +52,9 @@ that it could finish non-interactively):
 - The module boundary is the PSR-4 namespace. Each subdirectory of `src/Packetery/Module` is one
   module, and the classes that stand directly in that directory are the module
   `packetery-module-root`.
+- Three modules hold fewer lines than the threshold, but they hold more public members than the
+  member threshold, or every other module depends on them. They have a document of their own:
+  `packetery-module-framework`, `packetery-module-entityfactory` and `packetery-module-blocks`.
 - The counts of each module come from a run of the map tool with the namespace split, while the
   committed map in `ai-docs/ast` holds one project for each PSR-4 root. Test directories are
   excluded from every count.
@@ -76,7 +80,8 @@ tables of the verification record, without the rows of the class PENDING.
 | reference/packetery-module-forms.md, -views.md, -labels.md | reviewed | 51/58, 46/55 and 40/47 CONFIRMED |
 | reference/packetery-module-product.md, -productcategory.md, -customsdeclaration.md | reviewed | 54/62, 44/48 and 49/51 CONFIRMED |
 | reference/packetery-module-email.md, -dashboard.md | reviewed | 36/41 and 35/42 CONFIRMED |
-| index.md, overview.md, dependencies.md | reviewed | 29/41, 39/44 and 38/47 CONFIRMED; architecture.md is still `draft` |
+| index.md, overview.md, architecture.md, dependencies.md | reviewed | 29/41, 39/44, 43/57 and 38/47 CONFIRMED |
+| reference/packetery-module-framework.md, -entityfactory.md, -blocks.md | draft | Written after the verification round; not yet verified |
 
 A document reaches `verified` only when every checked row is confirmed at the first verification.
 Every document of this repository needed a fix, so `reviewed` is its ceiling until the next
