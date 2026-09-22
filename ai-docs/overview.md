@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [packeta.php, src/Packetery/Module/Framework, src/Packetery/Module/EntityFactory, src/Packetery/Module/Blocks, src/Packetery/Module/DiagnosticsLogger, src/Packetery/Module/Upgrade, src/Packetery/Module/Exception, src/Packetery/Module/Payment]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, type-overview]
 ---
 

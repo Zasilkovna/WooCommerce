@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 4034cda7
 last-generated: 2026-09-22
 covers: [composer.json, packeta.php, src/Packetery/Core/Api, src/Packetery/Module/Carrier/Downloader.php]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, type-dependencies]
 ---
 

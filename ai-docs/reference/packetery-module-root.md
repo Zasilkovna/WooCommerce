@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: c961aa4f
 last-generated: 2026-09-22
 covers: [src/Packetery/Module]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-root, type-reference]
 ---
 

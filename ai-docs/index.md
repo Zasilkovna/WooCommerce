@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [.]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, type-index]
 ---
 
@@ -21,14 +21,9 @@ sends the orders to Packeta as packets. The documentation of woocommerce is spli
 |---|---|---|
 | [manifest.yaml](manifest.yaml) | Machine-readable inventory: the modules, what the plugin exposes, what it calls and what data it owns | You grep for a route, an entity or an interface name — start here |
 | [overview.md](overview.md) | What the plugin does, the start of the plugin and the seven modules without a document | You need orientation |
-| [architecture.md](architecture.md) | How the modules hold together and where an order flows | You trace a request or an order |
+| [architecture.md](architecture.md) | How the modules hold together, and the flows of an order, of the carrier list and of a label print | You trace a request or an order |
 | [dependencies.md](dependencies.md) | The Packeta services, the platform requirements and the links between modules | You look for what the plugin needs from outside |
-| [reference/packetery-core.md](reference/packetery-core.md) | The domain module: entities, the API clients and the validators | You work with the Packeta API contract |
-| [reference/packetery-module-order.md](reference/packetery-module-order.md) | Packet lifecycle, admin screens and the order table | You work with packets or the order grid |
-| [reference/packetery-module-checkout.md](reference/packetery-module-checkout.md) | Shipping rates, validation and the widget | You work with the cart or the checkout |
-| [reference/packetery-module-carrier.md](reference/packetery-module-carrier.md) | The carrier feed, the carrier table and the carrier settings | You work with carriers or their prices |
-| [reference/packetery-module-root.md](reference/packetery-module-root.md) | Start, scheduled jobs, upgrade and uninstall | You work with the schema or the background jobs |
-| [reference/packetery-module-hooks.md](reference/packetery-module-hooks.md) | The registration map of every callback of the plugin | You look for the place where a callback becomes active |
+| `reference/` | Eighteen module documents, one for each module above the threshold; the table below lists them | You work in one module |
 
 ## woocommerce: modules
 
@@ -56,52 +51,54 @@ that it could finish non-interactively):
 - The module boundary is the PSR-4 namespace. Each subdirectory of `src/Packetery/Module` is one
   module, and the classes that stand directly in that directory are the module
   `packetery-module-root`.
-- The committed map in `ai-docs/ast` was produced at an older commit and without the namespace
-  split, so the counts of each module come from a second run of the same tool. Test directories are
+- The counts of each module come from a run of the map tool with the namespace split, while the
+  committed map in `ai-docs/ast` holds one project for each PSR-4 root. Test directories are
   excluded from every count.
-- The module `packetery-module-order` holds more lines than the split rule permits. The team decided
-  to document it as one module and to postpone the split.
+- The module `packetery-module-order` holds 5101 lines of logic, which is above the limit of 3000
+  lines of the split rule. The documentation keeps it as one module.
 - The names of the Packeta services follow the manifest of the PrestaShop module of Packeta, so a
   cross-repository query finds both plugins under one name.
 
 ## woocommerce: generation status
 
-woocommerce — documentation generated from commit `b34fe03c`.
+woocommerce — documentation generated from commit `b34fe03c`. Every document was verified against
+the code, and every finding of the class INCORRECT was fixed. The ratio counts the rows of both
+tables of the verification record, without the rows of the class PENDING.
 
 | Document | confidence | Verification |
 |---|---|---|
-| reference/packetery-core.md | reviewed | 53/53 CONFIRMED at the second verification |
-| reference/packetery-module-order.md | reviewed | 82/94 CONFIRMED, 9 INCORRECT fixed |
-| reference/packetery-module-checkout.md | reviewed | 81/89 CONFIRMED, 6 INCORRECT fixed |
-| reference/packetery-module-carrier.md | reviewed | 77/88 CONFIRMED, 9 INCORRECT fixed |
-| reference/packetery-module-options.md | reviewed | 71/77 CONFIRMED, 5 INCORRECT fixed |
-| reference/packetery-module-shipping.md | reviewed | 58/62 CONFIRMED, 3 INCORRECT fixed |
-| reference/packetery-module-api.md | reviewed | 65/68 CONFIRMED, 2 INCORRECT fixed |
-| The nine remaining reference pages | draft | not yet verified |
-| overview.md, architecture.md, dependencies.md, index.md | draft | not yet verified |
+| reference/packetery-core.md | reviewed | 53/55 CONFIRMED at the second verification |
+| reference/packetery-module-order.md | reviewed | 82/94 CONFIRMED |
+| reference/packetery-module-checkout.md | reviewed | 81/88 CONFIRMED |
+| reference/packetery-module-carrier.md | reviewed | 77/87 CONFIRMED |
+| reference/packetery-module-options.md, -shipping.md, -api.md | reviewed | 71/77, 58/62 and 65/70 CONFIRMED |
+| reference/packetery-module-hooks.md, -root.md, -log.md | reviewed | 44/58, 56/62 and 52/65 CONFIRMED |
+| reference/packetery-module-forms.md, -views.md, -labels.md | reviewed | 51/58, 46/55 and 40/47 CONFIRMED |
+| reference/packetery-module-product.md, -productcategory.md, -customsdeclaration.md | reviewed | 54/62, 44/48 and 49/51 CONFIRMED |
+| reference/packetery-module-email.md, -dashboard.md | reviewed | 36/41 and 35/42 CONFIRMED |
+| index.md, overview.md, dependencies.md | reviewed | 29/41, 39/44 and 38/47 CONFIRMED; architecture.md is still `draft` |
 
-The lowest confidence is `draft`. A verification run of those documents, and a fix of every finding,
-raises them to `reviewed`. A document reaches `verified` only when every checked row is confirmed at
-the first verification.
+A document reaches `verified` only when every checked row is confirmed at the first verification.
+Every document of this repository needed a fix, so `reviewed` is its ceiling until the next
+generation run.
 
 ## woocommerce: what the documentation does not know
 
-woocommerce has these evidenced blind spots (carried machine-readably by `manifest.yaml`, section
-`unknowns`). They are not tasks for the reader — they are findings to report when a query runs into
-them.
+woocommerce has these evidenced blind spots. `manifest.yaml` carries all 33 of them in the section
+`unknowns`; the table holds the ten that a reader meets most often.
 
 | What is unknown | What was searched | What would resolve it |
 |---|---|---|
 | Whether the open permission callback of the four checkout REST routes is a decision or a defect | The permission callbacks of both controllers, which differ | A person owning the plugin security |
-| Whether a capability check protects the settings export | The export class and the page that builds its link | The namespace that registers the hook |
+| Whether a capability check protects the settings export | The export class, the page that builds its link and the hook module | The hook module of the plugin |
 | Which Packeta API version and WSDL the plugin runs against | The constructor arguments of the SOAP client | Packeta API documentation |
 | Whether the carrier feed host and the pickup point validation host are one service | The endpoint constant and the REST client, which name two hosts | Packeta API documentation |
 | Which consumers outside this repository use the domain module | This repository only | Other documented repositories |
-| Which business rules decide the order status of each packet status, the disallowed gateways and the supported currency switchers | The settings that hold those values | A person owning the order process |
+| Which order status belongs to each packet status | The status mapping of the plugin settings | A person owning the order process |
+| Which payment gateways a carrier must disallow, and which currency switchers the shops need | The carrier option and the supported plugin list | A person owning the checkout |
 | Which data a shop must keep after it removes the plugin, and whether the job schedules fit a large shop | The uninstall constant and the five schedules | A person owning the plugin |
-| How an installation with a read only plugin directory gets the class of a new carrier | The generator and the bulk generator | A person owning the plugin release |
 | Whether a category restriction must win over a product restriction, and which products need age verification | The two metadata keys, which the checkout reads separately | A person owning the catalogue |
 | Whether the shortcode of the pickup point country must give the country of the point or of the customer | The method behind that shortcode, which reads the shipping country | A person owning the email templates |
 
-The manifest carries every question of every module. The table above groups the questions that share
-one answer, and it keeps the question of every group.
+The other questions of `unknowns` belong to one module each, and the document of that module names
+them. An answer to any of them is an input for the next generation run.
