@@ -40,7 +40,7 @@ exposes:
 unknowns:
   - question: Where WordPress registers the method list and the class loading of this module.
     checked: every file of the namespace Packetery\Module\Shipping
-    resolved_by: packetery-module-root
+    resolved_by: packetery-module-hooks
     blocks: "exposes: getSortedCachedMethods"
   - question: How an installation with a read only plugin directory gets the class of a new carrier.
     checked: the generator and the bulk generator of this module

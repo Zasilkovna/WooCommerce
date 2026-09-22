@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: ffca7e2e
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Shipping]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-shipping, type-reference]
 ---
 
@@ -16,7 +16,7 @@ Repo: woocommerce · Module: packetery-module-shipping · Type: reference · Sta
 
 packetery-module-shipping gives each Packeta carrier its own WooCommerce shipping method. The shop
 owner then adds the carrier to a shipping zone in the same way as any other method
-[VERIFY: src/Packetery/Module/Shipping/BaseShippingMethod.php#get_instance_form_fields]. One base
+[VERIFY: src/Packetery/Module/Shipping/BaseShippingMethod.php#__construct]. One base
 class holds the behaviour of every carrier, and a generated class holds the identifier of one
 carrier [VERIFY: src/Packetery/Module/Shipping/ShippingMethodGenerator.php#generateClass].
 
@@ -61,7 +61,7 @@ the class extends the base method, and its only member is the carrier identifier
 directory is a subdirectory of the namespace
 [VERIFY: src/Packetery/Module/Shipping/ShippingMethodGenerator.php#getTargetDirectory]. The
 generator tests that the directory is writable, and it returns `false` when the directory is not
-writable [VERIFY: src/Packetery/Module/Shipping/ShippingMethodGenerator.php#classExists].
+writable [VERIFY: src/Packetery/Module/Shipping/ShippingMethodGenerator.php#generateClass].
 
 The bulk generator collects the carriers from two sources. It takes the internal pickup point
 carriers from the carrier configuration, and it takes the feed carriers from a fresh download
@@ -83,17 +83,19 @@ references → packetery-core
 references → packetery-module-carrier
 references → packetery-module-checkout
 references → packetery-module-root
+references → packetery-module-framework
 
 The method reads the carrier entity and the carrier options of `packetery-module-carrier`, and it
 uses them for the title and for the active state
 [VERIFY: src/Packetery/Module/Shipping/ShippingProvider.php#getSortedCachedMethods]. The method asks
-`packetery-module-checkout` for the rates of the package, and it gives that call the identifiers of
-the other Packeta methods of the zone
+`packetery-module-checkout` for the rates of the package, and it gives that call the carrier
+identifiers and the titles of the Packeta methods of the zone, including its own
 [VERIFY: src/Packetery/Module/Shipping/BaseShippingMethod.php#calculate_shipping]. The base method
 takes its services from the service container of the plugin, because WooCommerce builds a shipping
 method without a container [VERIFY: src/Packetery/Module/Shipping/BaseShippingMethod.php#__construct].
-The module reads the countries of a zone through the repository of `packetery-module-root`, and it
-reads the car delivery identifiers of `packetery-core`
+The module reads the countries of a zone through the repository of `packetery-module-root`
+[VERIFY: src/Packetery/Module/Shipping/ShippingProvider.php#addMethods], and it reads the car
+delivery identifiers of `packetery-core`
 [VERIFY: src/Packetery/Module/Shipping/ShippingProvider.php#loadClasses].
 
 ## packetery-module-shipping: known limitations
