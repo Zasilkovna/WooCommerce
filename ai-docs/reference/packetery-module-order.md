@@ -54,7 +54,7 @@ screens and packet actions. The module registers no REST route of its own.
 
 The module gives four extension filters to other code: `packeta_order_grid_links_settings`
 [VERIFY: src/Packetery/Module/Order/GridExtender.php#addFilterLinks], `packeta_create_packet`
-[VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket] and
+[VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket],
 `packetery_exclude_orders_with_status`
 [VERIFY: src/Packetery/Module/Order/Repository.php#applyCustomFilters] and
 `packeta_order_detail_show_run_wizard_button`
@@ -76,6 +76,12 @@ references → packetery-module-customsdeclaration
 references → packetery-module-labels
 references → packetery-module-framework
 references → packetery-module-api
+references → packetery-module-shipping
+references → packetery-module-log
+references → packetery-module-exception
+references → packetery-module-dashboard
+references → packetery-module-views
+references → packetery-module-payment
 
 The module reads and writes `Packetery\Core\Entity\Order` and uses the SOAP client of
 `packetery-core` for every packet operation
@@ -87,7 +93,11 @@ status mapping and the custom currency rates from `packetery-module-options`
 WordPress and WooCommerce call the module through hooks, and the module calls them back through the
 adapters of `packetery-module-framework` [VERIFY: src/Packetery/Module/Order/WcOrderActions.php#updateOrderStatus].
 The module plans the long operations as Action Scheduler jobs
-[VERIFY: src/Packetery/Module/Order/PacketSynchronizer.php#syncStatuses].
+[VERIFY: src/Packetery/Module/Order/PacketSynchronizer.php#syncStatuses]. The module also uses the
+internal REST router of `packetery-module-api`, the shipping method classes of
+`packetery-module-shipping`, and the log, the exceptions, the dashboard pages, the views and the
+payment helpers of the other Packeta modules
+[VERIFY: src/Packetery/Module/Order/StoredUntilModal.php#renderModal].
 
 ## packetery-module-order: data model
 

@@ -1,0 +1,612 @@
+service: woocommerce
+description: The Packeta plugin for WooCommerce. It adds the Packeta carriers to the
+  checkout and sends the orders to Packeta as packets.
+aliases:
+- packetery-core
+- packetery-module-api
+- packetery-module-carrier
+- packetery-module-checkout
+- packetery-module-hooks
+- packetery-module-options
+- packetery-module-order
+- packetery-module-root
+- packetery-module-shipping
+generated-by: skill:generate-docs@0.3.5
+source_commit: 4034cda7c36b87fc8b8afe7ee2043fa7156097c3
+last-generated: 2026-09-22
+assumptions:
+- Generated at commit 6791c048, on the branch that is now named docs/teams.
+- Generated on branch docs/teams at commit 2c742814.
+- Generated on branch docs/teams at commit 33f911c4.
+- Generated on branch docs/teams at commit 3d44ef98.
+- Generated on branch docs/teams at commit 82e3a6c9.
+- Generated on branch docs/teams at commit 97720cfc.
+- Generated on branch docs/teams at commit c961aa4f.
+- Generated on branch docs/teams at commit e4971ab0.
+- Generated on branch docs/teams at commit ffca7e2e.
+- Module boundary taken from the PSR-4 namespace Packetery\Core; the committed ai-docs/ast/map.json
+  was produced without --split-psr4, so per-module counts come from a --split-psr4
+  run of the same tool at the same commit.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Api; the committed
+  ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
+  per-module counts come from a --split-psr4 run of the same tool. Test directories
+  are excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Carrier; the committed
+  ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
+  per-module counts come from a --split-psr4 run of the same tool. Test directories
+  are excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Checkout; the committed
+  ai-docs/ast/map.json was produced without --split-psr4, so per-module counts come
+  from a --split-psr4 run of the same tool at the same commit. Test directories are
+  excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Hooks; the committed
+  ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
+  per-module counts come from a --split-psr4 run of the same tool. Test directories
+  are excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Options; the committed
+  ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
+  per-module counts come from a --split-psr4 run of the same tool. Test directories
+  are excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Order; the committed
+  ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
+  per-module counts come from a --split-psr4 run of the same tool. Test directories
+  are excluded from the counts.
+- Module boundary taken from the PSR-4 namespace Packetery\Module\Shipping; the committed
+  ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so
+  per-module counts come from a --split-psr4 run of the same tool. Test directories
+  are excluded from the counts.
+- The STE plugin esterka@packeta-dev was not loaded in the generating session.
+- The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of
+  this document.
+- The admin screens of this module contain no capability check, so the auth field
+  of every exposes entry is unknown.
+- The carrier feed uses a Packeta REST host that differs from the host of the pickup
+  point validation of packetery-core, so the document names it packeta-pickup-point-api.
+- The committed ai-docs/ast/map.json was produced without --split-psr4 and at commit
+  11523b71, so per-module counts come from a --split-psr4 run of the same tool. Test
+  directories are excluded from the counts.
+- The counts hold the 144 generated carrier classes of the subdirectory Generated,
+  which the repository keeps under version control.
+- The module holds 5101 lines of logic, which is above the 3000 line limit of the
+  split rule. The team decided to document it as one module and to postpone the split.
+- The module holds the classes that stand directly in src/Packetery/Module, without
+  the subdirectories. Each subdirectory is a module of its own.
+- The registration map lists the groups of hooks, not every hook. The class registers
+  more than one hundred callbacks.
+modules:
+- name: packetery-core
+  path: src/Packetery/Core
+  lines: 2473
+  doc: reference/packetery-core.md
+- name: packetery-module-api
+  path: src/Packetery/Module/Api
+  lines: 391
+  doc: reference/packetery-module-api.md
+- name: packetery-module-carrier
+  path: src/Packetery/Module/Carrier
+  lines: 1721
+  doc: reference/packetery-module-carrier.md
+- name: packetery-module-checkout
+  path: src/Packetery/Module/Checkout
+  lines: 2162
+  doc: reference/packetery-module-checkout.md
+- name: packetery-module-hooks
+  path: src/Packetery/Module/Hooks
+  lines: 562
+  doc: reference/packetery-module-hooks.md
+- name: packetery-module-options
+  path: src/Packetery/Module/Options
+  lines: 1593
+  doc: reference/packetery-module-options.md
+- name: packetery-module-order
+  path: src/Packetery/Module/Order
+  lines: 5101
+  doc: reference/packetery-module-order.md
+- name: packetery-module-root
+  path: src/Packetery/Module
+  lines: 1833
+  doc: reference/packetery-module-root.md
+- name: packetery-module-shipping
+  path: src/Packetery/Module/Shipping
+  lines: 1521
+  doc: reference/packetery-module-shipping.md
+- name: packetery-module-views
+  path: src/Packetery/Module/Views
+  lines: 1090
+  doc: overview.md
+- name: packetery-module-forms
+  path: src/Packetery/Module/Forms
+  lines: 1066
+  doc: overview.md
+- name: packetery-module-log
+  path: src/Packetery/Module/Log
+  lines: 727
+  doc: overview.md
+- name: packetery-module-framework
+  path: src/Packetery/Module/Framework
+  lines: 537
+  doc: overview.md
+- name: packetery-module-product
+  path: src/Packetery/Module/Product
+  lines: 353
+  doc: overview.md
+- name: packetery-module-email
+  path: src/Packetery/Module/Email
+  lines: 347
+  doc: overview.md
+- name: packetery-module-dashboard
+  path: src/Packetery/Module/Dashboard
+  lines: 291
+  doc: overview.md
+- name: packetery-module-labels
+  path: src/Packetery/Module/Labels
+  lines: 291
+  doc: overview.md
+- name: packetery-module-customsdeclaration
+  path: src/Packetery/Module/CustomsDeclaration
+  lines: 284
+  doc: overview.md
+- name: packetery-module-productcategory
+  path: src/Packetery/Module/ProductCategory
+  lines: 213
+  doc: overview.md
+- name: packetery-module-entityfactory
+  path: src/Packetery/Module/EntityFactory
+  lines: 142
+  doc: overview.md
+- name: packetery-module-blocks
+  path: src/Packetery/Module/Blocks
+  lines: 124
+  doc: overview.md
+- name: packetery-module-diagnosticslogger
+  path: src/Packetery/Module/DiagnosticsLogger
+  lines: 65
+  doc: overview.md
+- name: packetery-module-upgrade
+  path: src/Packetery/Module/Upgrade
+  lines: 44
+  doc: overview.md
+- name: packetery-module-exception
+  path: src/Packetery/Module/Exception
+  lines: 25
+  doc: overview.md
+- name: packetery-module-payment
+  path: src/Packetery/Module/Payment
+  lines: 16
+  doc: overview.md
+exposes:
+- kind: rest
+  name: /checkout/remove-saved-data
+  module: packetery-module-api
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#removeSavedData
+  notes: Removes the stored checkout data of one carrier or of the whole session.
+- kind: rest
+  name: /checkout/save-car-delivery-details
+  module: packetery-module-api
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#saveCarDeliveryDetails
+  notes: Saves the car delivery selection. The permission callback always returns
+    true.
+- kind: rest
+  name: /checkout/save-selected-pickup-point
+  module: packetery-module-api
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#saveSelectedPickupPoint
+  notes: Saves the pickup point of the widget. The permission callback always returns
+    true.
+- kind: rest
+  name: /checkout/save-validated-address
+  module: packetery-module-api
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#saveValidatedAddress
+  notes: Saves the validated address of the customer. The permission callback always
+    returns true.
+- kind: rest
+  name: /order/save-modal
+  module: packetery-module-api
+  consumers:
+  - woocommerce
+  auth: wordpress-capability
+  evidence: src/Packetery/Module/Api/Internal/OrderController.php#saveModal
+  notes: Saves the packet values of an order. It needs the edit_posts capability and
+    checks no nonce.
+- kind: rest
+  name: /order/save-stored-until
+  module: packetery-module-api
+  consumers:
+  - woocommerce
+  auth: wordpress-capability
+  evidence: src/Packetery/Module/Api/Internal/OrderController.php#saveStoredUntil
+  notes: Sends a new storage date to Packeta and saves it. It needs the edit_posts
+    capability.
+- kind: library
+  name: Packetery\Core
+  module: packetery-core
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Core/Api/Soap/Client.php#createPacket
+  notes: PHP classes only; the module registers no HTTP route and no CLI command.
+- kind: library
+  name: WpdbAdapter
+  module: packetery-module-root
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/WpdbAdapter.php#getPacketeryPrefix
+  notes: Database wrapper of the plugin. It holds the table names that the repositories
+    use.
+- kind: other
+  name: actionUpdateOrder
+  module: packetery-module-checkout
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Checkout/OrderUpdater.php#actionUpdateOrder
+  notes: Writes the pickup point, the address and the car delivery data to the new
+    order.
+- kind: other
+  name: actionValidateCheckoutData
+  module: packetery-module-checkout
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Checkout/CheckoutValidator.php#actionValidateCheckoutData
+  notes: Validates the Packeta selection of the classic checkout before WooCommerce
+    creates the order.
+- kind: library
+  name: createByCarrierId
+  module: packetery-module-carrier
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Carrier/CarrierOptionsFactory.php#createByCarrierId
+  notes: Builds the settings object of one carrier from its WordPress option.
+- kind: other
+  name: createSettings
+  module: packetery-module-checkout
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings
+  notes: Builds the settings and the translations that the Packeta widget needs in
+    the browser.
+- kind: other
+  name: createShippingRates
+  module: packetery-module-checkout
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Checkout/ShippingRateFactory.php#createShippingRates
+  notes: Builds one WooCommerce shipping rate for each available Packeta carrier.
+- kind: html
+  name: export-settings
+  module: packetery-module-options
+  consumers:
+  - woocommerce
+  auth: unknown
+  evidence: src/Packetery/Module/Options/Exporter.php#ACTION_EXPORT_SETTINGS
+  notes: Query action that downloads the settings and the environment of the shop
+    as a text file. The class checks no capability and no nonce.
+- kind: library
+  name: getAllOptions
+  module: packetery-module-options
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions
+  notes: Typed access to every plugin setting. The modules that need a setting read
+    it through this provider.
+- kind: library
+  name: getAnyById
+  module: packetery-module-carrier
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Carrier/EntityRepository.php#getAnyById
+  notes: Returns the carrier entity of a feed identifier or of an internal identifier.
+- kind: library
+  name: getSortedCachedMethods
+  module: packetery-module-shipping
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Shipping/ShippingProvider.php#getSortedCachedMethods
+  notes: Gives WooCommerce the carrier methods that the zone allows.
+- kind: other
+  name: handleActions
+  module: packetery-module-hooks
+  consumers:
+  - woocommerce
+  auth: unknown
+  evidence: src/Packetery/Module/Hooks/PluginHooks.php#handleActions
+  notes: Runs a packet action from a query parameter on admin_init. The nonce check
+    lives in the packet action itself.
+- kind: html
+  name: packeta-country
+  module: packetery-module-carrier
+  consumers:
+  - woocommerce
+  auth: wordpress-capability
+  evidence: src/Packetery/Module/Carrier/OptionsPage.php#register
+  notes: Admin submenu page with the carrier settings. It needs the manage_options
+    capability.
+- kind: html
+  name: packeta-options
+  module: packetery-module-options
+  consumers:
+  - woocommerce
+  auth: wordpress-capability
+  evidence: src/Packetery/Module/Options/Page.php#registerSubmenuPage
+  notes: Admin settings page of the plugin. It needs the manage_options capability.
+- kind: library
+  name: packeta_method_
+  module: packetery-module-shipping
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Shipping/BaseShippingMethod.php#PACKETA_METHOD_PREFIX
+  notes: Identifier prefix of every carrier shipping method. WooCommerce offers these
+    methods in a shipping zone.
+- kind: other
+  name: packetery_cron_carriers_hook
+  module: packetery-module-root
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/CronService.php#CRON_CARRIERS_HOOK
+  notes: Scheduled action of the Action Scheduler. It downloads the carrier feed every
+    day.
+- kind: other
+  name: packetery_cron_packet_status_sync_hook
+  module: packetery-module-root
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/CronService.php#CRON_PACKET_STATUS_SYNC_HOOK
+  notes: Scheduled action of the Action Scheduler. It reads the packet statuses from
+    Packeta.
+- kind: html
+  name: packetery_customs_declaration_metabox
+  module: packetery-module-order
+  consumers:
+  - woocommerce
+  auth: unknown
+  evidence: src/Packetery/Module/Order/CustomsDeclarationMetabox.php#addMetaBoxes
+  notes: Admin metabox for the customs declaration. It is shown only when the carrier
+    needs one.
+- kind: html
+  name: packetery_metabox
+  module: packetery-module-order
+  consumers:
+  - woocommerce
+  auth: unknown
+  evidence: src/Packetery/Module/Order/Metabox.php#add_meta_boxes
+  notes: Admin metabox on the order detail. It shows the Packeta form and saves its
+    fields.
+- kind: other
+  name: packetery_sync_order_status
+  module: packetery-module-order
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Order/PacketSynchronizer.php#register
+  notes: Action Scheduler hook. It reads the packet status of one order from Packeta.
+- kind: library
+  name: register
+  module: packetery-module-hooks
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Hooks/HookRegistrar.php#register
+  notes: Entry point of the plugin. It registers the hooks of every module for the
+    current request.
+- kind: library
+  name: run
+  module: packetery-module-root
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Plugin.php#run
+  notes: Entry point of the plugin. The main plugin file calls it.
+- kind: html
+  name: submit_to_api
+  module: packetery-module-order
+  consumers:
+  - woocommerce
+  auth: unknown
+  evidence: src/Packetery/Module/Order/BulkActions.php#addActions
+  notes: Bulk action of the order grid. It submits the packets of the selected orders.
+- kind: other
+  name: updateOrder
+  module: packetery-module-hooks
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Hooks/UpdateOrderHook.php#updateOrder
+  notes: Saves the Packeta fields of an order after WooCommerce saves it.
+- kind: library
+  name: wcOrderHasOurMethod
+  module: packetery-module-shipping
+  consumers:
+  - woocommerce
+  auth: none
+  evidence: src/Packetery/Module/Shipping/ShippingProvider.php#wcOrderHasOurMethod
+  notes: Answers whether an order used a Packeta shipping method.
+calls:
+- service: packeta-api
+  kind: other
+  purpose: Creates, cancels and tracks packets and downloads label documents over
+    SOAP.
+  module: packetery-core
+  evidence: src/Packetery/Core/Api/Soap/Client.php#createPacket
+- service: packeta-api
+  kind: other
+  purpose: Validates the sender name of the shop over SOAP.
+  module: packetery-module-options
+  evidence: src/Packetery/Module/Options/Page.php#processActions
+- service: packeta-api
+  kind: other
+  purpose: Creates, cancels and tracks packets, and downloads label and handover documents
+    over SOAP.
+  module: packetery-module-order
+  evidence: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket
+- service: packeta-pickup-point-api
+  kind: rest
+  purpose: Downloads the carrier feed of the shop as JSON.
+  module: packetery-module-carrier
+  evidence: src/Packetery/Module/Carrier/Downloader.php#run
+- service: packeta-widget
+  kind: other
+  purpose: The browser opens the Packeta widget, and the customer selects a pickup
+    point or an address in it.
+  module: packetery-module-checkout
+  evidence: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings
+- service: packeta-widget-api
+  kind: rest
+  purpose: Validates a pickup point that the customer selected in the widget.
+  module: packetery-core
+  evidence: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate
+- service: packeta-widget-api
+  kind: rest
+  purpose: Validates the pickup point that the customer selected.
+  module: packetery-module-order
+  evidence: src/Packetery/Module/Order/PickupPointValidator.php#validate
+owns_data:
+- entity: carrier
+  store: mysql
+  module: packetery-module-carrier
+  evidence: src/Packetery/Module/Carrier/Repository.php#createOrAlterTable
+  notes: One table of the feed carriers. The settings of each carrier live in a WordPress
+    option instead.
+- entity: checkout-data
+  store: mysql
+  module: packetery-module-checkout
+  evidence: src/Packetery/Module/Checkout/CheckoutStorage.php#setTransient
+  notes: One WordPress transient for each session. It keeps the selection of the customer
+    until the order exists.
+- entity: order
+  store: mysql
+  module: packetery-module-order
+  evidence: src/Packetery/Module/Order/Repository.php#createOrAlterTable
+  notes: One table for the Packeta data of a WooCommerce order. The table name comes
+    from the WpdbAdapter property packeteryOrder.
+- entity: plugin-schema
+  store: mysql
+  module: packetery-module-root
+  evidence: src/Packetery/Module/Upgrade.php#runCreateTables
+  notes: The upgrade creates and alters the five tables of the plugin through the
+    repositories that own them.
+- entity: settings
+  store: mysql
+  module: packetery-module-options
+  evidence: src/Packetery/Module/Options/Page.php#saveOptions
+  notes: Five WordPress options hold the settings. More options hold the state of
+    the plugin between requests.
+unknowns:
+- question: How an installation with a read only plugin directory gets the class of
+    a new carrier.
+  checked: the generator and the bulk generator of this module
+  resolved_by: a person owning the plugin release
+  blocks: '-'
+- question: Where WordPress calls the registration of these routes.
+  checked: every file of the namespace Packetery\Module\Api
+  resolved_by: packetery-module-hooks
+  blocks: '-'
+- question: Where WordPress registers the grid column and bulk action callbacks of
+    this module.
+  checked: every file of the namespace Packetery\Module\Order
+  resolved_by: the module that builds the service container
+  blocks: 'exposes: submit_to_api'
+- question: Where WordPress registers the method list and the class loading of this
+    module.
+  checked: every file of the namespace Packetery\Module\Shipping
+  resolved_by: packetery-module-hooks
+  blocks: 'exposes: getSortedCachedMethods'
+- question: Where WordPress schedules the carrier feed download.
+  checked: every file of the namespace Packetery\Module\Carrier
+  resolved_by: packetery-module-root
+  blocks: 'calls: packeta-pickup-point-api'
+- question: Where WordPress schedules the purge of the expired checkout transients.
+  checked: every file of the namespace Packetery\Module\Options
+  resolved_by: the module that registers the cron service
+  blocks: '-'
+- question: Where the two switches of the car delivery configuration come from.
+  checked: the constructor of the configuration class
+  resolved_by: the module that builds the service container
+  blocks: '-'
+- question: Whether a capability check protects the settings export outside this namespace.
+  checked: the export class and the page that builds its link
+  resolved_by: packetery-module-root
+  blocks: 'exposes: export-settings'
+- question: Whether the carrier feed host and the pickup point validation host are
+    one service of Packeta.
+  checked: the endpoint constant of this module and the REST client of packetery-core,
+    which name two hosts
+  resolved_by: Packeta API documentation
+  blocks: 'calls: packeta-pickup-point-api'
+- question: Whether the compound pickup point provider must respect vendor identifiers
+    and age verification.
+  checked: source comments in the pickup point providers
+  resolved_by: a person owning the pickup point selection
+  blocks: '-'
+- question: Whether the open permission callback of the checkout routes is a decision
+    or a defect.
+  checked: the permission callbacks of both controllers, which differ
+  resolved_by: a person owning the plugin security
+  blocks: 'exposes: /checkout/save-selected-pickup-point'
+- question: Whether the order grid of the classic shape must stay supported.
+  checked: the two shapes that the module registers, and the hardcoded WooCommerce
+    version
+  resolved_by: a person owning the plugin release
+  blocks: '-'
+- question: Whether the schedules of the background jobs fit the load of a large shop.
+  checked: the five schedules of the cron service
+  resolved_by: a person owning the plugin operation
+  blocks: '-'
+- question: Which Packeta API version and WSDL the plugin runs against.
+  checked: constructor arguments of the SOAP client
+  resolved_by: the WordPress module that constructs the client, or Packeta API documentation
+  blocks: 'calls: packeta-api'
+- question: Which callbacks the plugin must keep active when WooCommerce is not active.
+  checked: the early return of the registration entry point
+  resolved_by: a person owning the plugin
+  blocks: '-'
+- question: Which code migrates the two legacy settings that the provider keeps for
+    the upgrade.
+  checked: the comments of the provider
+  resolved_by: packetery-module-upgrade
+  blocks: '-'
+- question: Which consumers outside this repository use Packetery\Core.
+  checked: this repository only
+  resolved_by: other documented repositories
+  blocks: 'exposes: Packetery\Core'
+- question: Which currency switcher plugins the shops must support.
+  checked: the supported plugin list of this module
+  resolved_by: a person owning the checkout
+  blocks: '-'
+- question: Which data a shop must keep after it removes the plugin.
+  checked: the constant that permits the uninstall and the list of the deleted options
+  resolved_by: a person owning the plugin
+  blocks: '-'
+- question: Which internal REST routes save the modal data and the stored until date.
+  checked: the modal classes of this module
+  resolved_by: packetery-module-api
+  blocks: '-'
+- question: Which order status the shop wants for each packet status.
+  checked: the status mapping is read from the plugin settings
+  resolved_by: a person owning the order process
+  blocks: '-'
+- question: Which payment gateways the shops must disallow for a carrier by default.
+  checked: the carrier option that holds the disallowed gateways
+  resolved_by: a person owning the checkout
+  blocks: '-'
