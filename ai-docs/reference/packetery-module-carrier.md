@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 82e3a6c9
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Carrier]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-carrier, type-reference]
 ---
 
@@ -19,8 +19,8 @@ The module downloads the carrier feed from Packeta, and it writes the carriers t
 table [VERIFY: src/Packetery/Module/Carrier/Updater.php#save]. The module builds the carrier entity
 that the checkout and the order modules use
 [VERIFY: src/Packetery/Module/Carrier/EntityRepository.php#getAnyById]. The module also holds the
-carriers that no feed contains. These are the pickup point carriers of Packeta itself and the car
-delivery carriers [VERIFY: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php#getNonFeedCarriersByCountry].
+carriers that no feed contains. These are the pickup point carriers of Packeta itself
+[VERIFY: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php#getNonFeedCarriersByCountry].
 
 The administrator sets the price limits, the size restrictions and the payment rules of each carrier
 on the carrier settings page [VERIFY: src/Packetery/Module/Carrier/OptionsPage.php#register]. Each
@@ -42,9 +42,9 @@ packetery-module-carrier exposes one admin page and a set of services that the o
 | Carrier validity | `isValidForCountry` | Answers whether a carrier is active and delivers to the country | [VERIFY: src/Packetery/Module/Carrier/EntityRepository.php#isValidForCountry] |
 | Carrier options | `createByCarrierId` | Builds the settings object of one carrier from its WordPress option | [VERIFY: src/Packetery/Module/Carrier/CarrierOptionsFactory.php#createByCarrierId] |
 | Settings object | `Options` | Gives typed access to the limits, the surcharges and the restrictions of a carrier | [VERIFY: src/Packetery/Module/Carrier/Options.php#getSizeRestrictions] |
-| Option name | `getOptionId` | Builds and recognises the option name of a carrier | [VERIFY: src/Packetery/Module/Carrier/OptionPrefixer.php#getOptionId] |
+| Option name | `getOptionId` | Builds the option name of a carrier | [VERIFY: src/Packetery/Module/Carrier/OptionPrefixer.php#getOptionId] |
 | Feed download | `run` | Downloads the feed, validates it and saves the carriers | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#run] |
-| Manual update | `startUpdate` | Starts the feed download from the admin page and shows the last update time | [VERIFY: src/Packetery/Module/Carrier/CarrierUpdater.php#startUpdate] |
+| Manual update | `startUpdate` | Starts the feed download from the admin page | [VERIFY: src/Packetery/Module/Carrier/CarrierUpdater.php#startUpdate] |
 | Internal carriers | `getFixedCarrierId` | Maps the legacy pickup point identifier to the compound carrier of a country | [VERIFY: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php#getFixedCarrierId] |
 
 The page is available to a user with the `manage_options` capability
@@ -68,8 +68,8 @@ The update maps the feed fields to the table columns and writes the differences
 [VERIFY: src/Packetery/Module/Carrier/Updater.php#carriers_mapper]. A carrier of the table that the
 feed no longer contains gets the `deleted` flag
 [VERIFY: src/Packetery/Module/Carrier/Repository.php#set_as_deleted]. A carrier that becomes
-unavailable also loses the active state in its own settings, and a new carrier of the feed gets a
-generated shipping method class [VERIFY: src/Packetery/Module/Carrier/Updater.php#save]. Every change
+changes its available flag also gets that change in its own settings, and a carrier without a
+generated shipping method class gets one [VERIFY: src/Packetery/Module/Carrier/Updater.php#save]. Every change
 goes to the plugin log, and a transient tells the administrator that the carrier list changed
 [VERIFY: src/Packetery/Module/Carrier/Updater.php#addLogEntry].
 
@@ -88,16 +88,18 @@ references → packetery-module-options
 references → packetery-module-shipping
 references → packetery-module-log
 references → packetery-module-framework
-calls → packeta-widget-api (sync, REST)
+calls → packeta-pickup-point-api (sync, REST)
 
 The module builds the `Packetery\Core\Entity\Carrier` object and the pickup point providers of
 `packetery-core` [VERIFY: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php#getVendorCarriers].
-It reads the API key and the configuration of the shop from `packetery-module-options`
+It reads the API key of the shop from `packetery-module-options` for the feed request
+[VERIFY: src/Packetery/Module/Carrier/Downloader.php#download_json], and it reads the carrier
+settings from the same module
 [VERIFY: src/Packetery/Module/Carrier/CarrierOptionsFactory.php#createByOptionId]. It generates and
 reads the shipping method classes of `packetery-module-shipping`, and it decides the activity of a
 carrier from the WooCommerce shipping zones when the shop enables that mode
 [VERIFY: src/Packetery/Module/Carrier/CarrierActivityBridge.php#isActive]. The carrier feed comes
-from the same Packeta REST service that validates a pickup point
+from a Packeta REST service, and its host is not the host that validates a pickup point
 [VERIFY: src/Packetery/Module/Carrier/Downloader.php#fetch_as_array]. The order module and the
 checkout module read the carriers only through this module
 [VERIFY: src/Packetery/Module/Carrier/EntityRepository.php#getActiveCarriers].
