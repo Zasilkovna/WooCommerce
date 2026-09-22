@@ -774,8 +774,8 @@ unknowns:
   resolved_by: the module that builds the service container
   blocks: '-'
 - question: Whether a capability check protects the settings export outside this namespace.
-  checked: the export class and the page that builds its link
-  resolved_by: packetery-module-root
+  checked: the export class, the page that builds its link, and the hook module that registers it
+  resolved_by: packetery-module-hooks
   blocks: 'exposes: export-settings'
 - question: Whether a category restriction must win over a product restriction.
   checked: the two metadata keys, which the checkout reads separately
@@ -849,10 +849,10 @@ unknowns:
   checked: the modal classes of this module
   resolved_by: packetery-module-api
   blocks: '-'
-- question: Which module gives the size limit and the age limit of the diagnostic
+- question: Which code gives the size limit and the age limit of the diagnostic
     file.
   checked: the constructor of the size limiter, which takes both values
-  resolved_by: packetery-module-root
+  resolved_by: the container configuration of the plugin, which stands outside src/Packetery
   blocks: '-'
 - question: Which module reads the data object of the order form.
   checked: every file of the namespace Packetery\Module\Forms

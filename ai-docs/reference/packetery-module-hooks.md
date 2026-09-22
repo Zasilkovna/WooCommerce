@@ -84,8 +84,11 @@ references → packetery-module-shipping
 references → packetery-module-views
 
 The module calls the registration method of the modules that keep their own map. These are the cron
-service, the checkout, the metaboxes, the modal windows, the settings page and the carrier settings
-page [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372]. The module reads the email
+service, the automatic packet submission, the status synchronisation, the REST API extension, the
+order save, the email shortcodes, the checkout, the metaboxes, the modal windows, the product tab,
+the category form fields, the order query processor, the dashboard widget, the block callbacks, the
+settings page and the carrier settings page
+[VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:409]. The module reads the email
 hook and the insertion setting from `packetery-module-options`, so a part of the map comes from the
 settings of the shop [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372]. The order save
 callback uses the order repository of `packetery-module-order` and the method test of

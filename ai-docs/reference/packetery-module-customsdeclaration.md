@@ -73,13 +73,13 @@ references → packetery-module-entityfactory
 references → packetery-module-exception
 
 The module maps the rows to the declaration entity and the item entity of `packetery-core`
-[VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#getCustomsDeclarationItemRows]. It
+[VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#getByOrderNumber]. It
 builds those entities with the factory of `packetery-module-entityfactory`, it reaches the database
 through the wrapper of `packetery-module-root`, and a failed delete raises the exception of
 `packetery-module-exception` [VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#delete].
 The order module reads the declaration when it sends a packet, and its metabox writes it. The
 deletion of an order deletes the declaration with its items in one call
-[VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#deleteItem]. The schema of the two
+[VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#delete]. The schema of the two
 tables is created by the upgrade of `packetery-module-root`, which calls this repository
 [VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#createOrAlterTable].
 

@@ -18,11 +18,11 @@ packetery-module-root holds the classes that stand directly in the plugin namesp
 the plugin [VERIFY: src/Packetery/Module/Plugin.php#run]. The module owns the tasks that no other
 module owns. It schedules the background jobs
 [VERIFY: src/Packetery/Module/CronService.php#register], it creates and migrates the database tables
-[VERIFY: src/Packetery/Module/Upgrade.php#check], it removes every trace of the plugin at uninstall
+[VERIFY: src/Packetery/Module/Upgrade.php#check], it removes the data of the plugin at uninstall when the shop permits that
 [VERIFY: src/Packetery/Module/Uninstaller.php#uninstall], and it wraps the database of WordPress
 [VERIFY: src/Packetery/Module/WpdbAdapter.php#dbDelta].
 
-packetery-module-root also holds the helpers that every module uses. These are the admin context
+packetery-module-root also holds the helpers that many modules use. These are the admin context
 detection [VERIFY: src/Packetery/Module/ContextResolver.php#isOrderGridPage], the flash messages
 [VERIFY: src/Packetery/Module/MessageManager.php#flash_message], the widget parameters
 [VERIFY: src/Packetery/Module/WidgetOptionsBuilder.php#getCarrierForCheckout] and the unit
@@ -92,6 +92,14 @@ references → packetery-module-carrier
 references → packetery-module-options
 references → packetery-module-log
 references → packetery-module-checkout
+references → packetery-module-framework
+references → packetery-module-views
+references → packetery-module-forms
+references → packetery-module-dashboard
+references → packetery-module-product
+references → packetery-module-customsdeclaration
+references → packetery-module-upgrade
+references → packetery-module-exception
 
 The plugin class asks `packetery-module-hooks` to register every hook
 [VERIFY: src/Packetery/Module/Plugin.php#run]. The scheduled jobs call the log purger, the transient
