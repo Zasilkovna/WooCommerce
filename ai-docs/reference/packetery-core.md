@@ -54,8 +54,8 @@ how to show them [VERIFY: src/Packetery/Core/Validator/Order.php#ERROR_TRANSLATI
 packetery-core depends on the Packeta API and on interfaces that another module implements.
 Structured lines:
 
-calls → packeta-api (sync, SOAP/XML)
-calls → packeta-widget-api (sync, REST/JSON)
+calls → packeta-soap-api (sync, SOAP/XML)
+calls → packeta-widget (sync, REST/JSON)
 called from → woocommerce
 
 packetery-core sends shipment data, label requests and status queries to the SOAP API of Packeta
@@ -95,8 +95,8 @@ holds several vendor codes of one country
 
 packetery-core communicates outside the repository with two services of Packeta.
 
-calls → packeta-api (sync, SOAP/XML)
-calls → packeta-widget-api (sync, REST/JSON)
+calls → packeta-soap-api (sync, SOAP/XML)
+calls → packeta-widget (sync, REST/JSON)
 
 The SOAP client creates packets, cancels them, reads their status and downloads label and barcode
 documents [VERIFY: src/Packetery/Core/Api/Soap/Client.php#cancelPacket]. The address of the service

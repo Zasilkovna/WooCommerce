@@ -14,24 +14,24 @@ Repo: woocommerce · Module: — · Type: dependencies · Status: current
 
 ## woocommerce: links outside the repo
 
-woocommerce communicates with four services outside its own code, and all four belong to Packeta.
+woocommerce communicates with three services outside its own code, and all three belong to Packeta.
 
-calls → packeta-api (sync, SOAP)
-calls → packeta-widget-api (sync, REST)
+calls → packeta-soap-api (sync, SOAP)
+calls → packeta-widget (sync, REST)
 calls → packeta-pickup-point-api (sync, REST)
-calls → packeta-widget (sync, HTTPS)
 
 | Counterpart | Direction | Sync/async | Protocol | Where in code | Anchor |
 |---|---|---|---|---|---|
-| packeta-api | calls | sync | SOAP | `src/Packetery/Core/Api/Soap/Client.php` | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |
-| packeta-widget-api | calls | sync | REST | `src/Packetery/Core/Api/Rest/PickupPointValidate.php` | [VERIFY: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate] |
+| packeta-soap-api | calls | sync | SOAP | `src/Packetery/Core/Api/Soap/Client.php` | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |
+| packeta-widget | calls | sync | REST and HTTPS | `src/Packetery/Core/Api/Rest/PickupPointValidate.php` | [VERIFY: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate] |
 | packeta-pickup-point-api | calls | sync | REST | `src/Packetery/Module/Carrier/Downloader.php` | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#run] |
 | packeta-widget | calls | sync | HTTPS | `src/Packetery/Module/Checkout/CheckoutSettings.php` | [VERIFY: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings] |
+| — | — | — | — | The browser loads the widget library, and the server checks the selected point | [VERIFY: src/Packetery/Module/Order/PickupPointValidator.php#validate] |
 
-The plugin creates, cancels and tracks packets over `packeta-api`, and it downloads the label
+The plugin creates, cancels and tracks packets over `packeta-soap-api`, and it downloads the label
 documents and the handover protocol over the same service
 [VERIFY: src/Packetery/Core/Api/Soap/Client.php#packetsLabelsPdf]. It validates a selected pickup
-point over `packeta-widget-api` [VERIFY: src/Packetery/Module/Order/PickupPointValidator.php#validate].
+point over `packeta-widget` [VERIFY: src/Packetery/Module/Order/PickupPointValidator.php#validate].
 It downloads the carrier list of the shop over `packeta-pickup-point-api`, which is a different host
 [VERIFY: src/Packetery/Module/Carrier/Downloader.php#API_URL]. The browser of the customer loads
 `packeta-widget`, and the plugin gives it the settings and the translations
@@ -68,9 +68,9 @@ Keys, not values:
 
 | Key | Points at | Where the value lives | Anchor |
 |---|---|---|---|
-| `api_password` | packeta-api and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_password] |
+| `api_password` | packeta-soap-api and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_password] |
 | `api_key` | packeta-widget and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_key] |
-| `sender` | packeta-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_sender] |
+| `sender` | packeta-soap-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_sender] |
 | `WIDGET_URL_PRODUCTION`, `WIDGET_URL_STAGE` | packeta-widget | [VERIFY: src/Packetery/Module/WidgetUrlResolver.php#WIDGET_URL_PRODUCTION] | [VERIFY: src/Packetery/Module/WidgetUrlResolver.php#getUrl] |
 | `API_URL` | packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#API_URL] | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#run] |
 
@@ -103,6 +103,6 @@ the namespace, and the manifest carries every id as an alias
 | woocommerce | Packeta, the plugin name that WordPress shows | [VERIFY: packeta.php#packetaPlugin] |
 | packetery-core | `Packetery\Core` | [VERIFY: src/Packetery/Core/CoreHelper.php#getTrackingUrl] |
 | packetery-module-root | `Packetery\Module` | [VERIFY: src/Packetery/Module/Plugin.php#run] |
-| packeta-api | The SOAP API of Packeta | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |
-| packeta-widget-api | The REST API that validates a pickup point | [VERIFY: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate] |
+| packeta-soap-api | The SOAP API of Packeta | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |
+| packeta-widget | The widget library and the REST API that validates a pickup point; prestashop uses the same name | [VERIFY: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate] |
 | packeta-pickup-point-api | The REST API that serves the carrier feed | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#API_URL] |

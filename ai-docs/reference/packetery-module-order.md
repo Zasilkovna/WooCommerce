@@ -129,8 +129,8 @@ Packeta table to the WooCommerce order table, and the join respects the HPOS set
 
 packetery-module-order communicates outside the repository with the Packeta API. Structured lines:
 
-calls → packeta-api (sync, SOAP)
-calls → packeta-widget-api (sync, REST)
+calls → packeta-soap-api (sync, SOAP)
+calls → packeta-widget (sync, REST)
 
 The module sends these SOAP operations through the client of `packetery-core`: `createPacket` and
 `createStorageFile` for a new packet [VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket],

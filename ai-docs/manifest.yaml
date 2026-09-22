@@ -443,18 +443,18 @@ exposes:
   evidence: src/Packetery/Module/Shipping/ShippingProvider.php#wcOrderHasOurMethod
   notes: Answers whether an order used a Packeta shipping method.
 calls:
-- service: packeta-api
+- service: packeta-soap-api
   kind: other
   purpose: Creates, cancels and tracks packets and downloads label documents over
     SOAP.
   module: packetery-core
   evidence: src/Packetery/Core/Api/Soap/Client.php#createPacket
-- service: packeta-api
+- service: packeta-soap-api
   kind: other
   purpose: Validates the sender name of the shop over SOAP.
   module: packetery-module-options
   evidence: src/Packetery/Module/Options/Page.php#processActions
-- service: packeta-api
+- service: packeta-soap-api
   kind: other
   purpose: Creates, cancels and tracks packets, and downloads label and handover documents
     over SOAP.
@@ -471,12 +471,12 @@ calls:
     point or an address in it.
   module: packetery-module-checkout
   evidence: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings
-- service: packeta-widget-api
+- service: packeta-widget
   kind: rest
   purpose: Validates a pickup point that the customer selected in the widget.
   module: packetery-core
   evidence: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate
-- service: packeta-widget-api
+- service: packeta-widget
   kind: rest
   purpose: Validates the pickup point that the customer selected.
   module: packetery-module-order
@@ -576,7 +576,7 @@ unknowns:
 - question: Which Packeta API version and WSDL the plugin runs against.
   checked: constructor arguments of the SOAP client
   resolved_by: the WordPress module that constructs the client, or Packeta API documentation
-  blocks: 'calls: packeta-api'
+  blocks: 'calls: packeta-soap-api'
 - question: Which callbacks the plugin must keep active when WooCommerce is not active.
   checked: the early return of the registration entry point
   resolved_by: a person owning the plugin

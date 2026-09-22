@@ -89,7 +89,7 @@ references → packetery-module-carrier
 references → packetery-module-order
 references → packetery-module-dashboard
 references → packetery-module-log
-calls → packeta-api (sync, SOAP)
+calls → packeta-soap-api (sync, SOAP)
 
 The settings page validates the sender name with the SOAP client of `packetery-core`, and it writes
 the answer to the plugin log [VERIFY: src/Packetery/Module/Options/Page.php#processActions]. The
