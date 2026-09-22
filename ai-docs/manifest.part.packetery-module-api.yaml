@@ -1,0 +1,68 @@
+service: woocommerce
+source_commit: 2c742814
+aliases: [packetery-module-api]
+
+assumptions:
+  - "Generated on branch docs/teams at commit 2c742814."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Api; the committed ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so per-module counts come from a --split-psr4 run of the same tool. Test directories are excluded from the counts."
+  - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
+
+modules:
+  - name: packetery-module-api
+    path: src/Packetery/Module/Api
+    lines: 391
+    doc: reference/packetery-module-api.md
+
+exposes:
+  - kind: rest
+    name: /checkout/save-selected-pickup-point
+    module: packetery-module-api
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#saveSelectedPickupPoint
+    notes: "Saves the pickup point of the widget. The permission callback always returns true."
+  - kind: rest
+    name: /checkout/save-validated-address
+    module: packetery-module-api
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#saveValidatedAddress
+    notes: "Saves the validated address of the customer. The permission callback always returns true."
+  - kind: rest
+    name: /checkout/save-car-delivery-details
+    module: packetery-module-api
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#saveCarDeliveryDetails
+    notes: "Saves the car delivery selection. The permission callback always returns true."
+  - kind: rest
+    name: /checkout/remove-saved-data
+    module: packetery-module-api
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Api/Internal/CheckoutController.php#removeSavedData
+    notes: "Removes the stored checkout data of one carrier or of the whole session."
+  - kind: rest
+    name: /order/save-modal
+    module: packetery-module-api
+    consumers: [woocommerce]
+    auth: wordpress-capability
+    evidence: src/Packetery/Module/Api/Internal/OrderController.php#saveModal
+    notes: "Saves the packet values of an order. It needs the edit_posts capability and checks no nonce."
+  - kind: rest
+    name: /order/save-stored-until
+    module: packetery-module-api
+    consumers: [woocommerce]
+    auth: wordpress-capability
+    evidence: src/Packetery/Module/Api/Internal/OrderController.php#saveStoredUntil
+    notes: "Sends a new storage date to Packeta and saves it. It needs the edit_posts capability."
+
+unknowns:
+  - question: Where WordPress calls the registration of these routes.
+    checked: every file of the namespace Packetery\Module\Api
+    resolved_by: packetery-module-hooks
+    blocks: "-"
+  - question: Whether the open permission callback of the checkout routes is a decision or a defect.
+    checked: the permission callbacks of both controllers, which differ
+    resolved_by: a person owning the plugin security
+    blocks: "exposes: /checkout/save-selected-pickup-point"
