@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-customsdeclaration module"
 repo: woocommerce
 module: packetery-module-customsdeclaration
 generated-by: skill:generate-docs@0.3.5
-source-commit: c5bc5fe5
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/CustomsDeclaration]
 confidence: draft
@@ -77,7 +77,11 @@ The module maps the rows to the declaration entity and the item entity of `packe
 builds those entities with the factory of `packetery-module-entityfactory`, it reaches the database
 through the wrapper of `packetery-module-root`, and a failed delete raises the exception of
 `packetery-module-exception` [VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#delete].
-The order module reads the declaration when it sends a packet, and its metabox writes it.
+The order module reads the declaration when it sends a packet, and its metabox writes it. The
+deletion of an order deletes the declaration with its items in one call
+[VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#deleteItem]. The schema of the two
+tables is created by the upgrade of `packetery-module-root`, which calls this repository
+[VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#createOrAlterTable].
 
 ## packetery-module-customsdeclaration: known limitations
 

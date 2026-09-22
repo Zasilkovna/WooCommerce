@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-dashboard module"
 repo: woocommerce
 module: packetery-module-dashboard
 generated-by: skill:generate-docs@0.3.5
-source-commit: c5bc5fe5
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Dashboard]
 confidence: draft
@@ -63,7 +63,11 @@ The steps read the settings of `packetery-module-options`, the carrier list and 
 any product holds a Packeta setting, and it reads the product metadata of
 `packetery-module-product` [VERIFY: src/Packetery/Module/Dashboard/DashboardItemBuilder.php#hasProductsWithPacketaSettings].
 The links of the steps come from the URL builder of `packetery-module-views`
-[VERIFY: src/Packetery/Module/Dashboard/DashboardItem.php#getUrl].
+[VERIFY: src/Packetery/Module/Dashboard/DashboardItem.php#getUrl]. The shipping zone step reads the
+zones of WooCommerce through the adapters of `packetery-module-root`, and it looks for a method of
+the Packeta shipping module in them
+[VERIFY: src/Packetery/Module/Dashboard/DashboardHelper.php#isPacketaShippingMethodActive]. No other
+module reads this one: the dashboard is the top of the page tree and nothing depends on its data.
 
 ## packetery-module-dashboard: known limitations
 

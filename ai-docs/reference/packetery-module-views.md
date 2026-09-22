@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-views module"
 repo: woocommerce
 module: packetery-module-views
 generated-by: skill:generate-docs@0.3.5
-source-commit: b36b68ad
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Views]
 confidence: draft

@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-email module"
 repo: woocommerce
 module: packetery-module-email
 generated-by: skill:generate-docs@0.3.5
-source-commit: c5bc5fe5
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Email]
 confidence: draft
@@ -43,7 +43,7 @@ packetery-module-email exposes fourteen shortcodes and the bug report.
 | Fresh logs | `addFreshLogsToZipByPrefix` | Adds the recent log files of one name prefix to the archive | [VERIFY: src/Packetery/Module/Email/BugReportAttachment.php#addFreshLogsToZipByPrefix] |
 
 Every shortcode takes the order number in one attribute, and it gives an empty text when the order
-does not exist [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#findOrder]. The archive stays
+does not exist [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#ifPickupPoint]. The archive stays
 empty when the installation has no archive extension of PHP
 [VERIFY: src/Packetery/Module/Email/BugReportAttachment.php#createAttachments].
 
@@ -63,7 +63,11 @@ The archive takes the settings export of `packetery-module-options` and the size
 diagnostic file of `packetery-module-log`
 [VERIFY: src/Packetery/Module/Email/BugReportAttachment.php#addTracyLogsToZip]. The address of the
 support comes to the email class as a constructor argument, so its value lives outside this module
-[VERIFY: src/Packetery/Module/Email/BugReportEmail.php#createEmailBody].
+[VERIFY: src/Packetery/Module/Email/BugReportEmail.php#createEmailBody]. The email itself leaves the
+shop through WordPress, and the module adds the archive as an attachment and the address of the
+sender as the reply address [VERIFY: src/Packetery/Module/Email/BugReportEmail.php#sendBugReport].
+The shortcodes need no other module at runtime, because the order repository gives them the whole
+order entity [VERIFY: src/Packetery/Module/Email/EmailShortcodes.php#carrierName].
 
 ## packetery-module-email: known limitations
 

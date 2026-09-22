@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-labels module"
 repo: woocommerce
 module: packetery-module-labels
 generated-by: skill:generate-docs@0.3.5
-source-commit: c5bc5fe5
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Labels]
 confidence: draft
@@ -23,7 +23,10 @@ and it builds the print parameters: the label format and the number of label fie
 packetery-module-labels prints nothing by itself. The print pages of the order module ask this
 module and then call Packeta
 [VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#getLabelFormat]. The module
-holds 4 files, 291 lines of logic and 19 public methods.
+holds 4 files, 291 lines of logic and 19 public methods. A carrier label needs the number that the
+carrier itself gave to the packet, and Packeta returns that number only after the packet exists
+[VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiSuccess]. The module therefore
+keeps the number on the order and asks Packeta only once for each packet.
 
 > ⚠ add business context (elicitation)
 
@@ -65,7 +68,11 @@ The module reads the courier number over the SOAP client of `packetery-core`
 through the order repository of `packetery-module-order`, and it takes the label type from the print
 page of the same module [VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#getLabelFormat].
 The label formats and the maximum offset of each format come from `packetery-module-options`
-[VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#createForm].
+[VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#createForm]. The module writes
+a note to the WooCommerce order and a flash message to the administrator, both through
+`packetery-module-root` [VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiError].
+The print list holds order entities of `packetery-core`, so a caller needs no second read of the
+database [VERIFY: src/Packetery/Module/Labels/LabelPrintPacketData.php#getItems].
 
 ## packetery-module-labels: known limitations
 
@@ -76,4 +83,8 @@ Whether the print page limits it is outside this module.
 
 One wrong API password ends the whole run and the module returns an empty list, so a print of many
 orders gives no partial result [VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#handleApiError].
-The module contains no TODO comment and no FIXME comment.
+Every other fault of the API skips one order only, and the administrator reads the result in the log
+of the plugin. The print list keeps its orders in memory for the whole run
+[VERIFY: src/Packetery/Module/Labels/LabelPrintPacketData.php#getCount], so a print of a very large
+selection holds every order of that selection. The module contains no TODO comment and no FIXME
+comment.

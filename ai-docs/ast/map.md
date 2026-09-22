@@ -3,7 +3,7 @@ title: "woocommerce — AST map"
 repo: woocommerce
 module: null
 generated-by: tool:ast-map@0.3.1
-source-commit: 11523b7131c7c289991c414d1419747fc9b4e819
+source-commit: b34fe03c3d932c007f21b970c38acd8241184d07
 last-generated: 2026-09-22
 tags: [ai-generated, repo-woocommerce, type-ast]
 ---

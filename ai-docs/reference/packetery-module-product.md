@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-product module"
 repo: woocommerce
 module: packetery-module-product
 generated-by: skill:generate-docs@0.3.5
-source-commit: c5bc5fe5
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Product]
 confidence: draft
@@ -22,7 +22,9 @@ carriers and adds the verification fee
 
 packetery-module-product also gives the size of a product in centimetres, which the cart needs for
 the size check of a carrier [VERIFY: src/Packetery/Module/Product/Entity.php#getLengthInCm]. The
-module holds 4 files, 353 lines of logic and 26 public methods.
+module holds 4 files, 353 lines of logic and 26 public methods. The settings belong to the product
+itself, so a shop sets them once and every order of that product follows them
+[VERIFY: src/Packetery/Module/Product/DataTab.php#saveData].
 
 > ⚠ add business context (elicitation)
 

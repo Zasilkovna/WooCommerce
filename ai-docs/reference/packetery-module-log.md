@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-log module"
 repo: woocommerce
 module: packetery-module-log
 generated-by: skill:generate-docs@0.3.5
-source-commit: b36b68ad
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Log]
 confidence: draft
@@ -22,7 +22,10 @@ page with a filter [VERIFY: src/Packetery/Module/Log/Page.php#createLogListUrl].
 packetery-module-log implements the logger interface of the domain module, so the other modules
 write through one service and know nothing about the storage
 [VERIFY: src/Packetery/Module/Log/Repository.php#remapToRecord]. The module holds 8 files, 727 lines
-of logic and 41 public methods.
+of logic and 41 public methods. The settings export of the plugin reads the records of the last days
+through the same service [VERIFY: src/Packetery/Module/Log/DbLogger.php#getForPeriodAsArray], and a
+second class cuts the diagnostic file of the plugin to a size limit
+[VERIFY: src/Packetery/Module/Log/LogSizeLimiter.php#getLimitedFilePartAsString].
 
 > ⚠ add business context (elicitation)
 

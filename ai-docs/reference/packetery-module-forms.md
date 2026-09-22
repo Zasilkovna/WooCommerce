@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-forms module"
 repo: woocommerce
 module: packetery-module-forms
 generated-by: skill:generate-docs@0.3.5
-source-commit: b36b68ad
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Forms]
 confidence: draft

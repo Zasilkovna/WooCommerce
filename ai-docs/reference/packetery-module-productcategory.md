@@ -3,7 +3,7 @@ title: "woocommerce — packetery-module-productcategory module"
 repo: woocommerce
 module: packetery-module-productcategory
 generated-by: skill:generate-docs@0.3.5
-source-commit: c5bc5fe5
+source-commit: b34fe03c
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/ProductCategory]
 confidence: draft
@@ -23,6 +23,9 @@ those carriers for a cart that holds such goods
 packetery-module-productcategory holds the same rule as the product module, one level higher. The
 module holds 4 files, 213 lines of logic and 14 public methods, and it owns the `category-settings`
 in one metadata key of a category [VERIFY: src/Packetery/Module/ProductCategory/Entity.php#META_DISALLOWED_SHIPPING_RATES].
+A category rule covers every product of that category, so a shop with many products sets the rule
+once instead of on each product
+[VERIFY: src/Packetery/Module/ProductCategory/ProductCategoryEntityFactory.php#fromTermId].
 
 > ⚠ add business context (elicitation)
 
@@ -62,7 +65,10 @@ delivery carriers that the shop disabled
 the logger of `packetery-module-log`
 [VERIFY: src/Packetery/Module/ProductCategory/CategoryGridExtender.php#addCategoryListColumns]. The
 checkout reads this module for the categories of every cart item, and the product module holds the
-same rule for one product.
+same rule for one product. The form itself comes from the form factory of `packetery-module-root`,
+and the module adds only its own field
+[VERIFY: src/Packetery/Module/ProductCategory/FormFields.php#render]. No module writes this metadata
+except the category form.
 
 ## packetery-module-productcategory: known limitations
 
@@ -74,4 +80,7 @@ The category list holds no filter for the restriction, although the product list
 [VERIFY: src/Packetery/Module/ProductCategory/CategoryGridExtender.php#hideCategoryListColumnByDefault].
 The column name of this module equals the column name of the product list, and only the screen keeps
 them apart [VERIFY: src/Packetery/Module/ProductCategory/CategoryGridExtender.php#addCategoryListColumns].
-The module contains no TODO comment and no FIXME comment.
+The column shows only whether a restriction exists, and the administrator opens the category to see
+which carriers it names
+[VERIFY: src/Packetery/Module/ProductCategory/CategoryGridExtender.php#fillCategoryListColumn]. The
+module contains no TODO comment and no FIXME comment.
