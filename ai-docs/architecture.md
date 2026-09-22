@@ -24,7 +24,7 @@ graph LR
   hooks[packetery-module-hooks] --> checkout[packetery-module-checkout]
   hooks --> order[packetery-module-order]
   hooks --> options[packetery-module-options]
-  checkout --> shipping[packetery-module-shipping]
+  shipping[packetery-module-shipping] --> checkout
   checkout --> carrier[packetery-module-carrier]
   order --> core[packetery-core]
   carrier --> core

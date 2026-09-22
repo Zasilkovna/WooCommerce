@@ -14,23 +14,26 @@ Repo: woocommerce · Module: packetery-module-views · Type: reference · Status
 
 ## packetery-module-views: purpose
 
-packetery-module-views renders what the Packeta plugin shows, and it loads the scripts and the
-styles that those screens need. The module holds the templates of the admin order detail, of the
-customer order detail and of the email footer
-[VERIFY: src/Packetery/Module/Views/ViewAdmin.php#renderDeliveryDetail]. It decides which asset
+packetery-module-views renders five templates of the Packeta plugin, and it loads the scripts and
+the styles of every Packeta screen. The module renders the delivery detail of the admin order, the
+order detail of the customer and the footer of the order email
+[VERIFY: src/Packetery/Module/Views/ViewAdmin.php#renderDeliveryDetail]. The templates themselves
+live in the `template` directory of the plugin, and the other modules render their own templates. It decides which asset
 belongs to which screen [VERIFY: src/Packetery/Module/Views/AssetManager.php#enqueueAdminAssets].
 
 packetery-module-views also runs the onboarding tours of the plugin, which show the administrator
 one setting after another [VERIFY: src/Packetery/Module/Views/WizardAssetManager.php#enqueueWizardAssets].
-The module holds 6 files, 1090 lines of logic and 18 public methods. It carries no Packeta business
-rule: every value comes from another module.
+The module holds 6 files, 1090 lines of logic and 18 public methods. Nearly every value comes from
+another module, and the module adds only presentation rules such as the first date that the date
+picker of the order grid offers
+[VERIFY: src/Packetery/Module/Views/AssetManager.php#enqueueAdminAssets].
 
 > ⚠ add business context (elicitation)
 
 ## packetery-module-views: public interface
 
 packetery-module-views exposes the render methods and the asset methods that the hook module
-registers.
+registers, and two builders that the other modules call directly.
 
 | Member | Signature / path | Behaviour | Anchor |
 |---|---|---|---|
@@ -80,21 +83,26 @@ references → packetery-module-checkout
 references → packetery-module-carrier
 references → packetery-module-options
 references → packetery-module-log
+references → packetery-module-framework
+references → packetery-module-dashboard
+references → packetery-module-shipping
 
-The admin order detail reads the order through the repository of `packetery-module-order`, and the
-widget settings of the pickup point picker come from its metabox
+The admin order detail reads the order through the repository of `packetery-module-order`
+[VERIFY: src/Packetery/Module/Views/ViewAdmin.php#renderDeliveryDetail], and the widget settings of
+the pickup point picker come from the metabox of the same module
 [VERIFY: src/Packetery/Module/Views/AssetManager.php#enqueueAdminAssets]. The checkout settings come
 from `packetery-module-checkout` [VERIFY: src/Packetery/Module/Views/AssetManager.php#enqueueFrontAssets].
 The module asks `packetery-module-root` which admin screen the request opens
 [VERIFY: src/Packetery/Module/Views/ViewAdmin.php#renderConfirmModalTemplate]. The URL of the widget
 library comes from the resolver of `packetery-module-root`
-[VERIFY: src/Packetery/Module/Views/UrlBuilder.php#buildAssetUrl].
+[VERIFY: src/Packetery/Module/Views/AssetManager.php#enqueueFrontAssets].
 
 ## packetery-module-views: known limitations
 
 packetery-module-views has these limitations evidenced in the code. Three render methods end without
-a message when the input is not a WooCommerce order, or when the order has no valid carrier. The
-module writes the type error to the log and returns
+a message when the input is not a WooCommerce order, or when the order has no valid carrier. Two of
+them write the type error to the log [VERIFY: src/Packetery/Module/Views/ViewFrontend.php#renderOrderDetail],
+and the render of the email footer returns without a record
 [VERIFY: src/Packetery/Module/Views/ViewMail.php#renderEmailFooter]. The asset URL is `null` when the
 file is missing, and the caller gets no error
 [VERIFY: src/Packetery/Module/Views/UrlBuilder.php#buildAssetUrl].

@@ -26,7 +26,7 @@ calls → packeta-pickup-point-api (sync, REST)
 | packeta-widget | calls | sync | REST and HTTPS | `src/Packetery/Core/Api/Rest/PickupPointValidate.php` | [VERIFY: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate] |
 | packeta-pickup-point-api | calls | sync | REST | `src/Packetery/Module/Carrier/Downloader.php` | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#run] |
 | packeta-widget | calls | sync | HTTPS | `src/Packetery/Module/Checkout/CheckoutSettings.php` | [VERIFY: src/Packetery/Module/Checkout/CheckoutSettings.php#createSettings] |
-| — | — | — | — | The browser loads the widget library, and the server checks the selected point | [VERIFY: src/Packetery/Module/Order/PickupPointValidator.php#validate] |
+| packeta-widget | calls | sync | REST | `src/Packetery/Module/Order/PickupPointValidator.php` | [VERIFY: src/Packetery/Module/Order/PickupPointValidator.php#validate] |
 
 The plugin creates, cancels and tracks packets over `packeta-soap-api`, and it downloads the label
 documents and the handover protocol over the same service
@@ -55,7 +55,7 @@ process, so no link carries a protocol.
 | packetery-module-order | packetery-core | references | [VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket] |
 | packetery-module-carrier | packetery-core | references | [VERIFY: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php#getVendorCarriers] |
 | packetery-module-api | packetery-module-order | references | [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal] |
-| Every module | packetery-module-framework | references | [VERIFY: src/Packetery/Module/Framework/WcAdapter.php#WcAdapter] |
+| Most modules | packetery-module-framework | references | [VERIFY: src/Packetery/Module/Framework/WcAdapter.php#WcAdapter] |
 
 The domain module `packetery-core` references no other module of the repository. It declares the
 interfaces that it needs, and `packetery-module-root` supplies the implementations
@@ -63,24 +63,27 @@ interfaces that it needs, and `packetery-module-root` supplies the implementatio
 
 ## woocommerce: environment configuration
 
-woocommerce reads the values of its links from the settings of the shop, not from the environment.
-Keys, not values:
+woocommerce reads most values of its links from the settings of the shop. The address of the SOAP
+service, the address of the tracking page and the environment of the widget live in the container
+configuration of the plugin, which stands outside `src/Packetery`
+[VERIFY: src/Packetery/Core/Api/Soap/Client.php#__construct]. Keys, not values:
 
 | Key | Points at | Where the value lives | Anchor |
 |---|---|---|---|
-| `api_password` | packeta-soap-api and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_password] |
-| `api_key` | packeta-widget and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_key] |
+| `api_password` | packeta-soap-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_password] |
+| `api_key` | packeta-widget and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#download_json] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_key] |
 | `sender` | packeta-soap-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_sender] |
 | `WIDGET_URL_PRODUCTION`, `WIDGET_URL_STAGE` | packeta-widget | [VERIFY: src/Packetery/Module/WidgetUrlResolver.php#WIDGET_URL_PRODUCTION] | [VERIFY: src/Packetery/Module/WidgetUrlResolver.php#getUrl] |
 | `API_URL` | packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#API_URL] | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#run] |
 
-The address of the SOAP service comes to the client as a constructor argument, so its value lives
-outside the domain module [VERIFY: src/Packetery/Core/Api/Soap/Client.php#setApiPassword].
+The address of the SOAP service and the API password come to the client as constructor arguments,
+so neither value lives in the domain module
+[VERIFY: src/Packetery/Core/Api/Soap/Client.php#__construct].
 
 ## woocommerce: platform requirements
 
 woocommerce needs WordPress with WooCommerce, and it stops its registration when WooCommerce is not
-active [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#addShippingMethods]. The plugin needs
+active [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:375]. The plugin needs
 the SOAP extension of PHP for the packet operations, and the settings page says so when the
 extension is missing [VERIFY: src/Packetery/Module/Options/Page.php#render].
 
@@ -95,7 +98,7 @@ extension is missing [VERIFY: src/Packetery/Module/Options/Page.php#render].
 ## woocommerce: aliases
 
 woocommerce is the repository name and the service id of this documentation. The module ids follow
-the namespace, and the manifest carries every id as an alias
+the namespace, and the manifest carries an alias for each module that has a document of its own
 [VERIFY: src/Packetery/Module/Plugin.php#getAppIdentity].
 
 | Canonical id | Also known as | Anchor |

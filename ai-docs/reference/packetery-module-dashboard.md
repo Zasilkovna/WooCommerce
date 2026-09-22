@@ -29,7 +29,8 @@ the shipping zones of WooCommerce
 
 ## packetery-module-dashboard: public interface
 
-packetery-module-dashboard exposes the page and the builder of its steps.
+packetery-module-dashboard exposes the page, the builder of its steps, the step object and the
+shipping zone check that the dashboard widget of the plugin uses.
 
 | Member | Signature / path | Behaviour | Anchor |
 |---|---|---|---|
@@ -37,7 +38,7 @@ packetery-module-dashboard exposes the page and the builder of its steps.
 | Page registration | `register` | Adds the page and needs the `manage_woocommerce` capability | [VERIFY: src/Packetery/Module/Dashboard/DashboardPage.php#register] |
 | Page render | `render` | Runs the carrier update and renders the home template | [VERIFY: src/Packetery/Module/Dashboard/DashboardPage.php#render] |
 | Setup steps | `buildItems` | Builds the eight steps and decides which ones are finished | [VERIFY: src/Packetery/Module/Dashboard/DashboardItemBuilder.php#buildItems] |
-| One step | `DashboardItem` | Caption, link, description, order and the finished state of one step | [VERIFY: src/Packetery/Module/Dashboard/DashboardItem.php#getSortOrder] |
+| One step | `DashboardItem` | Caption, link, description, order and the finished state of one step | [VERIFY: src/Packetery/Module/Dashboard/DashboardItem.php#DashboardItem] |
 | Shipping zone check | `isPacketaShippingMethodActive` | Answers whether a zone holds an active Packeta method | [VERIFY: src/Packetery/Module/Dashboard/DashboardHelper.php#isPacketaShippingMethodActive] |
 
 The eight steps are the account settings, the carrier configuration mode, the product settings, the
@@ -56,18 +57,23 @@ references → packetery-module-carrier
 references → packetery-module-order
 references → packetery-module-product
 references → packetery-module-views
+references → packetery-module-framework
+references → packetery-module-shipping
 
 The steps read the settings of `packetery-module-options`, the carrier list and the last update of
 `packetery-module-carrier`, and the status mapping of `packetery-module-order`
 [VERIFY: src/Packetery/Module/Dashboard/DashboardItemBuilder.php#buildItems]. One step asks whether
 any product holds a Packeta setting, and it reads the product metadata of
 `packetery-module-product` [VERIFY: src/Packetery/Module/Dashboard/DashboardItemBuilder.php#hasProductsWithPacketaSettings].
-The links of the steps come from the URL builder of `packetery-module-views`
-[VERIFY: src/Packetery/Module/Dashboard/DashboardItem.php#getUrl]. The shipping zone step reads the
-zones of WooCommerce through the adapters of `packetery-module-root`, and it looks for a method of
-the Packeta shipping module in them
-[VERIFY: src/Packetery/Module/Dashboard/DashboardHelper.php#isPacketaShippingMethodActive]. No other
-module reads this one: the dashboard is the top of the page tree and nothing depends on its data.
+The builder makes the link of each step from the admin address of its page
+[VERIFY: src/Packetery/Module/Dashboard/DashboardItemBuilder.php#getCarrierUpdateUrl], and the page
+itself uses the URL builder of `packetery-module-views` for its images
+[VERIFY: src/Packetery/Module/Dashboard/DashboardPage.php#render]. The shipping zone step reads the
+zones of WooCommerce through the adapters of `packetery-module-framework`, and it looks for a method
+of `packetery-module-shipping` in them
+[VERIFY: src/Packetery/Module/Dashboard/DashboardHelper.php#isPacketaShippingMethodActive]. Every
+Packeta page hangs under the page of this module, and the dashboard widget of the plugin reads its
+shipping zone check.
 
 ## packetery-module-dashboard: known limitations
 
