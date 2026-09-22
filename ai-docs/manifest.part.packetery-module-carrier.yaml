@@ -1,0 +1,67 @@
+service: woocommerce
+source_commit: 82e3a6c9
+aliases: [packetery-module-carrier]
+
+assumptions:
+  - "Generated on branch docs/teams at commit 82e3a6c9."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Carrier; the committed ai-docs/ast/map.json was produced without --split-psr4 and at commit 11523b71, so per-module counts come from a --split-psr4 run of the same tool. Test directories are excluded from the counts."
+  - "The carrier feed uses the same Packeta REST service as the pickup point validation of packetery-core, so the document names it packeta-widget-api."
+  - "The admin page of this module checks the manage_options capability; the other modules of this repository do not."
+  - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
+
+modules:
+  - name: packetery-module-carrier
+    path: src/Packetery/Module/Carrier
+    lines: 1721
+    doc: reference/packetery-module-carrier.md
+
+exposes:
+  - kind: html
+    name: packeta-country
+    module: packetery-module-carrier
+    consumers: [woocommerce]
+    auth: wordpress-capability
+    evidence: src/Packetery/Module/Carrier/OptionsPage.php#register
+    notes: "Admin submenu page with the carrier settings. It needs the manage_options capability."
+  - kind: library
+    name: getAnyById
+    module: packetery-module-carrier
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Carrier/EntityRepository.php#getAnyById
+    notes: "Returns the carrier entity of a feed identifier or of an internal identifier."
+  - kind: library
+    name: createByCarrierId
+    module: packetery-module-carrier
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Carrier/CarrierOptionsFactory.php#createByCarrierId
+    notes: "Builds the settings object of one carrier from its WordPress option."
+
+calls:
+  - service: packeta-widget-api
+    kind: rest
+    purpose: Downloads the carrier feed of the shop as JSON.
+    module: packetery-module-carrier
+    evidence: src/Packetery/Module/Carrier/Downloader.php#run
+
+owns_data:
+  - entity: carrier
+    store: mysql
+    module: packetery-module-carrier
+    evidence: src/Packetery/Module/Carrier/Repository.php#createOrAlterTable
+    notes: "One table of the feed carriers. The settings of each carrier live in a WordPress option instead."
+
+unknowns:
+  - question: Where WordPress schedules the carrier feed download.
+    checked: every file of the namespace Packetery\Module\Carrier
+    resolved_by: the module that registers the cron service
+    blocks: "calls: packeta-widget-api"
+  - question: Where the two switches of the car delivery configuration come from.
+    checked: the constructor of the configuration class
+    resolved_by: the module that builds the service container
+    blocks: "-"
+  - question: Whether the carrier feed service is the same deployment as the pickup point validation.
+    checked: the endpoint constant and the core client of this repository
+    resolved_by: Packeta API documentation
+    blocks: "calls: packeta-widget-api"
