@@ -32,8 +32,7 @@ four are described in [overview.md](overview.md).
 
 | Module | Path | Document |
 |---|---|---|
-| packetery-core | `src/Packetery/Core` | [reference/packetery-core.md](reference/packetery-core.md) |
-| packetery-module-root | `src/Packetery/Module` | [reference/packetery-module-root.md](reference/packetery-module-root.md) |
+| packetery-core, packetery-module-root | `src/Packetery/Core`, `src/Packetery/Module` | [reference/packetery-core.md](reference/packetery-core.md), [reference/packetery-module-root.md](reference/packetery-module-root.md) |
 | packetery-module-order | `src/Packetery/Module/Order` | [reference/packetery-module-order.md](reference/packetery-module-order.md) |
 | packetery-module-checkout | `src/Packetery/Module/Checkout` | [reference/packetery-module-checkout.md](reference/packetery-module-checkout.md) |
 | packetery-module-carrier | `src/Packetery/Module/Carrier` | [reference/packetery-module-carrier.md](reference/packetery-module-carrier.md) |
@@ -71,8 +70,7 @@ tables of the verification record, without the rows of the class PENDING.
 
 | Document | confidence | Verification |
 |---|---|---|
-| reference/packetery-core.md | reviewed | 53/55 CONFIRMED at the second verification |
-| reference/packetery-module-order.md | reviewed | 82/94 CONFIRMED |
+| reference/packetery-core.md, -order.md | reviewed | 53/55 CONFIRMED at the second verification, and 82/94 CONFIRMED |
 | reference/packetery-module-checkout.md | reviewed | 81/88 CONFIRMED |
 | reference/packetery-module-carrier.md | reviewed | 77/87 CONFIRMED |
 | reference/packetery-module-options.md, -shipping.md, -api.md | reviewed | 71/77, 58/62 and 65/70 CONFIRMED |
