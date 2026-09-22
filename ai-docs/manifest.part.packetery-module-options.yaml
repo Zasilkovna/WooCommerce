@@ -34,7 +34,7 @@ exposes:
     consumers: [woocommerce]
     auth: none
     evidence: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions
-    notes: "Typed access to every plugin setting. All other modules read the settings through this provider."
+    notes: "Typed access to every plugin setting. The modules that need a setting read it through this provider."
 
 calls:
   - service: packeta-api

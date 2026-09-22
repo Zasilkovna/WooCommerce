@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 2c742814
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Api]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-api, type-reference]
 ---
 
@@ -65,9 +65,11 @@ checkout module, and the order routes write to the order entity.
 | order | `packeteryCOD`, `packeteryValue`, `hasPacketeryAdultContent`, `packeteryDeliverOn` | request body | Manual values of the packet that the administrator can change | [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal] |
 | order | `packeteryStoredUntil` | request body | New storage date of the packet | [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveStoredUntil] |
 
-The order routes answer with the new values, with the state of the order and with the HTML fragment
+The modal route answers with the new values, with the state of the order and with the HTML fragment
 of the grid cell, so the admin page needs no reload
-[VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal]. A validation error, an
+[VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal]. The storage date route
+answers with the new date and with the state of the order, and it sends no fragment
+[VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveStoredUntil]. A validation error, an
 order that does not load, a failed save and a fault of the Packeta API each give the status code
 400 with its own error code
 [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveStoredUntil].
@@ -81,6 +83,8 @@ references → packetery-module-order
 references → packetery-module-checkout
 references → packetery-module-options
 references → packetery-module-forms
+references → packetery-module-framework
+references → packetery-module-exception
 
 The checkout routes take the attribute keys of `packetery-module-order` and write through the
 storage of `packetery-module-checkout`

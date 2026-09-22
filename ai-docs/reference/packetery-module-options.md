@@ -6,7 +6,7 @@ generated-by: skill:generate-docs@0.3.5
 source-commit: 33f911c4
 last-generated: 2026-09-22
 covers: [src/Packetery/Module/Options]
-confidence: draft
+confidence: reviewed
 tags: [ai-generated, repo-woocommerce, module-packetery-module-options, type-reference]
 ---
 
@@ -14,8 +14,8 @@ Repo: woocommerce · Module: packetery-module-options · Type: reference · Stat
 
 ## packetery-module-options: purpose
 
-packetery-module-options keeps the settings of the Packeta plugin and gives them to every other
-module. The module renders the settings page with its tabs, validates the values and writes them to
+packetery-module-options keeps the settings of the Packeta plugin and gives them to the modules that
+need them. The module renders the settings page with its tabs, validates the values and writes them to
 five WordPress options [VERIFY: src/Packetery/Module/Options/Page.php#create_form]. The module then
 reads those options once and answers each question with a typed method
 [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions].
@@ -24,8 +24,8 @@ packetery-module-options also builds the settings export for the Packeta support
 [VERIFY: src/Packetery/Module/Options/Exporter.php#getExportContent], and it removes the expired
 checkout transients of the plugin
 [VERIFY: src/Packetery/Module/Options/TransientPurger.php#purge]. The module holds 6 files, 1593
-lines of logic and 90 public methods. The settings provider is the largest part, because each
-setting has its own method.
+lines of logic and 90 public methods. The settings page is the largest file, and the settings
+provider holds the most public methods, because each setting has its own method.
 
 > ⚠ add business context (elicitation)
 
@@ -93,8 +93,10 @@ calls → packeta-api (sync, SOAP)
 
 The settings page validates the sender name with the SOAP client of `packetery-core`, and it writes
 the answer to the plugin log [VERIFY: src/Packetery/Module/Options/Page.php#processActions]. The
-page builds the choice lists of the packet statuses and of the order statuses from
-`packetery-module-order` [VERIFY: src/Packetery/Module/Options/Page.php#getAllPacketStatusesChoiceData].
+page builds the choice list of the packet statuses from `packetery-module-order`
+[VERIFY: src/Packetery/Module/Options/Page.php#getAllPacketStatusesChoiceData], and it takes the
+order statuses from WooCommerce
+[VERIFY: src/Packetery/Module/Options/Page.php#getOrderStatusesChoiceData].
 The maximum cart value combines the plugin setting with the carrier setting of
 `packetery-module-carrier` [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#getEffectiveMaxCartValueLimit].
 The export reads the carrier list, the shipping zones and the last five days of the plugin log
@@ -109,7 +111,7 @@ two query parameters, and the export class contains no capability check and no n
 [VERIFY: src/Packetery/Module/Options/Exporter.php#outputExportTxt]. The export masks the API
 password and removes the API key, but every other setting goes into the file as it is
 [VERIFY: src/Packetery/Module/Options/Exporter.php#getExportContent]. An object of an unknown class
-is printed as its type alone, so the export shows no content of such a value
+is printed as its type and its class name, without its content
 [VERIFY: src/Packetery/Module/Options/Exporter.php#formatVariable].
 
 The settings page needs the SOAP extension for the sender check. Without the extension the page
