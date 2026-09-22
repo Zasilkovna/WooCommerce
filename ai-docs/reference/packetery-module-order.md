@@ -24,8 +24,8 @@ and the label print pages [VERIFY: src/Packetery/Module/Order/LabelPrint.php#out
 The module sends the packet to Packeta and reads the packet status back
 [VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket].
 
-packetery-module-order is the largest namespace in the repository. It holds 44 files, 5949 lines of
-logic and 198 public methods. All classes are in one directory, and the module has no deeper
+packetery-module-order is the largest namespace in the repository. It holds 36 files, 5101 lines of
+logic and 171 public methods. All classes are in one directory, and the module has no deeper
 namespace to split on.
 
 > ⚠ add business context (elicitation)

@@ -5,13 +5,13 @@ aliases: [packetery-module-order]
 assumptions:
   - "Generated on branch docs/teams at commit 97720cfc."
   - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Order; the committed ai-docs/ast/map.json was produced without --split-psr4, so per-module counts come from a --split-psr4 run of the same tool at the same commit."
-  - "The module holds 5949 lines of logic, which is above the 3000 line limit of the split rule. The team decided to document it as one module and to postpone the split."
+  - "The module holds 5101 lines of logic, which is above the 3000 line limit of the split rule. The team decided to document it as one module and to postpone the split."
   - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
 
 modules:
   - name: packetery-module-order
     path: src/Packetery/Module/Order
-    lines: 5949
+    lines: 5101
     doc: reference/packetery-module-order.md
 
 exposes:
