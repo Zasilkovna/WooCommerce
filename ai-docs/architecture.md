@@ -75,6 +75,37 @@ as deleted and stops appearing [VERIFY: src/Packetery/Module/Carrier/Repository.
 A failure of the Packeta API stops the step and writes the fault to the order and to the log
 [VERIFY: src/Packetery/Module/Order/PacketSubmitter.php#submitPacket].
 
+## woocommerce: runtime flows of the carrier list and the label print
+
+woocommerce runs two more flows that cross several modules. The first one keeps the carrier list
+current. A scheduled job downloads the feed of the shop
+[VERIFY: src/Packetery/Module/Carrier/Downloader.php#run], the update validates every carrier of the
+answer and writes the differences to the carrier table
+[VERIFY: src/Packetery/Module/Carrier/Updater.php#carriers_mapper], a carrier that the feed no longer
+holds gets the deleted flag [VERIFY: src/Packetery/Module/Carrier/Repository.php#set_as_deleted], and
+a carrier without a generated shipping method class gets one
+[VERIFY: src/Packetery/Module/Shipping/ShippingMethodGenerator.php#generateClass]. The checkout then
+offers the new carrier as soon as the shop activates it in a zone
+[VERIFY: src/Packetery/Module/Shipping/ShippingProvider.php#getSortedCachedMethods].
+
+The second flow prints the labels of selected orders:
+
+1. The administrator selects orders in the grid and starts a bulk action
+   [VERIFY: src/Packetery/Module/Order/BulkActions.php#handleActions]
+2. The print page reads the label format and the offset of the sheet
+   [VERIFY: src/Packetery/Module/Labels/LabelPrintParametersService.php#getLabelFormat]
+3. For a carrier label the plugin first reads the courier number of each packet from Packeta
+   [VERIFY: src/Packetery/Module/Labels/CarrierLabelService.php#getPacketaPacketIdsWithCourierNumbers]
+4. The page asks Packeta for the label document and sends it to the browser as PDF
+   [VERIFY: src/Packetery/Module/Order/LabelPrint.php#requestPacketaLabels]
+5. A failed carrier label falls back to the Packeta label when the shop allows it
+   [VERIFY: src/Packetery/Module/Order/LabelPrint.php#getResponse]
+
+The handover protocol follows the same shape: it creates a shipment of the selected packets and
+reads its barcode [VERIFY: src/Packetery/Module/Order/CollectionPrint.php#requestShipment]. The
+checkout of the customer is part of the order flow above, because every step of it ends in the
+order.
+
 ## woocommerce: authentication and authorisation
 
 woocommerce authenticates the shop against Packeta with the API password of the account, and it
