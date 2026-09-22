@@ -1,0 +1,49 @@
+service: woocommerce
+source_commit: 6791c048
+aliases: [packetery-core]
+
+assumptions:
+  - "Generated on branch ai-docs at commit 6791c048."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Core; the committed ai-docs/ast/map.json was produced without --split-psr4, so per-module counts come from a --split-psr4 run of the same tool at the same commit."
+  - "The STE plugin esterka@packeta-dev was not loaded in the generating session."
+
+modules:
+  - name: packetery-core
+    path: src/Packetery/Core
+    lines: 2473
+    doc: reference/packetery-core.md
+
+exposes:
+  - kind: library
+    name: Packetery\Core
+    module: packetery-core
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Core/Api/Soap/Client.php#createPacket
+    notes: "PHP classes only; the module registers no HTTP route and no CLI command."
+
+calls:
+  - service: packeta-api
+    kind: other
+    purpose: Creates, cancels and tracks packets and downloads label documents over SOAP.
+    module: packetery-core
+    evidence: src/Packetery/Core/Api/Soap/Client.php#createPacket
+  - service: packeta-widget-api
+    kind: rest
+    purpose: Validates a pickup point that the customer selected in the widget.
+    module: packetery-core
+    evidence: src/Packetery/Core/Api/Rest/PickupPointValidate.php#validate
+
+unknowns:
+  - question: Which Packeta API version and WSDL the plugin runs against.
+    checked: constructor arguments of the SOAP client
+    resolved_by: the WordPress module that constructs the client, or Packeta API documentation
+    blocks: "calls: packeta-api"
+  - question: Whether the compound pickup point provider must respect vendor identifiers and age verification.
+    checked: source comments in the pickup point providers
+    resolved_by: a person owning the pickup point selection
+    blocks: "-"
+  - question: Which consumers outside this repository use Packetery\Core.
+    checked: this repository only
+    resolved_by: other documented repositories
+    blocks: "exposes: Packetery\\Core"
