@@ -1,0 +1,43 @@
+service: woocommerce
+source_commit: b36b68ad
+aliases: [packetery-module-views]
+
+assumptions:
+  - "Generated on branch docs/teams at commit b36b68ad."
+  - "Module boundary taken from the PSR-4 namespace Packetery\\Module\\Views; per-module counts come from a --split-psr4 run of the ast-map tool. Test directories are excluded from the counts."
+  - "The STE skill esterka:writing-technical-docs-in-ste was invoked for the prose of this document."
+
+modules:
+  - name: packetery-module-views
+    path: src/Packetery/Module/Views
+    lines: 1090
+    doc: reference/packetery-module-views.md
+
+exposes:
+  - kind: html
+    name: renderEmailFooter
+    module: packetery-module-views
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Views/ViewMail.php#renderEmailFooter
+    notes: "Adds the delivery information to the order email of the shop."
+  - kind: html
+    name: renderOrderDetail
+    module: packetery-module-views
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Views/ViewFrontend.php#renderOrderDetail
+    notes: "Shows the pickup point or the validated address to the customer."
+  - kind: library
+    name: buildAssetUrl
+    module: packetery-module-views
+    consumers: [woocommerce]
+    auth: none
+    evidence: src/Packetery/Module/Views/UrlBuilder.php#buildAssetUrl
+    notes: "Builds the URL of a plugin asset with a cache key."
+
+unknowns:
+  - question: Which onboarding tours the plugin must keep for a new shop.
+    checked: the tours that the wizard asset manager builds
+    resolved_by: a person owning the onboarding
+    blocks: "-"
