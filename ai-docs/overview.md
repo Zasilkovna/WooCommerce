@@ -50,7 +50,7 @@ document, and the others are summarised on this page.
 ## woocommerce: startup and configuration
 
 woocommerce starts from the main plugin file, which builds the service container and calls the
-plugin class [VERIFY: packeta.php#Plugin]. The plugin class hands the work to the hook module, which
+plugin class [VERIFY: packeta.php#packetaPlugin]. The plugin class hands the work to the hook module, which
 registers every callback of the request [VERIFY: src/Packetery/Module/Plugin.php#run]. The upgrade
 runs on the `init` action, and it creates the tables of the plugin when the stored version differs
 from the version of the code [VERIFY: src/Packetery/Module/Upgrade.php#check].
@@ -59,7 +59,7 @@ Settings that affect the start of the plugin:
 
 | Key | Read in | Where the value lives | Anchor |
 |---|---|---|---|
-| `packetery` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions] |
+| `packetery` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#getAllOptions] |
 | `packetery_version` | `src/Packetery/Module/Upgrade.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#VERSION] | [VERIFY: src/Packetery/Module/Upgrade.php#check] |
 | `packetery_advanced` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY_ADVANCED] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#isWcCarrierConfigEnabled] |
 | `packeta_feature_flags` | `src/Packetery/Module/Options/OptionsProvider.php` | [VERIFY: src/Packetery/Module/Options/OptionNames.php#FEATURE_FLAGS] | [VERIFY: src/Packetery/Module/Options/OptionNames.php#FEATURE_FLAGS_ERROR_COUNTER] |
@@ -70,9 +70,10 @@ Never copy those values into a document.
 
 ## woocommerce: platform and presentation modules
 
-packetery-module-framework, packetery-module-views, packetery-module-forms,
-packetery-module-blocks and packetery-module-email carry the platform layer of the plugin. None of
-them passed the threshold for a standalone document, or they hold no Packeta logic of their own.
+woocommerce groups its platform layer into five modules: packetery-module-framework,
+packetery-module-views, packetery-module-forms, packetery-module-blocks and packetery-module-email.
+None of them passed the threshold for a standalone document, or they hold no Packeta logic of their
+own.
 
 | Module | Behaviour | Anchor |
 |---|---|---|
@@ -89,9 +90,10 @@ of the shop gets the delivery information through one view
 
 ## woocommerce: catalogue and shipment modules
 
+woocommerce groups the smaller parts of the order path into seven modules:
 packetery-module-product, packetery-module-productcategory, packetery-module-labels,
 packetery-module-customsdeclaration, packetery-module-entityfactory, packetery-module-payment and
-packetery-module-exception hold the smaller parts of the order path.
+packetery-module-exception.
 
 | Module | Behaviour | Anchor |
 |---|---|---|
@@ -105,8 +107,8 @@ packetery-module-exception hold the smaller parts of the order path.
 
 ## woocommerce: logging and maintenance modules
 
-packetery-module-log, packetery-module-diagnosticslogger, packetery-module-dashboard and
-packetery-module-upgrade keep the plugin serviceable.
+woocommerce groups the maintenance of the plugin into four modules: packetery-module-log,
+packetery-module-diagnosticslogger, packetery-module-dashboard and packetery-module-upgrade.
 
 | Module | Behaviour | Anchor |
 |---|---|---|

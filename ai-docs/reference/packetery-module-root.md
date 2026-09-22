@@ -67,7 +67,7 @@ schedule yet [VERIFY: src/Packetery/Module/CronService.php#register].
 | Log deletion | `packetery_cron_log_auto_deletion_hook` | Every day at 02:00 | [VERIFY: src/Packetery/Module/CronService.php#CRON_LOG_AUTO_DELETION_HOOK] |
 | Transient purge | `packetery_cron_purge_transients` | Every day at 02:10 | [VERIFY: src/Packetery/Module/CronService.php#register] |
 | Carrier feed | `packetery_cron_carriers_hook` | Every day at 09:10 | [VERIFY: src/Packetery/Module/CronService.php#CRON_CARRIERS_HOOK] |
-| Packet status, week | `packetery_cron_packet_status_sync_hook` | Six times a day, from Monday to Friday | [VERIFY: src/Packetery/Module/CronService.php#CRON_PACKET_STATUS_SYNC_HOOK] |
+| Packet status, week | `packetery_cron_packet_status_sync_hook` | Six times a day, from Monday to Friday | [VERIFY: src/Packetery/Module/CronService.php:23] |
 | Packet status, weekend | `packetery_cron_packet_status_sync_hook_weekend` | Once a day on Saturday and Sunday | [VERIFY: src/Packetery/Module/CronService.php#register] |
 
 The deactivation of the plugin removes all five schedules

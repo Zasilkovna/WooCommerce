@@ -103,7 +103,7 @@ module that reads it, and the repository of that module creates it
 | carrier | Carriers of the feed | packetery-module-carrier | [VERIFY: src/Packetery/Module/Carrier/Repository.php#createOrAlterTable] |
 | customs declaration | Declaration of an order and its items | packetery-module-customsdeclaration | [VERIFY: src/Packetery/Module/CustomsDeclaration/Repository.php#Repository] |
 | log | Result of every API call | packetery-module-log | [VERIFY: src/Packetery/Module/Log/Repository.php#createTable] |
-| settings | Five options of the plugin | packetery-module-options | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY] |
+| settings | Five options of the plugin | packetery-module-options | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] |
 | checkout-data | Transient of the selection of one customer | packetery-module-checkout | [VERIFY: src/Packetery/Module/Checkout/CheckoutStorage.php#setTransient] |
 
 The upgrade owns the schema of every table, and it runs the migrations between plugin versions

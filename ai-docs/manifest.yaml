@@ -372,7 +372,7 @@ exposes:
   consumers:
   - woocommerce
   auth: none
-  evidence: src/Packetery/Module/CronService.php#CRON_PACKET_STATUS_SYNC_HOOK
+  evidence: src/Packetery/Module/CronService.php:23
   notes: Scheduled action of the Action Scheduler. It reads the packet statuses from
     Packeta.
 - kind: html
@@ -407,7 +407,7 @@ exposes:
   consumers:
   - woocommerce
   auth: none
-  evidence: src/Packetery/Module/Hooks/HookRegistrar.php#register
+  evidence: src/Packetery/Module/Hooks/HookRegistrar.php:372
   notes: Entry point of the plugin. It registers the hooks of every module for the
     current request.
 - kind: library

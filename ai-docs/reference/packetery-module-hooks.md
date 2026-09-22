@@ -16,7 +16,7 @@ Repo: woocommerce · Module: packetery-module-hooks · Type: reference · Status
 
 packetery-module-hooks connects every part of the Packeta plugin to WordPress and to WooCommerce.
 One class holds that map, and it decides what to register from the context of the request
-[VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register]. The other modules keep their
+[VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372]. The other modules keep their
 callbacks, and most of them get their hooks from here. A reader who looks for the place where a
 callback becomes active starts in this module.
 
@@ -33,7 +33,7 @@ packetery-module-hooks exposes one entry point and the callbacks that WordPress 
 
 | Member | Signature / path | Behaviour | Anchor |
 |---|---|---|---|
-| Entry point | `register` | Registers the hooks of the whole plugin for this request | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register] |
+| Entry point | `register` | Registers the hooks of the whole plugin for this request | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372] |
 | Admin hooks | `registerBackEnd` | Registers the grids, the metaboxes, the modal windows and the admin actions | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerBackEnd] |
 | Front end hooks | `registerFrontEnd` | Registers the checkout, the assets, the cart fees and the block callbacks | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerFrontEnd] |
 | Menu pages | `addMenuPages` | Adds the dashboard, the settings, the carriers, the label pages and the log | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#addMenuPages] |
@@ -48,11 +48,11 @@ packetery-module-hooks exposes one entry point and the callbacks that WordPress 
 
 packetery-module-hooks registers a different set of hooks for each context. The plugin first tests
 WooCommerce. Without WooCommerce the module shows one admin notice and registers nothing more
-[VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register].
+[VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372].
 
 | Context | What the module registers | Anchor |
 |---|---|---|
-| Every request | Translation, HPOS compatibility, upgrade check, REST routes, cron service, packet auto submission, status synchronisation, order save, shipping method list | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register] |
+| Every request | Translation, HPOS compatibility, upgrade check, REST routes, cron service, packet auto submission, status synchronisation, order save, shipping method list | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372] |
 | Plugin lifecycle | Activation hook, deactivation hook that stops the scheduled actions | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#activatePlugin] |
 | Admin, AJAX | The settings callback of the widget under `wp_ajax_get_settings` and `wp_ajax_nopriv_get_settings`, and nothing else | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerBackEnd] |
 | Admin, order grid | Filter links, order type select, columns, sortable columns and the column content | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerBackEnd] |
@@ -61,7 +61,7 @@ WooCommerce. Without WooCommerce the module shows one admin notice and registers
 | Admin, screens | Metaboxes, modal windows, the product and category grids, the product data tab and the dashboard widget | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#addMenuPages] |
 | Front end | Checkout hooks, front assets, cart fees with priority 20, and the guest session migration | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerFrontEnd] |
 | Front end, no AJAX | Order detail of the customer and the block checkout callbacks | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#registerFrontEnd] |
-| Email | The footer callback of the configured email hook, when the shop enables the automatic insertion | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register] |
+| Email | The footer callback of the configured email hook, when the shop enables the automatic insertion | [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372] |
 
 The order grid exists in two shapes. The module registers the classic shape and, from WooCommerce
 7.9.0, the shape of the orders page of the High Performance Order Storage
@@ -85,9 +85,9 @@ references → packetery-module-views
 
 The module calls the registration method of the modules that keep their own map. These are the cron
 service, the checkout, the metaboxes, the modal windows, the settings page and the carrier settings
-page [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register]. The module reads the email
+page [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372]. The module reads the email
 hook and the insertion setting from `packetery-module-options`, so a part of the map comes from the
-settings of the shop [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php#register]. The order save
+settings of the shop [VERIFY: src/Packetery/Module/Hooks/HookRegistrar.php:372]. The order save
 callback uses the order repository of `packetery-module-order` and the method test of
 `packetery-module-shipping` [VERIFY: src/Packetery/Module/Hooks/UpdateOrderHook.php#updateOrder].
 

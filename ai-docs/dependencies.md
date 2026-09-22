@@ -68,9 +68,9 @@ Keys, not values:
 
 | Key | Points at | Where the value lives | Anchor |
 |---|---|---|---|
-| `api_password` | packeta-api and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_password] |
-| `api_key` | packeta-widget and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_key] |
-| `sender` | packeta-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php#PACKETERY] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_sender] |
+| `api_password` | packeta-api and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_password] |
+| `api_key` | packeta-widget and packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_api_key] |
+| `sender` | packeta-api | [VERIFY: src/Packetery/Module/Options/OptionNames.php:11] | [VERIFY: src/Packetery/Module/Options/OptionsProvider.php#get_sender] |
 | `WIDGET_URL_PRODUCTION`, `WIDGET_URL_STAGE` | packeta-widget | [VERIFY: src/Packetery/Module/WidgetUrlResolver.php#WIDGET_URL_PRODUCTION] | [VERIFY: src/Packetery/Module/WidgetUrlResolver.php#getUrl] |
 | `API_URL` | packeta-pickup-point-api | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#API_URL] | [VERIFY: src/Packetery/Module/Carrier/Downloader.php#run] |
 
@@ -100,7 +100,7 @@ the namespace, and the manifest carries every id as an alias
 
 | Canonical id | Also known as | Anchor |
 |---|---|---|
-| woocommerce | Packeta, the plugin name that WordPress shows | [VERIFY: packeta.php#Plugin] |
+| woocommerce | Packeta, the plugin name that WordPress shows | [VERIFY: packeta.php#packetaPlugin] |
 | packetery-core | `Packetery\Core` | [VERIFY: src/Packetery/Core/CoreHelper.php#getTrackingUrl] |
 | packetery-module-root | `Packetery\Module` | [VERIFY: src/Packetery/Module/Plugin.php#run] |
 | packeta-api | The SOAP API of Packeta | [VERIFY: src/Packetery/Core/Api/Soap/Client.php#createPacket] |

@@ -59,7 +59,7 @@ checkout module, and the order routes write to the order entity.
 | Entity | Field | Type | Note | Anchor |
 |---|---|---|---|---|
 | checkout data | `packetery_rate_id` | request key | The key under which the routes store the selection of one carrier | [VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php#RATE_ID] |
-| checkout data | pickup point attributes | request body | The route takes the attribute list of the order module and stores the values it knows | [VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php#save] |
+| checkout data | pickup point attributes | request body | The route takes the attribute list of the order module and stores the values it knows | [VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php:170] |
 | order | `packeteryWeight`, `packeteryOriginalWeight` | request body | Weight of the packet and the weight that WooCommerce computed | [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal] |
 | order | `packeteryLength`, `packeteryWidth`, `packeteryHeight` | request body | Size of the packet. The module converts the values to millimetres | [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal] |
 | order | `packeteryCOD`, `packeteryValue`, `hasPacketeryAdultContent`, `packeteryDeliverOn` | request body | Manual values of the packet that the administrator can change | [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal] |
@@ -88,7 +88,7 @@ references → packetery-module-exception
 
 The checkout routes take the attribute keys of `packetery-module-order` and write through the
 storage of `packetery-module-checkout`
-[VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php#save]. The order routes validate
+[VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php:170]. The order routes validate
 with the forms of `packetery-module-forms` and with the order validator of `packetery-core`, and
 they save through the order repository
 [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#saveModal]. The size of the packet
@@ -104,7 +104,7 @@ request from any visitor, because their permission callback always returns true
 [VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php#registerRoutes]. A request with an
 invalid data structure is not stored, and the route still answers with the status code 200, so the
 caller learns nothing about the result
-[VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php#save].
+[VERIFY: src/Packetery/Module/Api/Internal/CheckoutController.php:170].
 
 The two order routes check the `edit_posts` capability and no nonce
 [VERIFY: src/Packetery/Module/Api/Internal/OrderController.php#registerRoutes]. The key of the

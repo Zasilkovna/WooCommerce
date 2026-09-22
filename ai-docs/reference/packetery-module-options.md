@@ -112,7 +112,7 @@ two query parameters, and the export class contains no capability check and no n
 password and removes the API key, but every other setting goes into the file as it is
 [VERIFY: src/Packetery/Module/Options/Exporter.php#getExportContent]. An object of an unknown class
 is printed as its type and its class name, without its content
-[VERIFY: src/Packetery/Module/Options/Exporter.php#formatVariable].
+[VERIFY: src/Packetery/Module/Options/Exporter.php:248].
 
 The settings page needs the SOAP extension for the sender check. Without the extension the page
 shows an error and the other settings still save
