@@ -57,7 +57,7 @@
             "php cli/build-carrier-classes.php"
         ],
         "build:deps": "bash build-deps.sh",
-        "build:pot": "vendor/bin/wp i18n make-pot . languages/packeta.pot --allow-root",
+        "build:pot": "vendor/bin/wp i18n make-pot . languages/packeta.pot --slug=packeta --allow-root",
         "check:all": [
             "@check:ec",
             "@check:phpcs",

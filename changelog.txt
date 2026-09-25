@@ -1,4 +1,10 @@
 == Changelog ==
+= 2.3.3 =
+Added: Diagnostics screen explaining why a carrier is not offered in the checkout.
+Fixed: The checkout kept a stale shipping price.
+Fixed: Fatal error when WP-Cron was triggered from the system cron.
+Fixed: Saving settings displayed the "Settings saved" message twice and turned off diagnostics logging.
+
 = 2.3.2 =
 Added: Romanian Post carriers (home delivery and pickup points).
 Fixed: The widget used the billing country instead of the shipping country when the shipping address form was hidden in the checkout.
