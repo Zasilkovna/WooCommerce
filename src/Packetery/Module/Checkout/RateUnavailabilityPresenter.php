@@ -32,7 +32,12 @@ class RateUnavailabilityPresenter {
 	/**
 	 * @param array{reason: string, context: array<string, scalar|null>} $unavailability
 	 *
-	 * @return array{text: string, link: string|null, linkText: string|null}
+	 * @return array{
+	 *      text: string,
+	 *      link: string|null,
+	 *      linkText: string|null,
+	 *      followUp: array{text: string, link: string, linkText: string}|null
+	 *  }
 	 */
 	public function present( array $unavailability, string $carrierId ): array {
 		$reason  = $unavailability['reason'];
@@ -52,14 +57,14 @@ class RateUnavailabilityPresenter {
 					)
 				);
 			case RateUnavailabilityReason::NO_ZONE_METHOD_FOR_COUNTRY:
-				return $this->describe(
+				return $this->describeZoneReason(
 					sprintf(
 						// translators: %s: country code.
 						$this->wpAdapter->__( 'None of the Packeta methods in the shipping zone matching the address serves country %s.', 'packeta' ),
 						strtoupper( (string) ( $context['customerCountry'] ?? '' ) )
 					),
-					$this->getWcSettingsLink( 'shipping' ),
-					$this->wpAdapter->__( 'Shipping zones', 'packeta' )
+					$this->wpAdapter->__( 'After you activate a carrier, add its shipping method to the shipping zone matching the address.', 'packeta' ),
+					$context
 				);
 			case RateUnavailabilityReason::SHIPPING_COUNTRY_NOT_ALLOWED:
 				return $this->describe(
@@ -72,14 +77,20 @@ class RateUnavailabilityPresenter {
 					$this->wpAdapter->__( 'WooCommerce shipping locations', 'packeta' )
 				);
 			case RateUnavailabilityReason::NO_SHIPPING_ZONE:
-				return $this->describe(
+				$zoneName = (string) ( $context['zoneName'] ?? '' );
+
+				return $this->describeZoneReason(
 					sprintf(
 						// translators: %s: shipping zone name.
 						$this->wpAdapter->__( 'The shipping zone matching the address (%s) has no Packeta shipping method switched on.', 'packeta' ),
-						(string) ( $context['zoneName'] ?? '' )
+						$zoneName
 					),
-					$this->getWcSettingsLink( 'shipping' ),
-					$this->wpAdapter->__( 'Shipping zones', 'packeta' )
+					sprintf(
+						// translators: %s: shipping zone name.
+						$this->wpAdapter->__( 'After you activate a carrier, add its shipping method to the shipping zone matching the address (%s).', 'packeta' ),
+						$zoneName
+					),
+					$context
 				);
 			case RateUnavailabilityReason::CARRIER_NOT_IN_SHIPPING_ZONE:
 				return $this->describe(
@@ -215,13 +226,71 @@ class RateUnavailabilityPresenter {
 	}
 
 	/**
-	 * @return array{text: string, link: string|null, linkText: string|null}
+	 * Until a carrier of the country is active, the zone has no method to add, so the activation comes first.
+	 *
+	 * @param string                     $zoneSentence            Sentence without the activation step.
+	 * @param string                     $afterActivationSentence Zone step that follows the activation.
+	 * @param array<string, scalar|null> $context                 Payload stored with the reason.
+	 *
+	 * @return array{
+	 *      text: string,
+	 *      link: string|null,
+	 *      linkText: string|null,
+	 *      followUp: array{text: string, link: string, linkText: string}|null
+	 *  }
 	 */
-	private function describe( string $text, ?string $link = null, ?string $linkText = null ): array {
+	private function describeZoneReason( string $zoneSentence, string $afterActivationSentence, array $context ): array {
+		$zonesLink     = $this->getWcSettingsLink( 'shipping' );
+		$zonesLinkText = $this->wpAdapter->__( 'Shipping zones', 'packeta' );
+
+		if ( ( $context['noActiveCarrier'] ?? false ) !== true ) {
+			return $this->describe( $zoneSentence, $zonesLink, $zonesLinkText );
+		}
+
+		$customerCountry = (string) ( $context['customerCountry'] ?? '' );
+
+		return $this->describe(
+			sprintf(
+				// translators: %s: country code.
+				$this->wpAdapter->__( 'No available carrier of country %s is active in Packeta settings.', 'packeta' ),
+				strtoupper( $customerCountry )
+			),
+			$this->getCountryCarriersLink( $customerCountry ),
+			$this->wpAdapter->__( 'Carrier settings', 'packeta' ),
+			[
+				'text'     => $afterActivationSentence,
+				'link'     => $zonesLink,
+				'linkText' => $zonesLinkText,
+			]
+		);
+	}
+
+	/**
+	 * The follow-up is a second sentence with its own link, shown after the first one.
+	 *
+	 * @param string                                                   $text
+	 * @param string|null                                              $link
+	 * @param string|null                                              $linkText
+	 * @param array{text: string, link: string, linkText: string}|null $followUp
+	 *
+	 * @return array{
+	 *      text: string,
+	 *      link: string|null,
+	 *      linkText: string|null,
+	 *      followUp: array{text: string, link: string, linkText: string}|null
+	 *  }
+	 */
+	private function describe(
+		string $text,
+		?string $link = null,
+		?string $linkText = null,
+		?array $followUp = null
+	): array {
 		return [
 			'text'     => $text,
 			'link'     => $link,
 			'linkText' => $linkText,
+			'followUp' => $followUp,
 		];
 	}
 
@@ -230,6 +299,16 @@ class RateUnavailabilityPresenter {
 			[
 				'page'                                    => Carrier\OptionsPage::SLUG,
 				Carrier\OptionsPage::PARAMETER_CARRIER_ID => $carrierId,
+			],
+			$this->wpAdapter->getAdminUrl( null, 'admin.php' )
+		);
+	}
+
+	private function getCountryCarriersLink( string $countryCode ): string {
+		return $this->wpAdapter->addQueryArg(
+			[
+				'page' => Carrier\OptionsPage::SLUG,
+				Carrier\OptionsPage::PARAMETER_COUNTRY_CODE => $countryCode,
 			],
 			$this->wpAdapter->getAdminUrl( null, 'admin.php' )
 		);
