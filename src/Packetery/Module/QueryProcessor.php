@@ -71,6 +71,7 @@ class QueryProcessor {
 	public function register(): void {
 		add_filter( 'posts_clauses', [ $this, 'processClauses' ], 10, 2 );
 		add_filter( 'woocommerce_orders_table_query_clauses', [ $this, 'processHposClauses' ] );
+		// Each filter fixes one WC range: the request filter fixes 9.9 to 10.9, the query args filter fixes 11+. Keep both.
 		add_filter( 'woocommerce_shop_order_list_table_request', [ $this, 'processHposRequest' ] );
 		add_filter( 'woocommerce_shop_order_list_table_prepare_items_query_args', [ $this, 'processHposQueryArgs' ] );
 	}
