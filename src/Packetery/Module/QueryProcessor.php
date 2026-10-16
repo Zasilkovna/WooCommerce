@@ -16,6 +16,19 @@ use Packetery\Nette\Http\Request;
  */
 class QueryProcessor {
 
+	private const FILTER_PARAMS = [
+		'packetery_carrier_id',
+		'packetery_to_submit',
+		'packetery_to_print',
+		'packetery_order_type',
+	];
+
+	/**
+	 * Default WooCommerce search filter. It does not change the search results.
+	 * Any extra query argument makes WooCommerce count the filtered orders instead of using the cached count.
+	 */
+	private const SEARCH_FILTER_ALL = 'all';
+
 	/**
 	 * HTTP request.
 	 *
@@ -58,6 +71,9 @@ class QueryProcessor {
 	public function register(): void {
 		add_filter( 'posts_clauses', [ $this, 'processClauses' ], 10, 2 );
 		add_filter( 'woocommerce_orders_table_query_clauses', [ $this, 'processHposClauses' ] );
+		// Each filter fixes one WC range: the request filter fixes 9.9 to 10.9, the query args filter fixes 11+. Keep both.
+		add_filter( 'woocommerce_shop_order_list_table_request', [ $this, 'processHposRequest' ] );
+		add_filter( 'woocommerce_shop_order_list_table_prepare_items_query_args', [ $this, 'processHposQueryArgs' ] );
 	}
 
 	/**
@@ -132,21 +148,63 @@ class QueryProcessor {
 	}
 
 	/**
+	 * Adds the default search filter to the order list request when a Packeta filter is active.
+	 *
+	 * @param array<string, string>|mixed $request Order list request.
+	 *
+	 * @return array<string, string>|mixed
+	 */
+	public function processHposRequest( $request ) {
+		if ( ! is_array( $request ) || ( $request['search-filter'] ?? '' ) !== '' || ! $this->hasActiveFilter() ) {
+			return $request;
+		}
+
+		$request['search-filter'] = self::SEARCH_FILTER_ALL;
+
+		return $request;
+	}
+
+	/**
+	 * Adds the default search filter to the order query arguments when a Packeta filter is active.
+	 *
+	 * @param array<string, mixed>|mixed $queryArgs Order query arguments.
+	 *
+	 * @return array<string, mixed>|mixed
+	 */
+	public function processHposQueryArgs( $queryArgs ) {
+		if ( ! is_array( $queryArgs ) || isset( $queryArgs['search_filter'] ) || ! $this->hasActiveFilter() ) {
+			return $queryArgs;
+		}
+
+		$queryArgs['search_filter'] = self::SEARCH_FILTER_ALL;
+
+		return $queryArgs;
+	}
+
+	/**
+	 * Tells if at least one Packeta order list filter has a value.
+	 *
+	 * @return bool
+	 */
+	private function hasActiveFilter(): bool {
+		foreach ( self::FILTER_PARAMS as $param ) {
+			if ( ! in_array( $this->httpRequest->getQuery( $param ), [ null, '' ], true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Gets param values.
 	 *
 	 * @return array<string,null>
 	 */
 	private function getParamValues(): array {
-		$paramValues = [
-			'packetery_carrier_id' => null,
-			'packetery_to_submit'  => null,
-			'packetery_to_print'   => null,
-			'packetery_order_type' => null,
-			'orderby'              => null,
-			'order'                => null,
-		];
+		$paramValues = [];
 
-		foreach ( $paramValues as $key => $value ) {
+		foreach ( array_merge( self::FILTER_PARAMS, [ 'orderby', 'order' ] ) as $key ) {
 			$paramValues[ $key ] = $this->httpRequest->getQuery( $key );
 		}
 

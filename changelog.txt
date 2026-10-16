@@ -4,6 +4,7 @@ Added: Diagnostics screen explaining why a carrier is not offered in the checkou
 Fixed: The checkout kept a stale shipping price.
 Fixed: Fatal error when WP-Cron was triggered from the system cron.
 Fixed: Saving settings displayed the "Settings saved" message twice and turned off diagnostics logging.
+Fixed: The order list pagination showed the page count of all orders when a Packeta filter was active.
 
 = 2.3.2 =
 Added: Romanian Post carriers (home delivery and pickup points).
