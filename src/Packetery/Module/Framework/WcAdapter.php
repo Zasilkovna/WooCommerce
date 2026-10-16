@@ -196,6 +196,16 @@ class WcAdapter {
 	}
 
 	/**
+	 * WC_Shipping_Zone::get_shipping_methods() drops every zone row whose method id is not in this list,
+	 * so WooCommerce never asks such a method for a rate.
+	 *
+	 * @return string[]
+	 */
+	public function shippingGetRegisteredMethodIds(): array {
+		return array_map( 'strval', array_keys( WC()->shipping()->get_shipping_method_class_names() ) );
+	}
+
+	/**
 	 * @param array<string, mixed> $package
 	 *
 	 * @return WC_Shipping_Zone

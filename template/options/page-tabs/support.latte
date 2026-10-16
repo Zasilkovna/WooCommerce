@@ -80,6 +80,11 @@
 			<li n:foreach="$rateDiagnostics['packageReasons'] as $reason">
 				{$reason['text']}
 				{if $reason['link'] !== null}<a href="{$reason['link']}">{$reason['linkText']}</a>{/if}
+				{if $reason['followUp'] !== null}
+					<br>
+					{$reason['followUp']['text']}
+					<a href="{$reason['followUp']['link']}">{$reason['followUp']['linkText']}</a>
+				{/if}
 			</li>
 		</ul>
 	{/if}

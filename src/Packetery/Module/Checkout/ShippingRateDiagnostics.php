@@ -67,8 +67,8 @@ class ShippingRateDiagnostics {
 	private $carrierOptionsFactory;
 
 	/**
-	 * Collected within a single request - calculate_shipping() runs once per shipping method, so the
-	 * pieces have to be gathered and written out only once.
+	 * Collected within a single calculation of the totals - calculate_shipping() runs once per shipping
+	 * method, so the pieces have to be gathered and written out only once.
 	 *
 	 * @var ShippingRateEvaluation[]
 	 */
@@ -80,8 +80,8 @@ class ShippingRateDiagnostics {
 	private $packageUnavailabilities = [];
 
 	/**
-	 * Our calculate_shipping() ran in this request. False means WooCommerce never asked us, which
-	 * is what a rate cache hit looks like from here.
+	 * Our calculate_shipping() ran in this calculation of the totals.
+	 * False means WooCommerce never asked us, which is what a rate cache hit looks like from here.
 	 *
 	 * @var bool
 	 */
@@ -94,16 +94,26 @@ class ShippingRateDiagnostics {
 
 	/**
 	 * Packeta shipping method id => enabled in at least one zone matching the cart packages. Read once
-	 * per request, because both the package level reason and the per carrier rows need it.
+	 * per calculation of the totals, because both the package level reason and the per carrier rows need it.
 	 *
 	 * @var array<string, bool>|null
 	 */
 	private $packetaMethodStatesInZones;
 
 	/**
+	 * First zone matching the cart packages where WooCommerce can ask no Packeta method:
+	 * each Packeta row is switched off or has no registered class, or there is none.
+	 *
 	 * @var string|null
 	 */
 	private $firstZoneWithoutPacketaMethod;
+
+	/**
+	 * A zone matching the cart packages has an enabled Packeta method that WooCommerce can ask.
+	 *
+	 * @var bool
+	 */
+	private $isPacketaMethodAskedInZones = false;
 
 	public function __construct(
 		WpAdapter $wpAdapter,
@@ -165,6 +175,27 @@ class ShippingRateDiagnostics {
 			return;
 		}
 
+		try {
+			$this->storeSnapshot();
+		} finally {
+			$this->resetCollectedState();
+		}
+	}
+
+	/**
+	 * WooCommerce can calculate the totals more than once in one request,
+	 * and the next calculation can be for another address.
+	 */
+	private function resetCollectedState(): void {
+		$this->evaluations                   = [];
+		$this->packageUnavailabilities       = [];
+		$this->methodRan                     = false;
+		$this->packetaMethodStatesInZones    = null;
+		$this->firstZoneWithoutPacketaMethod = null;
+		$this->isPacketaMethodAskedInZones   = false;
+	}
+
+	private function storeSnapshot(): void {
 		$customerCountry   = $this->checkoutService->getCustomerCountry();
 		$carriersOfCountry = $customerCountry === null
 			? []
@@ -172,7 +203,7 @@ class ShippingRateDiagnostics {
 
 		$packageUnavailabilities = $this->packageUnavailabilities;
 		if ( $this->methodRan === false ) {
-			$notAskedReason = $this->getReasonMethodWasNotAsked();
+			$notAskedReason = $this->getReasonMethodWasNotAsked( $carriersOfCountry );
 			if ( $notAskedReason !== null ) {
 				$packageUnavailabilities[] = $notAskedReason;
 			}
@@ -191,10 +222,16 @@ class ShippingRateDiagnostics {
 
 		// The block checkout fires a series of Store API requests and all but the first are served from
 		// the rate cache; overwriting with a record that says nothing would leave only the last one behind.
+		// A record of another country does not describe this cart, so it is replaced.
+		// When no Packeta method could be asked, the record does not depend on the cache,
+		// so it is written - the carrier rows can be all it has to say.
+		$snapshot = $this->getSnapshot();
 		if (
 			$this->methodRan === false
 			&& count( $packageUnavailabilities ) === 0
-			&& $this->getSnapshot() !== null
+			&& $snapshot !== null
+			&& ( $snapshot['customerCountry'] ?? null ) === $customerCountry
+			&& $this->isPacketaMethodAskedInMatchingZones()
 		) {
 			return;
 		}
@@ -327,7 +364,8 @@ class ShippingRateDiagnostics {
 		array $carriersOfCountry,
 		?string $customerCountry
 	): ?RateUnavailability {
-		if ( count( $carriersOfCountry ) === 0 ) {
+		// An unavailable carrier counts as none, the same as when the method was not asked.
+		if ( $this->hasAvailableCarrier( $carriersOfCountry ) === false ) {
 			return new RateUnavailability(
 				RateUnavailabilityReason::NO_CARRIER_FOR_COUNTRY,
 				[ 'customerCountry' => $customerCountry ]
@@ -344,7 +382,10 @@ class ShippingRateDiagnostics {
 
 		return new RateUnavailability(
 			RateUnavailabilityReason::NO_ZONE_METHOD_FOR_COUNTRY,
-			[ 'customerCountry' => $customerCountry ]
+			[
+				'customerCountry' => $customerCountry,
+				'noActiveCarrier' => $this->isNoCarrierOfCountryActive( $carriersOfCountry ),
+			]
 		);
 	}
 
@@ -401,6 +442,14 @@ class ShippingRateDiagnostics {
 		?bool $isMethodEnabledInZone
 	): ?RateUnavailability {
 		// Null stands for no zone matching the address holding the method at all.
+		// A row in the zone does nothing before the carrier is switched on in Packeta settings, so that comes first.
+		if ( $isMethodEnabledInZone !== null && $carrierOptions->isActive() === false ) {
+			return new RateUnavailability(
+				RateUnavailabilityReason::CARRIER_OPTION_INACTIVE,
+				[ 'optionId' => OptionPrefixer::getOptionId( $carrier->getId() ) ]
+			);
+		}
+
 		if ( $isMethodEnabledInZone === false ) {
 			return new RateUnavailability(
 				RateUnavailabilityReason::CARRIER_METHOD_DISABLED_IN_ZONE,
@@ -409,13 +458,6 @@ class ShippingRateDiagnostics {
 		}
 
 		if ( $isMethodEnabledInZone === true ) {
-			if ( $carrierOptions->isActive() === false ) {
-				return new RateUnavailability(
-					RateUnavailabilityReason::CARRIER_OPTION_INACTIVE,
-					[ 'optionId' => OptionPrefixer::getOptionId( $carrier->getId() ) ]
-				);
-			}
-
 			// The method is in the zone and switched on, so it did run - unless WooCommerce served the
 			// rates from its cache, and then there is nothing to be said about this carrier.
 			return null;
@@ -451,7 +493,9 @@ class ShippingRateDiagnostics {
 			return $this->packetaMethodStatesInZones;
 		}
 
-		$states = [];
+		$states              = [];
+		$isAskedInZones      = false;
+		$registeredMethodIds = $this->wcAdapter->shippingGetRegisteredMethodIds();
 		foreach ( $this->wcAdapter->cartGetShippingPackages() as $package ) {
 			$zone                   = $this->wcAdapter->shippingZonesGetZoneMatchingPackage( $package );
 			$zoneCarriesPacketaRate = false;
@@ -461,8 +505,12 @@ class ShippingRateDiagnostics {
 					continue;
 				}
 
-				$states[ $methodId ]    = ( $states[ $methodId ] ?? false ) || $isEnabled;
-				$zoneCarriesPacketaRate = $zoneCarriesPacketaRate || $isEnabled;
+				$states[ $methodId ] = ( $states[ $methodId ] ?? false ) || $isEnabled;
+
+				// A carrier switched off in Packeta settings does not register its method class.
+				$isAsked                = $isEnabled && in_array( $methodId, $registeredMethodIds, true );
+				$zoneCarriesPacketaRate = $zoneCarriesPacketaRate || $isAsked;
+				$isAskedInZones         = $isAskedInZones || $isAsked;
 			}
 
 			if ( $zoneCarriesPacketaRate === false && $this->firstZoneWithoutPacketaMethod === null ) {
@@ -470,9 +518,43 @@ class ShippingRateDiagnostics {
 			}
 		}
 
-		$this->packetaMethodStatesInZones = $states;
+		$this->packetaMethodStatesInZones  = $states;
+		$this->isPacketaMethodAskedInZones = $isAskedInZones;
 
 		return $states;
+	}
+
+	private function isPacketaMethodAskedInMatchingZones(): bool {
+		$this->getPacketaMethodStatesInMatchingZones();
+
+		return $this->isPacketaMethodAskedInZones;
+	}
+
+	/**
+	 * A carrier of the destination country has a row in a matching zone,
+	 * and the table gives that row its own reason:
+	 * the row is switched off in the zone, or the carrier is switched off in Packeta settings.
+	 * The conditions follow getReasonCarrierIsMissing().
+	 *
+	 * @param Carrier[] $carriersOfCountry Carriers Packeta has for the destination country.
+	 */
+	private function isMethodNotAskedExplainedByCarrierRow( array $carriersOfCountry ): bool {
+		$methodStates = $this->getPacketaMethodStatesInMatchingZones();
+		foreach ( $carriersOfCountry as $carrier ) {
+			$isMethodEnabledInZone = $methodStates[ $this->getZoneMethodIdOfCarrier( $carrier->getId() ) ] ?? null;
+			if ( $isMethodEnabledInZone === null ) {
+				continue;
+			}
+
+			if (
+				$isMethodEnabledInZone === false
+				|| $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() )->isActive() === false
+			) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -517,11 +599,21 @@ class ShippingRateDiagnostics {
 	}
 
 	/**
-	 * WooCommerce skips a shipping method entirely - our calculate_shipping() is never called - when
-	 * the destination country is not shippable or when no zone matching the address carries a Packeta
-	 * method. A zone that does carry one yields no reason; the rates then came from the rate cache.
+	 * WooCommerce skips a shipping method entirely - our calculate_shipping() is never called -
+	 * when the destination country is not shippable,
+	 * or when no zone matching the address carries an enabled Packeta method WooCommerce has a class for.
+	 * A zone that does carry one yields no reason; the rates then came from the rate cache.
+	 * Otherwise a country without an available Packeta carrier is named,
+	 * before any carrier row or zone.
+	 * A carrier of the destination country whose row is switched off in the zone,
+	 * or switched on while the carrier is switched off in Packeta settings, yields no reason either:
+	 * its own row in the table says so.
+	 * Any other row explains nothing, for example the switched-on row of an active carrier
+	 * whose class is not registered, so the zone is named.
+	 *
+	 * @param Carrier[] $carriersOfCountry Carriers Packeta has for the destination country.
 	 */
-	private function getReasonMethodWasNotAsked(): ?RateUnavailability {
+	private function getReasonMethodWasNotAsked( array $carriersOfCountry ): ?RateUnavailability {
 		$customerCountry = $this->checkoutService->getCustomerCountry();
 		if ( $customerCountry === null ) {
 			return new RateUnavailability( RateUnavailabilityReason::CUSTOMER_COUNTRY_UNKNOWN );
@@ -535,19 +627,70 @@ class ShippingRateDiagnostics {
 			);
 		}
 
-		// One zone carrying a switched on Packeta method is enough for the method to have been asked.
-		if ( in_array( true, $this->getPacketaMethodStatesInMatchingZones(), true ) ) {
+		// One zone carrying an enabled Packeta method with a registered class is enough for the method
+		// to have been asked.
+		if ( $this->isPacketaMethodAskedInMatchingZones() ) {
+			return null;
+		}
+
+		// Without an available carrier for the country, no setting in the shop can make Packeta deliver there.
+		if ( $this->hasAvailableCarrier( $carriersOfCountry ) === false ) {
+			return new RateUnavailability(
+				RateUnavailabilityReason::NO_CARRIER_FOR_COUNTRY,
+				[ 'customerCountry' => $customerCountry ]
+			);
+		}
+
+		if ( $this->isMethodNotAskedExplainedByCarrierRow( $carriersOfCountry ) ) {
 			return null;
 		}
 
 		if ( $this->firstZoneWithoutPacketaMethod !== null ) {
 			return new RateUnavailability(
 				RateUnavailabilityReason::NO_SHIPPING_ZONE,
-				[ 'zoneName' => $this->firstZoneWithoutPacketaMethod ]
+				[
+					'zoneName'        => $this->firstZoneWithoutPacketaMethod,
+					'customerCountry' => $customerCountry,
+					'noActiveCarrier' => $this->isNoCarrierOfCountryActive( $carriersOfCountry ),
+				]
 			);
 		}
 
 		return null;
+	}
+
+	/**
+	 * In the per-carrier mode a carrier switched off in Packeta settings has no shipping method to add to a zone,
+	 * and a carrier unavailable in the feed gives no rate.
+	 * So the zone cannot be fixed before an available carrier of the country is switched on.
+	 *
+	 * @param Carrier[] $carriersOfCountry Carriers Packeta has for the destination country.
+	 */
+	private function isNoCarrierOfCountryActive( array $carriersOfCountry ): bool {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() === false ) {
+			return false;
+		}
+
+		foreach ( $carriersOfCountry as $carrier ) {
+			if ( $carrier->isAvailable() && $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() )->isActive() ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param Carrier[] $carriersOfCountry Carriers Packeta has for the destination country.
+	 */
+	private function hasAvailableCarrier( array $carriersOfCountry ): bool {
+		foreach ( $carriersOfCountry as $carrier ) {
+			if ( $carrier->isAvailable() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function getTransientName(): string {
