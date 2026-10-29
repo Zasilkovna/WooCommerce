@@ -102,11 +102,10 @@ class ShippingRateFactory {
 	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
-	 * In the per-carrier mode the carrier is derived from $methodId, which is also the key WooCommerce
-	 * looks $allowedCarrierNames up by - the two can only disagree if a third party swaps the shipping
-	 * method classes through woocommerce_load_shipping_methods.
+	 * In the per-carrier mode the carrier is derived from $methodId.
+	 * BaseShippingMethod builds $methodId and the $allowedCarrierNames key from the same CARRIER_ID.
 	 *
-	 * @param array|null $allowedCarrierNames List of allowed carrier names.
+	 * @param array|null $allowedCarrierNames Rate labels keyed by carrier ID; null in the legacy single-method mode.
 	 * @param string     $methodId            Shipping method class id.
 	 * @param int        $instanceId          Shipping method instance id.
 	 *

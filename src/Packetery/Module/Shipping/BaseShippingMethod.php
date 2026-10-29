@@ -8,11 +8,9 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\CompatibilityBridge;
-use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\DI\Container;
 
-use function is_array;
 use function sprintf;
 
 abstract class BaseShippingMethod extends \WC_Shipping_Method {
@@ -47,11 +45,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	private $wpAdapter;
 
 	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
-
-	/**
 	 * @param int $instanceId Shipping method instance id.
 	 */
 	public function __construct( int $instanceId = 0 ) {
@@ -60,7 +53,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->container         = CompatibilityBridge::getContainer();
 		$this->carrierRepository = $this->container->getByType( Carrier\EntityRepository::class );
 		$this->wpAdapter         = $this->container->getByType( WpAdapter::class );
-		$this->wcAdapter         = $this->container->getByType( WcAdapter::class );
 
 		$this->id = static::getShippingMethodId();
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -123,16 +115,9 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 * @return void
 	 */
 	public function calculate_shipping( $package = [] ): void {
-		$allowedCarrierNames = [];
-		$zone                = $this->wcAdapter->shippingZonesGetZoneMatchingPackage( $package );
-		$shippingMethods     = $zone->get_shipping_methods( true );
-		if ( is_array( $shippingMethods ) && count( $shippingMethods ) > 0 ) {
-			foreach ( $shippingMethods as $shippingMethod ) {
-				if ( $shippingMethod instanceof self ) {
-					$allowedCarrierNames[ $shippingMethod::CARRIER_ID ] = $shippingMethod->options['title'] ?? $shippingMethod->get_title();
-				}
-			}
-		}
+		$allowedCarrierNames = [
+			static::CARRIER_ID => $this->options['title'] ?? $this->get_title(),
+		];
 
 		$customRates = $this->shippingRateFactory->createShippingRates(
 			$allowedCarrierNames,
