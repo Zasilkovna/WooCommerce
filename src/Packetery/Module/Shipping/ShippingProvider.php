@@ -131,8 +131,7 @@ class ShippingProvider {
 	 *
 	 * @return array<string, string>
 	 */
-	private function addMethods( array $methods ): array {
-		$zoneId = $this->contextResolver->getShippingZoneId();
+	private function addMethods( array $methods, ?int $zoneId ): array {
 		if ( $zoneId === null ) {
 			return $this->addAllMethods( $methods );
 		}
@@ -229,11 +228,13 @@ class ShippingProvider {
 			return $originalMethods;
 		}
 
+		$zoneId = $this->contextResolver->getShippingZoneId();
+
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-		$cacheKey = crc32( serialize( $originalMethods ) );
+		$cacheKey = crc32( serialize( $originalMethods ) . '_zone_' . ( $zoneId ?? 'null' ) );
 
 		if ( ! isset( self::$sortedMethodsCache[ $cacheKey ] ) ) {
-			$unsortedMethods                       = $this->addMethods( $originalMethods );
+			$unsortedMethods                       = $this->addMethods( $originalMethods, $zoneId );
 			self::$sortedMethodsCache[ $cacheKey ] = $this->sortMethods( $unsortedMethods );
 		}
 
