@@ -15,7 +15,7 @@ use WC_Abstract_Order;
 
 class ShippingProvider {
 	/**
-	 * @var array<int, array<string, string>>
+	 * @var array<int, array<string, string|object>>
 	 */
 	private static $sortedMethodsCache = [];
 
@@ -127,9 +127,9 @@ class ShippingProvider {
 	/**
 	 * Loads shipping methods, uses different approach for zone setting page.
 	 *
-	 * @param array<string, string> $methods Previous state.
+	 * @param array<string, string|object> $methods Previous state.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function addMethods( array $methods ): array {
 		$zoneId = $this->contextResolver->getShippingZoneId();
@@ -161,9 +161,9 @@ class ShippingProvider {
 	/**
 	 * Add shipping methods to array.
 	 *
-	 * @param array<string, string> $methods Array.
+	 * @param array<string, string|object> $methods Array.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function addAllMethods( array $methods ): array {
 		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
@@ -176,10 +176,10 @@ class ShippingProvider {
 	/**
 	 * Adds shipping method to array in case the carrier is active.
 	 *
-	 * @param string                $fullyQualifiedClassname Fully qualified classname.
-	 * @param array<string, string> $methods                 Methods.
+	 * @param string                       $fullyQualifiedClassname Fully qualified classname.
+	 * @param array<string, string|object> $methods                 Methods.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function addActiveCarrierMethod( string $fullyQualifiedClassname, array $methods ): array {
 		/**
@@ -197,21 +197,23 @@ class ShippingProvider {
 	}
 
 	/**
-	 * Sort classnames by method_title property.
+	 * Sorts methods by method title. Each title is read once, before the sort.
+	 * The methods include foreign ones, and a value can also be an instance.
 	 *
-	 * @param array<string, string> $methods Methods to sort.
+	 * @param array<string, string|object> $methods Methods to sort.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function sortMethods( array $methods ): array {
-		uasort(
-			$methods,
-			function ( $classA, $classB ) {
-				$objectA = new $classA();
-				$objectB = new $classB();
+		$titles = [];
+		foreach ( $methods as $methodId => $method ) {
+			$titles[ $methodId ] = $this->getTitleForSorting( $method );
+		}
 
-				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-				return strcmp( $objectA->method_title, $objectB->method_title );
+		uksort(
+			$methods,
+			function ( $methodIdA, $methodIdB ) use ( $titles ): int {
+				return strcmp( $titles[ $methodIdA ], $titles[ $methodIdB ] );
 			}
 		);
 
@@ -219,9 +221,30 @@ class ShippingProvider {
 	}
 
 	/**
-	 * @param array<string, string> $originalMethods
+	 * The title of a Packeta method comes from the carrier cache, so no instance is needed.
 	 *
-	 * @return array<string, string>
+	 * @param string|object $method Class name or instance of a shipping method.
+	 */
+	private function getTitleForSorting( $method ): string {
+		if ( is_object( $method ) ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			return (string) $method->method_title;
+		}
+
+		if ( is_subclass_of( $method, BaseShippingMethod::class ) ) {
+			return $method::getMethodTitle( $this->carrierRepository );
+		}
+
+		$instance = new $method();
+
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		return (string) $instance->method_title;
+	}
+
+	/**
+	 * @param array<string, string|object> $originalMethods
+	 *
+	 * @return array<string, string|object>
 	 */
 	public function getSortedCachedMethods( array $originalMethods ): array {
 		$areClassesLoaded = in_array( BaseShippingMethod::class, get_declared_classes(), true );

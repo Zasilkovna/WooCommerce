@@ -4,7 +4,9 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Shipping;
 
+use Packetery\Latte\Engine;
 use Packetery\Module\Checkout\ShippingRateFactory;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\Shipping\Generated\ShippingMethod_106;
 use Packetery\Module\Shipping\Generated\ShippingMethod_10618;
@@ -17,6 +19,8 @@ class BaseShippingMethodTest extends TestCase {
 	private const METHOD_TITLE     = 'Packeta Home';
 	private const OPTIONS_TITLE    = 'Home delivery';
 	private const BOX_METHOD_TITLE = 'Packeta Box';
+
+	private const SETTINGS_LINK_HTML = '<p><a href="carrier-settings">Configure selected carrier</a></p>';
 
 	/**
 	 * @return array<string, array{
@@ -130,6 +134,64 @@ class BaseShippingMethodTest extends TestCase {
 		$shippingMethod->calculate_shipping( [] );
 
 		self::assertSame( [ $firstRate, $secondRate ], $addedRates );
+	}
+
+	/**
+	 * @return array<string, array{isAdmin: bool, renderCount: int, expectedDescription: string}>
+	 */
+	public static function settingsLinkProvider(): array {
+		return [
+			'admin renders the link'      => [
+				'isAdmin'             => true,
+				'renderCount'         => 1,
+				'expectedDescription' => self::SETTINGS_LINK_HTML,
+			],
+			'storefront skips the render' => [
+				'isAdmin'             => false,
+				'renderCount'         => 0,
+				'expectedDescription' => '',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider settingsLinkProvider
+	 *
+	 * @param bool   $isAdmin             Whether the request is in the admin.
+	 * @param int    $renderCount         Expected number of template renders.
+	 * @param string $expectedDescription Expected description of the settings link field.
+	 */
+	public function testInstanceFormFieldsRenderSettingsLinkOnlyInAdmin(
+		bool $isAdmin,
+		int $renderCount,
+		string $expectedDescription
+	): void {
+		$latteEngine = $this->createMock( Engine::class );
+		$latteEngine
+			->expects( $this->exactly( $renderCount ) )
+			->method( 'renderToString' )
+			->willReturn( self::SETTINGS_LINK_HTML );
+
+		$container = $this->createMock( Container::class );
+		$container
+			->method( 'getByType' )
+			->willReturn( $latteEngine );
+
+		$wpAdapter = $this->createMock( WpAdapter::class );
+		$wpAdapter
+			->method( 'isAdmin' )
+			->willReturn( $isAdmin );
+
+		$shippingMethod = ( new ReflectionClass( ShippingMethod_106::class ) )->newInstanceWithoutConstructor();
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$shippingMethod->method_title = self::METHOD_TITLE;
+		$this->setBaseShippingMethodProperty( $shippingMethod, 'container', $container );
+		$this->setBaseShippingMethodProperty( $shippingMethod, 'wpAdapter', $wpAdapter );
+
+		$formFields = $shippingMethod->get_instance_form_fields();
+
+		self::assertSame( $expectedDescription, $formFields['custom_html']['description'] );
+		self::assertSame( self::METHOD_TITLE, $formFields['title']['default'] );
 	}
 
 	/**

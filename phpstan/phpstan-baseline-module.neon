@@ -2431,12 +2431,6 @@ parameters:
 			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
 
 		-
-			message: '#^Method Packetery\\Module\\Shipping\\ShippingProvider\:\:addActiveCarrierMethod\(\) should return array\<string, string\> but returns array\<string, Packetery\\Module\\Shipping\\BaseShippingMethod\|string\>\.$#'
-			identifier: return.type
-			count: 1
-			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
-
-		-
 			message: '#^Method Packetery\\Module\\Shipping\\ShippingProvider\:\:getGeneratedClassnames\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
