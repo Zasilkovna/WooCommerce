@@ -250,14 +250,19 @@ class ShippingProvider {
 	}
 
 	/**
-	 * Gets the names of the carrier options, which addActiveCarrierMethod() reads for each generated class.
+	 * Gets the names of the options which are read for each generated class:
+	 * the carrier options for addActiveCarrierMethod(),
+	 * and the method settings, which WooCommerce reads when it registers the method.
+	 * The settings name has the same form as WC_Settings_API::get_option_key().
 	 *
 	 * @return string[]
 	 */
 	private function getMethodOptionNames(): array {
 		$optionNames = [];
 		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+			$methodId      = $fullyQualifiedClassname::getShippingMethodId();
 			$optionNames[] = OptionPrefixer::getOptionId( $fullyQualifiedClassname::CARRIER_ID );
+			$optionNames[] = "woocommerce_{$methodId}_settings";
 		}
 
 		return $optionNames;
@@ -267,6 +272,8 @@ class ShippingProvider {
 	 * WooCommerce runs this filter in WC_Shipping_Zone::get_shipping_methods() before it creates the zone methods,
 	 * so the instance settings are primed before the method constructors read them.
 	 * The carrier options are primed before addMethods() reads them.
+	 * WC_Shipping::load_shipping_methods() runs this filter before it registers the methods,
+	 * so the method settings are primed before WooCommerce reads them.
 	 *
 	 * @param array<string, string|object> $originalMethods
 	 *

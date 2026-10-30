@@ -155,8 +155,9 @@ class ShippingProviderTest extends TestCase {
 
 	/**
 	 * The carrier options are read in addMethods(), so the primer has to load them first.
+	 * WooCommerce reads the method settings later, when it registers the methods.
 	 */
-	public function testGetSortedCachedMethodsPrimesCarrierOptionsBeforeReadingThem(): void {
+	public function testGetSortedCachedMethodsPrimesMethodOptionsBeforeReadingThem(): void {
 		$shippingProvider = $this->createShippingProvider();
 		self::assertTrue( class_exists( ShippingMethod_106::class ) );
 		self::assertTrue( class_exists( ShippingMethod_1160::class ) );
@@ -168,7 +169,9 @@ class ShippingProviderTest extends TestCase {
 			->willReturnCallback(
 				function ( array $optionNames ) use ( &$calls ): void {
 					self::assertContains( 'packetery_carrier_106', $optionNames );
+					self::assertContains( 'woocommerce_packeta_method_106_settings', $optionNames );
 					self::assertContains( 'packetery_carrier_1160', $optionNames );
+					self::assertContains( 'woocommerce_packeta_method_1160_settings', $optionNames );
 					$calls[] = 'prime';
 				}
 			);
