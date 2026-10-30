@@ -145,7 +145,7 @@ services:
 	- Packetery\Module\Views\ViewMail
 	- Packetery\Module\Views\AssetManager
 	- Packetery\Module\Shipping\ShippingProvider
-	- Packetery\Module\Shipping\InstanceSettingsPrimer
+	- Packetery\Module\Shipping\ShippingMethodOptionsPrimer
 	- Packetery\Module\Shipping\ShippingMethodGenerator
 	- Packetery\Module\WidgetUrlResolver(widgetEnvironment: %widgetEnvironment%)
 	- Packetery\Module\Views\WizardAssetManager

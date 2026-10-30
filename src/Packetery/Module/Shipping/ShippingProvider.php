@@ -8,6 +8,7 @@ use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
@@ -45,9 +46,9 @@ class ShippingProvider {
 	private $carrierOptionsFactory;
 
 	/**
-	 * @var InstanceSettingsPrimer
+	 * @var ShippingMethodOptionsPrimer
 	 */
-	private $instanceSettingsPrimer;
+	private $optionsPrimer;
 
 	public function __construct(
 		CarDeliveryConfig $carDeliveryConfig,
@@ -55,14 +56,14 @@ class ShippingProvider {
 		ShippingZoneRepository $shippingZoneRepository,
 		EntityRepository $carrierRepository,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		InstanceSettingsPrimer $instanceSettingsPrimer
+		ShippingMethodOptionsPrimer $optionsPrimer
 	) {
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->contextResolver        = $contextResolver;
 		$this->shippingZoneRepository = $shippingZoneRepository;
 		$this->carrierRepository      = $carrierRepository;
 		$this->carrierOptionsFactory  = $carrierOptionsFactory;
-		$this->instanceSettingsPrimer = $instanceSettingsPrimer;
+		$this->optionsPrimer          = $optionsPrimer;
 	}
 
 	/**
@@ -249,8 +250,23 @@ class ShippingProvider {
 	}
 
 	/**
+	 * Gets the names of the carrier options, which addActiveCarrierMethod() reads for each generated class.
+	 *
+	 * @return string[]
+	 */
+	private function getMethodOptionNames(): array {
+		$optionNames = [];
+		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+			$optionNames[] = OptionPrefixer::getOptionId( $fullyQualifiedClassname::CARRIER_ID );
+		}
+
+		return $optionNames;
+	}
+
+	/**
 	 * WooCommerce runs this filter in WC_Shipping_Zone::get_shipping_methods() before it creates the zone methods,
 	 * so the instance settings are primed before the method constructors read them.
+	 * The carrier options are primed before addMethods() reads them.
 	 *
 	 * @param array<string, string|object> $originalMethods
 	 *
@@ -262,7 +278,7 @@ class ShippingProvider {
 			return $originalMethods;
 		}
 
-		$this->instanceSettingsPrimer->prime();
+		$this->optionsPrimer->prime( $this->getMethodOptionNames() );
 
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$cacheKey = crc32( serialize( $originalMethods ) );

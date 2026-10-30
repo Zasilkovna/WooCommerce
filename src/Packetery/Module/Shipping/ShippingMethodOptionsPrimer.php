@@ -9,10 +9,10 @@ use Packetery\Module\WpdbAdapter;
 use stdClass;
 
 /**
- * Loads the instance settings of all Packeta zone methods with one query.
- * WooCommerce then does not read them one by one when it creates the methods.
+ * Loads the instance settings of all Packeta zone methods and the given options in advance.
+ * WooCommerce and the plugin then do not read them one by one when they create the methods.
  */
-class InstanceSettingsPrimer {
+class ShippingMethodOptionsPrimer {
 	private const OPTIONS_CACHE_GROUP   = 'options';
 	private const NOT_OPTIONS_CACHE_KEY = 'notoptions';
 
@@ -38,25 +38,28 @@ class InstanceSettingsPrimer {
 		$this->wpAdapter   = $wpAdapter;
 	}
 
-	public function prime(): void {
+	/**
+	 * @param string[] $optionNames Options which are read for each Packeta method class.
+	 */
+	public function prime( array $optionNames ): void {
 		$blogId = $this->wpAdapter->getCurrentBlogId();
 		if ( isset( $this->primedBlogIds[ $blogId ] ) ) {
 			return;
 		}
 		$this->primedBlogIds[ $blogId ] = true;
 
-		$optionNames = $this->getOptionNames();
-		if ( $optionNames === [] ) {
+		$allOptionNames = array_merge( $this->getInstanceOptionNames(), $optionNames );
+		if ( $allOptionNames === [] ) {
 			return;
 		}
 
 		if ( $this->wpAdapter->canPrimeOptionCaches() ) {
-			$this->wpAdapter->primeOptionCaches( $optionNames );
+			$this->wpAdapter->primeOptionCaches( $allOptionNames );
 
 			return;
 		}
 
-		$this->primeWithOwnQuery( $optionNames );
+		$this->primeWithOwnQuery( $allOptionNames );
 	}
 
 	/**
@@ -64,7 +67,7 @@ class InstanceSettingsPrimer {
 	 *
 	 * @return string[]
 	 */
-	private function getOptionNames(): array {
+	private function getInstanceOptionNames(): array {
 		$zoneMethodsTable = $this->wpdbAdapter->getShippingZoneMethodsTable();
 
 		/**

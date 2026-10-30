@@ -6,12 +6,12 @@ namespace Tests\Module\Shipping;
 
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Shipping\BaseShippingMethod;
-use Packetery\Module\Shipping\InstanceSettingsPrimer;
+use Packetery\Module\Shipping\ShippingMethodOptionsPrimer;
 use Packetery\Module\WpdbAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class InstanceSettingsPrimerTest extends TestCase {
+class ShippingMethodOptionsPrimerTest extends TestCase {
 	private const ZONE_METHODS_TABLE    = 'wp_woocommerce_shipping_zone_methods';
 	private const OPTIONS_TABLE         = 'wp_options';
 	private const ZONE_METHODS_QUERY    = 'prepared zone methods query';
@@ -21,6 +21,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 	private const OPTION_MISSING        = 'woocommerce_packeta_method_4307_3_settings';
 	private const OPTION_CACHED         = 'woocommerce_packeta_method_zpointcz_4_settings';
 	private const OPTION_KNOWN_MISSING  = 'woocommerce_packeta_method_106_5_settings';
+	private const OPTION_CARRIER        = 'packetery_carrier_106';
 	private const OPTION_SAVED_RAW      = 'a:1:{s:5:"title";s:4:"Test";}';
 	private const OPTIONS_IN_CLAUSE     = "'quoted names'";
 	private const FOREIGN_MISSING_NAME  = 'some_other_option';
@@ -39,7 +40,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 	 * @param array<int, array{method_id: string, instance_id: string}>    $zoneMethodRows
 	 * @param array<int, array{option_name: string, option_value: string}> $optionRows
 	 */
-	private function createPrimer( array $zoneMethodRows, array $optionRows = [] ): InstanceSettingsPrimer {
+	private function createPrimer( array $zoneMethodRows, array $optionRows = [] ): ShippingMethodOptionsPrimer {
 		$this->wpdbAdapter = $this->createMock( WpdbAdapter::class );
 		$this->wpAdapter   = $this->createMock( WpAdapter::class );
 
@@ -76,7 +77,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 				}
 			);
 
-		return new InstanceSettingsPrimer( $this->wpdbAdapter, $this->wpAdapter );
+		return new ShippingMethodOptionsPrimer( $this->wpdbAdapter, $this->wpAdapter );
 	}
 
 	/**
@@ -99,20 +100,63 @@ class InstanceSettingsPrimerTest extends TestCase {
 		];
 	}
 
-	public function testPrimeUsesWordPressFunctionWithOptionNamesOfZoneMethods(): void {
-		$primer = $this->createPrimer( self::getZoneMethodRows() );
+	/**
+	 * @return array<string, array{
+	 *     zoneMethodRows: array<int, array{method_id: string, instance_id: string}>,
+	 *     givenOptionNames: string[],
+	 *     expectedOptionNames: string[]
+	 * }>
+	 */
+	public static function optionNamesProvider(): array {
+		return [
+			'zone methods only'        => [
+				'zoneMethodRows'      => self::getZoneMethodRows(),
+				'givenOptionNames'    => [],
+				'expectedOptionNames' => [ self::OPTION_AUTOLOADED, self::OPTION_SAVED, self::OPTION_MISSING ],
+			],
+			'given options only'       => [
+				'zoneMethodRows'      => [],
+				'givenOptionNames'    => [ self::OPTION_CARRIER ],
+				'expectedOptionNames' => [ self::OPTION_CARRIER ],
+			],
+			'zone methods and options' => [
+				'zoneMethodRows'      => self::getZoneMethodRows(),
+				'givenOptionNames'    => [ self::OPTION_CARRIER ],
+				'expectedOptionNames' => [
+					self::OPTION_AUTOLOADED,
+					self::OPTION_SAVED,
+					self::OPTION_MISSING,
+					self::OPTION_CARRIER,
+				],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider optionNamesProvider
+	 *
+	 * @param array<int, array{method_id: string, instance_id: string}> $zoneMethodRows
+	 * @param string[]                                                  $givenOptionNames
+	 * @param string[]                                                  $expectedOptionNames
+	 */
+	public function testPrimeUsesWordPressFunctionWithOptionNamesOfZoneMethodsAndGivenOptions(
+		array $zoneMethodRows,
+		array $givenOptionNames,
+		array $expectedOptionNames
+	): void {
+		$primer = $this->createPrimer( $zoneMethodRows );
 		$this->wpAdapter
 			->method( 'canPrimeOptionCaches' )
 			->willReturn( true );
 		$this->wpAdapter
 			->expects( $this->once() )
 			->method( 'primeOptionCaches' )
-			->with( [ self::OPTION_AUTOLOADED, self::OPTION_SAVED, self::OPTION_MISSING ] );
+			->with( $expectedOptionNames );
 		$this->wpAdapter
 			->expects( $this->never() )
 			->method( 'cacheAdd' );
 
-		$primer->prime();
+		$primer->prime( $givenOptionNames );
 
 		self::assertSame( [ self::ZONE_METHODS_QUERY ], $this->queries );
 	}
@@ -152,7 +196,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 
 		$callCount = count( $blogIds );
 		for ( $call = 0; $call < $callCount; $call++ ) {
-			$primer->prime();
+			$primer->prime( [] );
 		}
 
 		self::assertSame( array_fill( 0, $expectedPrimeCount, self::ZONE_METHODS_QUERY ), $this->queries );
@@ -167,7 +211,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 			->expects( $this->never() )
 			->method( 'loadAllOptions' );
 
-		$primer->prime();
+		$primer->prime( [] );
 
 		self::assertSame( [ self::ZONE_METHODS_QUERY ], $this->queries );
 	}
@@ -233,7 +277,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 				self::OPTIONS_CACHE_GROUP
 			);
 
-		$primer->prime();
+		$primer->prime( [] );
 
 		self::assertSame(
 			[
@@ -257,7 +301,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 			->expects( $this->never() )
 			->method( 'cacheSet' );
 
-		$primer->prime();
+		$primer->prime( [] );
 
 		self::assertSame( [ self::ZONE_METHODS_QUERY ], $this->queries );
 	}
@@ -285,7 +329,7 @@ class InstanceSettingsPrimerTest extends TestCase {
 			->expects( $this->never() )
 			->method( 'cacheSet' );
 
-		$primer->prime();
+		$primer->prime( [] );
 
 		self::assertCount( 2, $this->queries );
 	}

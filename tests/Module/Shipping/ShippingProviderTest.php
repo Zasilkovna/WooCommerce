@@ -8,6 +8,7 @@ use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Carrier\Options;
 use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Shipping\BaseShippingMethod;
@@ -17,7 +18,7 @@ use Packetery\Module\Shipping\Generated\ShippingMethod_10619;
 use Packetery\Module\Shipping\Generated\ShippingMethod_10693;
 use Packetery\Module\Shipping\Generated\ShippingMethod_11251;
 use Packetery\Module\Shipping\Generated\ShippingMethod_1160;
-use Packetery\Module\Shipping\InstanceSettingsPrimer;
+use Packetery\Module\Shipping\ShippingMethodOptionsPrimer;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
@@ -33,7 +34,8 @@ class ShippingProviderTest extends TestCase {
 	private ContextResolver&MockObject $contextResolver;
 	private ShippingZoneRepository&MockObject $shippingZoneRepository;
 	private EntityRepository&MockObject $carrierRepository;
-	private InstanceSettingsPrimer&MockObject $instanceSettingsPrimer;
+	private CarrierOptionsFactory&MockObject $carrierOptionsFactory;
+	private ShippingMethodOptionsPrimer&MockObject $optionsPrimer;
 	private ?Container $originalContainer;
 
 	protected function setUp(): void {
@@ -59,15 +61,16 @@ class ShippingProviderTest extends TestCase {
 		$this->contextResolver        = $this->createMock( ContextResolver::class );
 		$this->shippingZoneRepository = $this->createMock( ShippingZoneRepository::class );
 		$this->carrierRepository      = $this->createMock( EntityRepository::class );
-		$this->instanceSettingsPrimer = $this->createMock( InstanceSettingsPrimer::class );
+		$this->carrierOptionsFactory  = $this->createMock( CarrierOptionsFactory::class );
+		$this->optionsPrimer          = $this->createMock( ShippingMethodOptionsPrimer::class );
 
 		return new ShippingProvider(
 			$this->createMock( CarDeliveryConfig::class ),
 			$this->contextResolver,
 			$this->shippingZoneRepository,
 			$this->carrierRepository,
-			$this->createMock( CarrierOptionsFactory::class ),
-			$this->instanceSettingsPrimer
+			$this->carrierOptionsFactory,
+			$this->optionsPrimer
 		);
 	}
 
@@ -143,11 +146,46 @@ class ShippingProviderTest extends TestCase {
 
 		$this->contextResolver->expects( $this->never() )->method( 'getShippingZoneId' );
 		$this->shippingZoneRepository->expects( $this->never() )->method( 'getCountryCodesForShippingZone' );
-		$this->instanceSettingsPrimer
+		$this->optionsPrimer
 			->expects( $this->once() )
 			->method( 'prime' );
 
 		$shippingProvider->getSortedCachedMethods( $originalMethods );
+	}
+
+	/**
+	 * The carrier options are read in addMethods(), so the primer has to load them first.
+	 */
+	public function testGetSortedCachedMethodsPrimesCarrierOptionsBeforeReadingThem(): void {
+		$shippingProvider = $this->createShippingProvider();
+		self::assertTrue( class_exists( ShippingMethod_106::class ) );
+		self::assertTrue( class_exists( ShippingMethod_1160::class ) );
+
+		$calls = [];
+		$this->optionsPrimer
+			->expects( $this->once() )
+			->method( 'prime' )
+			->willReturnCallback(
+				function ( array $optionNames ) use ( &$calls ): void {
+					self::assertContains( 'packetery_carrier_106', $optionNames );
+					self::assertContains( 'packetery_carrier_1160', $optionNames );
+					$calls[] = 'prime';
+				}
+			);
+		$this->carrierOptionsFactory
+			->method( 'createByCarrierId' )
+			->willReturnCallback(
+				function () use ( &$calls ): Options {
+					$calls[] = 'createByCarrierId';
+
+					return $this->createMock( Options::class );
+				}
+			);
+
+		$shippingProvider->getSortedCachedMethods( [] );
+
+		self::assertSame( 'prime', $calls[0] );
+		self::assertContains( 'createByCarrierId', $calls );
 	}
 
 	public function testSortMethodsSortsByTitleWithoutPacketaInstances(): void {
