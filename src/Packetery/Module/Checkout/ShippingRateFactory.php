@@ -103,26 +103,25 @@ class ShippingRateFactory {
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * In the per-carrier mode the carrier is derived from $methodId.
-	 * BaseShippingMethod builds $methodId and the $allowedCarrierNames key from the same CARRIER_ID.
 	 *
-	 * @param array|null $allowedCarrierNames Rate labels keyed by carrier ID; null in the legacy single-method mode.
-	 * @param string     $methodId            Shipping method class id.
-	 * @param int        $instanceId          Shipping method instance id.
+	 * @param string|null $carrierName Rate label from the shipping method; null uses the carrier options name.
+	 * @param string      $methodId    Shipping method class id.
+	 * @param int         $instanceId  Shipping method instance id.
 	 *
 	 * @return array<string, array<string, string|float|array>>
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function createShippingRates( ?array $allowedCarrierNames, string $methodId, int $instanceId ): array {
+	public function createShippingRates( ?string $carrierName, string $methodId, int $instanceId ): array {
 		$this->shippingRateDiagnostics->collectMethodRun();
 
 		$customerCountry = $this->checkoutService->getCustomerCountry();
 		$this->diagnosticsLogger->log(
 			'createShippingRates parameters',
 			[
-				'customerCountry'     => $customerCountry,
-				'allowedCarrierNames' => $allowedCarrierNames,
-				'methodId'            => $methodId,
-				'instanceId'          => $instanceId,
+				'customerCountry' => $customerCountry,
+				'carrierName'     => $carrierName,
+				'methodId'        => $methodId,
+				'instanceId'      => $instanceId,
 			]
 		);
 		if ( $customerCountry === null ) {
@@ -172,12 +171,13 @@ class ShippingRateFactory {
 		$customRates = [];
 		foreach ( $availableCarriers as $carrier ) {
 			$optionId   = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-			$rateId     = $methodId === ShippingMethod::PACKETERY_METHOD_ID
+			$rateId     = $isLegacySingleMethod
 				? $methodId . ':' . $optionId
 				: $methodId . ':' . $instanceId;
 			$evaluation = $this->evaluateCarrier(
 				$carrier,
-				$allowedCarrierNames,
+				$carrierName,
+				$isLegacySingleMethod,
 				$optionId,
 				$rateId
 			);
@@ -216,30 +216,32 @@ class ShippingRateFactory {
 	}
 
 	/**
-	 * @param Entity\Carrier                  $carrier             Carrier.
-	 * @param array<string, string|null>|null $allowedCarrierNames Null in the legacy single-method mode.
-	 * @param string                          $optionId            Carrier option id.
-	 * @param string                          $rateId              WooCommerce rate id.
+	 * @param Entity\Carrier $carrier              Carrier.
+	 * @param string|null    $carrierName          Rate label from the shipping method.
+	 * @param bool           $isLegacySingleMethod True for the legacy single Packeta method.
+	 * @param string         $optionId             Carrier option id.
+	 * @param string         $rateId               WooCommerce rate id.
 	 *
 	 * @throws ProductNotFoundException
 	 */
 	private function evaluateCarrier(
 		Entity\Carrier $carrier,
-		?array $allowedCarrierNames,
+		?string $carrierName,
+		bool $isLegacySingleMethod,
 		string $optionId,
 		string $rateId
 	): ShippingRateEvaluation {
-		$options     = $this->carrierOptionsFactory->createByOptionId( $optionId );
-		$carrierName = $allowedCarrierNames[ $carrier->getId() ] ?? $options->getName() ?? $carrier->getName();
+		$options   = $this->carrierOptionsFactory->createByOptionId( $optionId );
+		$rateLabel = $carrierName ?? $options->getName() ?? $carrier->getName();
 
 		// Only somebody reading the diagnostics needs the full list; a customer needs the yes or no,
 		// so the reasons that have to walk the cart products are skipped once one already ruled the
 		// carrier out. The offered-or-not result is the same either way.
 		$collectAllReasons = $this->shippingRateDiagnostics->isActive();
 
-		$unavailabilities = $this->getCarrierUnavailabilities( $carrier, $allowedCarrierNames, $optionId, $options );
+		$unavailabilities = $this->getCarrierUnavailabilities( $carrier, $isLegacySingleMethod, $optionId, $options );
 		if ( $collectAllReasons === false && count( $unavailabilities ) > 0 ) {
-			return new ShippingRateEvaluation( $carrier->getId(), (string) $carrierName, null, $unavailabilities );
+			return new ShippingRateEvaluation( $carrier->getId(), $rateLabel, null, $unavailabilities );
 		}
 
 		$cartPrice             = $this->cartService->getCartContentsTotalIncludingTax();
@@ -257,27 +259,27 @@ class ShippingRateFactory {
 			// Null would mean getLimitsUnavailability() and the price calculation disagreed. Offering
 			// no rate is wrong but harmless; a cast would hand the customer free shipping.
 			if ( $cost !== null ) {
-				$rate = $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId );
+				$rate = $this->createShippingRateAndApplyTaxes( $rateLabel, $cost, $rateId );
 			}
 		}
 
-		return new ShippingRateEvaluation( $carrier->getId(), (string) $carrierName, $rate, $unavailabilities );
+		return new ShippingRateEvaluation( $carrier->getId(), $rateLabel, $rate, $unavailabilities );
 	}
 
 	/**
 	 * Reasons answerable from the carrier and its options alone.
 	 *
-	 * @param Entity\Carrier                  $carrier             Carrier.
-	 * @param array<string, string|null>|null $allowedCarrierNames Null in the legacy single-method mode.
-	 * @param string                          $optionId            Carrier option id.
-	 * @param Carrier\Options                 $carrierOptions      Carrier options.
+	 * @param Entity\Carrier  $carrier              Carrier.
+	 * @param bool            $isLegacySingleMethod True for the legacy single Packeta method.
+	 * @param string          $optionId             Carrier option id.
+	 * @param Carrier\Options $carrierOptions       Carrier options.
 	 *
 	 * @return RateUnavailability[]
 	 * @throws ProductNotFoundException
 	 */
 	private function getCarrierUnavailabilities(
 		Entity\Carrier $carrier,
-		?array $allowedCarrierNames,
+		bool $isLegacySingleMethod,
 		string $optionId,
 		Carrier\Options $carrierOptions
 	): array {
@@ -294,7 +296,7 @@ class ShippingRateFactory {
 			$unavailabilities[] = new RateUnavailability( RateUnavailabilityReason::AGE_VERIFICATION_UNSUPPORTED );
 		}
 
-		if ( $allowedCarrierNames === null && $carrierOptions->isActive() === false ) {
+		if ( $isLegacySingleMethod && $carrierOptions->isActive() === false ) {
 			$unavailabilities[] = new RateUnavailability(
 				RateUnavailabilityReason::CARRIER_OPTION_INACTIVE,
 				[ 'optionId' => $optionId ]

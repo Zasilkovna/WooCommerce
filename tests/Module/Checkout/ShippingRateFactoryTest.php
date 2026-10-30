@@ -375,7 +375,7 @@ class ShippingRateFactoryTest extends TestCase {
 
 		return [
 			'no customer country -> empty result'         => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => null,
@@ -394,7 +394,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::CUSTOMER_COUNTRY_UNKNOWN ],
 			],
 			'packetery method with 2 carriers in same country' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -413,7 +413,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [],
 			],
 			'specific carrier method with matching country' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
 				'instanceId'                => 3,
 				'customerCountry'           => 'de',
@@ -432,7 +432,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [],
 			],
 			'age verification required but unsupported'   => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierCzNoAgeCheck->getId(),
 				'instanceId'                => 3,
 				'customerCountry'           => 'cz',
@@ -451,7 +451,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::AGE_VERIFICATION_UNSUPPORTED ],
 			],
 			'specific carrier method with mismatched country' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierDe->getId(),
 				'instanceId'                => 3,
 				'customerCountry'           => 'cz',
@@ -470,7 +470,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [],
 			],
 			'legacy method with no carrier for the country' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -489,7 +489,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::NO_CARRIER_FOR_COUNTRY ],
 			],
 			'carrier unavailable in the feed'             => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -508,7 +508,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::CARRIER_UNAVAILABLE ],
 			],
 			'carrier not activated in Packeta settings'   => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -527,7 +527,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::CARRIER_OPTION_INACTIVE ],
 			],
 			'car delivery globally disabled'              => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -546,7 +546,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::CAR_DELIVERY_DISABLED ],
 			],
 			'product in cart disallows the carrier'       => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -565,7 +565,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::DISALLOWED_BY_PRODUCT ],
 			],
 			'product oversized for the carrier'           => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -584,7 +584,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::PRODUCT_OVERSIZED ],
 			],
 			'product category disallows the carrier'      => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -603,7 +603,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::DISALLOWED_BY_CATEGORY ],
 			],
 			'cart heavier than the highest weight rule'   => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -622,7 +622,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::WEIGHT_OVER_LIMIT ],
 			],
 			'cart worth more than the highest value rule' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -641,7 +641,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::PRODUCT_VALUE_OVER_LIMIT ],
 			],
 			'no pricing rule configured at all'           => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -660,7 +660,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::NO_PRICING_RULES ],
 			],
 			'several reasons reported at once'            => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -683,8 +683,27 @@ class ShippingRateFactoryTest extends TestCase {
 					RateUnavailabilityReason::WEIGHT_OVER_LIMIT,
 				],
 			],
+			'per-carrier method ignores the inactive carrier options' => [
+				'carrierName'               => null,
+				'methodId'                  => BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrierCzPp->getId(),
+				'instanceId'                => 3,
+				'customerCountry'           => 'cz',
+				'availableCarriers'         => [ [ $carrierCzPp, $carrierOptionsCzPpInactive ] ],
+				'cartTotal'                 => 100.0,
+				'cartWeight'                => 1.0,
+				'totalValue'                => 100.0,
+				'isAgeVerificationRequired' => false,
+				'isCarDeliveryDisabled'     => false,
+				'disallowingProductId'      => null,
+				'oversizedProduct'          => null,
+				'restrictingCategory'       => null,
+				'arePricesTaxInclusive'     => false,
+				'collectAllReasons'         => true,
+				'expectedRateCount'         => 1,
+				'expectedReasons'           => [],
+			],
 			'diagnostics off stops at the first reason and skips the cart scan' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -703,7 +722,7 @@ class ShippingRateFactoryTest extends TestCase {
 				'expectedReasons'           => [ RateUnavailabilityReason::CARRIER_UNAVAILABLE ],
 			],
 			'diagnostics on reports the cart reasons alongside the carrier one' => [
-				'allowedCarrierNames'       => null,
+				'carrierName'               => null,
 				'methodId'                  => ShippingMethod::PACKETERY_METHOD_ID,
 				'instanceId'                => 1,
 				'customerCountry'           => 'cz',
@@ -732,7 +751,7 @@ class ShippingRateFactoryTest extends TestCase {
 	 * @dataProvider createShippingRatesProvider
 	 */
 	public function testCreateShippingRates(
-		?array $allowedCarrierNames,
+		?string $carrierName,
 		string $methodId,
 		int $instanceId,
 		?string $customerCountry,
@@ -817,7 +836,7 @@ class ShippingRateFactoryTest extends TestCase {
 				}
 			);
 
-		$shippingRates = $shippingRateFactory->createShippingRates( $allowedCarrierNames, $methodId, $instanceId );
+		$shippingRates = $shippingRateFactory->createShippingRates( $carrierName, $methodId, $instanceId );
 
 		self::assertCount( $expectedRateCount, $shippingRates );
 		self::assertSame( $expectedReasons, $loggedReasons );
@@ -829,5 +848,61 @@ class ShippingRateFactoryTest extends TestCase {
 				self::assertStringStartsWith( $methodId . ':', $firstRate );
 			}
 		}
+	}
+
+	/**
+	 * @return array<string, array{carrierName: string|null, expectedLabel: string}>
+	 */
+	public static function rateLabelProvider(): array {
+		return [
+			'name of the shipping method'           => [
+				'carrierName'   => 'Home delivery',
+				'expectedLabel' => 'Home delivery',
+			],
+			'no name uses the carrier options name' => [
+				'carrierName'   => null,
+				'expectedLabel' => 'Carrier CZ I',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider rateLabelProvider
+	 */
+	public function testCarrierNameIsTheRateLabel( ?string $carrierName, string $expectedLabel ): void {
+		$shippingRateFactory = $this->createShippingRateFactory();
+
+		$carrier  = DummyFactory::createCarrierCzechPp();
+		$methodId = BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrier->getId();
+		$this->checkoutServiceMock->method( 'getCustomerCountry' )->willReturn( 'cz' );
+		$this->carrierEntityRepositoryMock
+			->method( 'getAnyById' )
+			->willReturn( $carrier );
+		$this->carrierOptionsFactoryMock
+			->method( 'createByOptionId' )
+			->willReturn(
+				new Carrier\Options(
+					OptionPrefixer::getOptionId( $carrier->getId() ),
+					[
+						'id'            => $carrier->getId(),
+						'active'        => true,
+						'name'          => 'Carrier CZ I',
+						'weight_limits' => [
+							[
+								'weight' => 5.0,
+								'price'  => 30.0,
+							],
+						],
+					]
+				)
+			);
+		$this->cartServiceMock->method( 'getCartContentsTotalIncludingTax' )->willReturn( 100.0 );
+		$this->cartServiceMock->method( 'getCartWeightKg' )->willReturn( 1.0 );
+		$this->cartServiceMock->method( 'getTotalCartProductValue' )->willReturn( 100.0 );
+
+		$shippingRates = $shippingRateFactory->createShippingRates( $carrierName, $methodId, 3 );
+
+		self::assertCount( 1, $shippingRates );
+		self::assertSame( $expectedLabel, $shippingRates[ $methodId . ':3' ]['label'] );
 	}
 }

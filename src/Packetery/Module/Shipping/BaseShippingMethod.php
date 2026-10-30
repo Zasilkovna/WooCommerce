@@ -115,12 +115,8 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 * @return void
 	 */
 	public function calculate_shipping( $package = [] ): void {
-		$allowedCarrierNames = [
-			static::CARRIER_ID => $this->options['title'] ?? $this->get_title(),
-		];
-
 		$customRates = $this->shippingRateFactory->createShippingRates(
-			$allowedCarrierNames,
+			$this->options['title'] ?? $this->get_title(),
 			$this->id,
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->instance_id

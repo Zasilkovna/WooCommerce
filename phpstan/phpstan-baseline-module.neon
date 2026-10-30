@@ -763,12 +763,6 @@ parameters:
 			path: ../src/Packetery/Module/Checkout/SessionService.php
 
 		-
-			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRates\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
-
-		-
 			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRates\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
