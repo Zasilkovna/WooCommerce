@@ -8,6 +8,7 @@ use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
@@ -15,7 +16,7 @@ use WC_Abstract_Order;
 
 class ShippingProvider {
 	/**
-	 * @var array<int, array<string, string>>
+	 * @var array<int, array<string, string|object>>
 	 */
 	private static $sortedMethodsCache = [];
 
@@ -44,18 +45,25 @@ class ShippingProvider {
 	 */
 	private $carrierOptionsFactory;
 
+	/**
+	 * @var ShippingMethodOptionsPrimer
+	 */
+	private $optionsPrimer;
+
 	public function __construct(
 		CarDeliveryConfig $carDeliveryConfig,
 		ContextResolver $contextResolver,
 		ShippingZoneRepository $shippingZoneRepository,
 		EntityRepository $carrierRepository,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ShippingMethodOptionsPrimer $optionsPrimer
 	) {
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->contextResolver        = $contextResolver;
 		$this->shippingZoneRepository = $shippingZoneRepository;
 		$this->carrierRepository      = $carrierRepository;
 		$this->carrierOptionsFactory  = $carrierOptionsFactory;
+		$this->optionsPrimer          = $optionsPrimer;
 	}
 
 	/**
@@ -127,9 +135,9 @@ class ShippingProvider {
 	/**
 	 * Loads shipping methods, uses different approach for zone setting page.
 	 *
-	 * @param array<string, string> $methods Previous state.
+	 * @param array<string, string|object> $methods Previous state.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function addMethods( array $methods ): array {
 		$zoneId = $this->contextResolver->getShippingZoneId();
@@ -161,9 +169,9 @@ class ShippingProvider {
 	/**
 	 * Add shipping methods to array.
 	 *
-	 * @param array<string, string> $methods Array.
+	 * @param array<string, string|object> $methods Array.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function addAllMethods( array $methods ): array {
 		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
@@ -176,10 +184,10 @@ class ShippingProvider {
 	/**
 	 * Adds shipping method to array in case the carrier is active.
 	 *
-	 * @param string                $fullyQualifiedClassname Fully qualified classname.
-	 * @param array<string, string> $methods                 Methods.
+	 * @param string                       $fullyQualifiedClassname Fully qualified classname.
+	 * @param array<string, string|object> $methods                 Methods.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function addActiveCarrierMethod( string $fullyQualifiedClassname, array $methods ): array {
 		/**
@@ -197,21 +205,23 @@ class ShippingProvider {
 	}
 
 	/**
-	 * Sort classnames by method_title property.
+	 * Sorts methods by method title. Each title is read once, before the sort.
+	 * The methods include foreign ones, and a value can also be an instance.
 	 *
-	 * @param array<string, string> $methods Methods to sort.
+	 * @param array<string, string|object> $methods Methods to sort.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	private function sortMethods( array $methods ): array {
-		uasort(
-			$methods,
-			function ( $classA, $classB ) {
-				$objectA = new $classA();
-				$objectB = new $classB();
+		$titles = [];
+		foreach ( $methods as $methodId => $method ) {
+			$titles[ $methodId ] = $this->getTitleForSorting( $method );
+		}
 
-				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-				return strcmp( $objectA->method_title, $objectB->method_title );
+		uksort(
+			$methods,
+			function ( $methodIdA, $methodIdB ) use ( $titles ): int {
+				return strcmp( $titles[ $methodIdA ], $titles[ $methodIdB ] );
 			}
 		);
 
@@ -219,15 +229,63 @@ class ShippingProvider {
 	}
 
 	/**
-	 * @param array<string, string> $originalMethods
+	 * The title of a Packeta method comes from the carrier cache, so no instance is needed.
 	 *
-	 * @return array<string, string>
+	 * @param string|object $method Class name or instance of a shipping method.
+	 */
+	private function getTitleForSorting( $method ): string {
+		if ( is_object( $method ) ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			return (string) $method->method_title;
+		}
+
+		if ( is_subclass_of( $method, BaseShippingMethod::class ) ) {
+			return $method::getMethodTitle( $this->carrierRepository );
+		}
+
+		$instance = new $method();
+
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		return (string) $instance->method_title;
+	}
+
+	/**
+	 * Gets the names of the options which are read for each generated class:
+	 * the carrier options for addActiveCarrierMethod(),
+	 * and the method settings, which WooCommerce reads when it registers the method.
+	 * The settings name has the same form as WC_Settings_API::get_option_key().
+	 *
+	 * @return string[]
+	 */
+	private function getMethodOptionNames(): array {
+		$optionNames = [];
+		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+			$methodId      = $fullyQualifiedClassname::getShippingMethodId();
+			$optionNames[] = OptionPrefixer::getOptionId( $fullyQualifiedClassname::CARRIER_ID );
+			$optionNames[] = "woocommerce_{$methodId}_settings";
+		}
+
+		return $optionNames;
+	}
+
+	/**
+	 * WooCommerce runs this filter in WC_Shipping_Zone::get_shipping_methods() before it creates the zone methods,
+	 * so the instance settings are primed before the method constructors read them.
+	 * The carrier options are primed before addMethods() reads them.
+	 * WC_Shipping::load_shipping_methods() runs this filter before it registers the methods,
+	 * so the method settings are primed before WooCommerce reads them.
+	 *
+	 * @param array<string, string|object> $originalMethods
+	 *
+	 * @return array<string, string|object>
 	 */
 	public function getSortedCachedMethods( array $originalMethods ): array {
 		$areClassesLoaded = in_array( BaseShippingMethod::class, get_declared_classes(), true );
 		if ( $areClassesLoaded === false ) {
 			return $originalMethods;
 		}
+
+		$this->optionsPrimer->prime( $this->getMethodOptionNames() );
 
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$cacheKey = crc32( serialize( $originalMethods ) );

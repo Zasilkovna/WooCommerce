@@ -62,10 +62,8 @@ class ShippingMethod extends WC_Shipping_Method {
 	 * @throws ProductNotFoundException
 	 */
 	public function calculate_shipping( $package = [] ): void {
-		$allowedCarrierNames = null;
-
 		$customRates = $this->shippingRateFactory->createShippingRates(
-			$allowedCarrierNames,
+			null,
 			$this->id,
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->instance_id

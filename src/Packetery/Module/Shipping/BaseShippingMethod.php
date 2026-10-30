@@ -8,11 +8,9 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\CompatibilityBridge;
-use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\DI\Container;
 
-use function is_array;
 use function sprintf;
 
 abstract class BaseShippingMethod extends \WC_Shipping_Method {
@@ -47,11 +45,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	private $wpAdapter;
 
 	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
-
-	/**
 	 * @param int $instanceId Shipping method instance id.
 	 */
 	public function __construct( int $instanceId = 0 ) {
@@ -60,22 +53,19 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->container         = CompatibilityBridge::getContainer();
 		$this->carrierRepository = $this->container->getByType( Carrier\EntityRepository::class );
 		$this->wpAdapter         = $this->container->getByType( WpAdapter::class );
-		$this->wcAdapter         = $this->container->getByType( WcAdapter::class );
 
 		$this->id = static::getShippingMethodId();
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->instance_id = $this->wpAdapter->absint( $instanceId );
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-		$this->method_title = __( 'Packeta', 'packeta' );
-		$this->title        = __( 'Packeta', 'packeta' );
+		$this->method_title = static::getMethodTitle( $this->carrierRepository );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->title = $this->method_title;
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 
 		$carrier = $this->carrierRepository->getAnyById( static::CARRIER_ID, true );
 		if ( $carrier !== null ) {
-			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$this->method_title = $carrier->getName();
-			$this->title        = $carrier->getName();
 			// translators: %s is carrier name.
 			$this->method_description = sprintf( __( 'Allows customers to use %s carrier delivery', 'packeta' ), $carrier->getName() ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		}
@@ -123,19 +113,8 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 * @return void
 	 */
 	public function calculate_shipping( $package = [] ): void {
-		$allowedCarrierNames = [];
-		$zone                = $this->wcAdapter->shippingZonesGetZoneMatchingPackage( $package );
-		$shippingMethods     = $zone->get_shipping_methods( true );
-		if ( is_array( $shippingMethods ) && count( $shippingMethods ) > 0 ) {
-			foreach ( $shippingMethods as $shippingMethod ) {
-				if ( $shippingMethod instanceof self ) {
-					$allowedCarrierNames[ $shippingMethod::CARRIER_ID ] = $shippingMethod->options['title'] ?? $shippingMethod->get_title();
-				}
-			}
-		}
-
 		$customRates = $this->shippingRateFactory->createShippingRates(
-			$allowedCarrierNames,
+			$this->options['title'] ?? $this->get_title(),
 			$this->id,
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->instance_id
@@ -151,23 +130,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 * @return array
 	 */
 	public function get_instance_form_fields(): array {
-		$latteEngine = $this->container->getByType( Engine::class );
-
-		$carrierSettingsLinkBase = $this->wpAdapter->addQueryArg(
-			[
-				'page'                                    => Carrier\OptionsPage::SLUG,
-				Carrier\OptionsPage::PARAMETER_CARRIER_ID => static::CARRIER_ID,
-			],
-			$this->wpAdapter->getAdminUrl( null, 'admin.php' )
-		);
-
-		$latteParams = [
-			'carrierSettingsLink' => $carrierSettingsLinkBase,
-			'translations'        => [
-				'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
-			],
-		];
-
 		$settings = [
 			'title'       => [
 				'title'       => __( 'Method title', 'packeta' ),
@@ -185,14 +147,53 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 				'title'       => '',
 				'type'        => 'title',
 				'default'     => '',
-				'description' => $latteEngine->renderToString(
-					PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal-fragment.latte',
-					$latteParams
-				),
+				'description' => $this->renderCarrierSettingsLink(),
 			],
 		];
 
 		return $settings;
+	}
+
+	/**
+	 * Renders the link to the carrier settings for the method settings form.
+	 */
+	private function renderCarrierSettingsLink(): string {
+		// Only the admin shows the settings form. The storefront needs only the field defaults.
+		if ( ! $this->wpAdapter->isAdmin() ) {
+			return '';
+		}
+
+		$carrierSettingsLink = $this->wpAdapter->addQueryArg(
+			[
+				'page'                                    => Carrier\OptionsPage::SLUG,
+				Carrier\OptionsPage::PARAMETER_CARRIER_ID => static::CARRIER_ID,
+			],
+			$this->wpAdapter->getAdminUrl( null, 'admin.php' )
+		);
+
+		$latteEngine = $this->container->getByType( Engine::class );
+
+		return $latteEngine->renderToString(
+			PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal-fragment.latte',
+			[
+				'carrierSettingsLink' => $carrierSettingsLink,
+				'translations'        => [
+					'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
+				],
+			]
+		);
+	}
+
+	/**
+	 * Gets the method title without an instance: the carrier name, or "Packeta" for an unknown carrier.
+	 */
+	public static function getMethodTitle( Carrier\EntityRepository $carrierRepository ): string {
+		$carrier = $carrierRepository->getAnyById( static::CARRIER_ID, true );
+		if ( $carrier === null ) {
+			return (string) __( 'Packeta', 'packeta' );
+		}
+
+		return $carrier->getName();
 	}
 
 	/**
