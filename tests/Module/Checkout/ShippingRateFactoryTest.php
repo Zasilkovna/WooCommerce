@@ -776,6 +776,10 @@ class ShippingRateFactoryTest extends TestCase {
 			$targetCarrier = $carrierEntities[0] ?? null;
 			$this->carrierEntityRepositoryMock
 				->method( 'getAnyById' )
+				->with(
+					str_replace( BaseShippingMethod::PACKETA_METHOD_PREFIX, '', $methodId ),
+					true
+				)
 				->willReturn( $targetCarrier );
 		}
 

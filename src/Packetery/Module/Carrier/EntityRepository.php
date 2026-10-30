@@ -26,6 +26,14 @@ class EntityRepository {
 	private static $carrierDataCache = [];
 
 	/**
+	 * Raw carrier rows keyed by carrier id, filled by one query on the first cache miss.
+	 *
+	 * @var array<int, array<string, string>>
+	 */
+	private static array $carrierRowsCache    = [];
+	private static bool $areAllCarriersLoaded = false;
+
+	/**
 	 * Carrier repository.
 	 *
 	 * @var Repository
@@ -97,12 +105,44 @@ class EntityRepository {
 		return $this->carrierEntityFactory->fromDbResult( $result );
 	}
 
+	/**
+	 * Loads all carriers with one query on the first miss, then answers every id from memory.
+	 */
 	private function getByIdCached( int $carrierId ): ?Entity\Carrier {
-		if ( ! isset( self::$carrierDataCache[ $carrierId ] ) ) {
-			self::$carrierDataCache[ $carrierId ] = $this->getById( $carrierId );
+		if ( array_key_exists( $carrierId, self::$carrierDataCache ) ) {
+			return self::$carrierDataCache[ $carrierId ];
 		}
 
-		return self::$carrierDataCache[ $carrierId ];
+		$this->loadAllCarriers();
+
+		$carrier = null;
+		if ( isset( self::$carrierRowsCache[ $carrierId ] ) ) {
+			$carrier = $this->carrierEntityFactory->fromDbResult( self::$carrierRowsCache[ $carrierId ] );
+		}
+		self::$carrierDataCache[ $carrierId ] = $carrier;
+
+		return $carrier;
+	}
+
+	private function loadAllCarriers(): void {
+		if ( self::$areAllCarriersLoaded ) {
+			return;
+		}
+
+		/** @var array<int, array<string, string>> $rows wpdb returns every column as a string. */
+		$rows = $this->repository->getAllRawIndexed();
+
+		self::$carrierRowsCache     = $rows;
+		self::$areAllCarriersLoaded = true;
+	}
+
+	/**
+	 * Clears the carrier cache, for example after the carrier import.
+	 */
+	public static function clearCache(): void {
+		self::$carrierDataCache     = [];
+		self::$carrierRowsCache     = [];
+		self::$areAllCarriersLoaded = false;
 	}
 
 	/**

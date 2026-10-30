@@ -142,7 +142,8 @@ class ShippingRateFactory {
 		} else {
 			$availableCarriers = [];
 			$carrierEntity     = $this->carrierEntityRepository->getAnyById(
-				str_replace( BaseShippingMethod::PACKETA_METHOD_PREFIX, '', $methodId )
+				str_replace( BaseShippingMethod::PACKETA_METHOD_PREFIX, '', $methodId ),
+				true
 			);
 			if ( $carrierEntity !== null && $carrierEntity->getCountry() === $customerCountry ) {
 				$availableCarriers[] = $carrierEntity;
