@@ -17,6 +17,7 @@ use Packetery\Module\Shipping\Generated\ShippingMethod_10619;
 use Packetery\Module\Shipping\Generated\ShippingMethod_10693;
 use Packetery\Module\Shipping\Generated\ShippingMethod_11251;
 use Packetery\Module\Shipping\Generated\ShippingMethod_1160;
+use Packetery\Module\Shipping\InstanceSettingsPrimer;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
@@ -32,6 +33,7 @@ class ShippingProviderTest extends TestCase {
 	private ContextResolver&MockObject $contextResolver;
 	private ShippingZoneRepository&MockObject $shippingZoneRepository;
 	private EntityRepository&MockObject $carrierRepository;
+	private InstanceSettingsPrimer&MockObject $instanceSettingsPrimer;
 	private ?Container $originalContainer;
 
 	protected function setUp(): void {
@@ -57,13 +59,15 @@ class ShippingProviderTest extends TestCase {
 		$this->contextResolver        = $this->createMock( ContextResolver::class );
 		$this->shippingZoneRepository = $this->createMock( ShippingZoneRepository::class );
 		$this->carrierRepository      = $this->createMock( EntityRepository::class );
+		$this->instanceSettingsPrimer = $this->createMock( InstanceSettingsPrimer::class );
 
 		return new ShippingProvider(
 			$this->createMock( CarDeliveryConfig::class ),
 			$this->contextResolver,
 			$this->shippingZoneRepository,
 			$this->carrierRepository,
-			$this->createMock( CarrierOptionsFactory::class )
+			$this->createMock( CarrierOptionsFactory::class ),
+			$this->instanceSettingsPrimer
 		);
 	}
 
@@ -139,6 +143,9 @@ class ShippingProviderTest extends TestCase {
 
 		$this->contextResolver->expects( $this->never() )->method( 'getShippingZoneId' );
 		$this->shippingZoneRepository->expects( $this->never() )->method( 'getCountryCodesForShippingZone' );
+		$this->instanceSettingsPrimer
+			->expects( $this->once() )
+			->method( 'prime' );
 
 		$shippingProvider->getSortedCachedMethods( $originalMethods );
 	}

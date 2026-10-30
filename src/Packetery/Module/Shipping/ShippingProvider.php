@@ -44,18 +44,25 @@ class ShippingProvider {
 	 */
 	private $carrierOptionsFactory;
 
+	/**
+	 * @var InstanceSettingsPrimer
+	 */
+	private $instanceSettingsPrimer;
+
 	public function __construct(
 		CarDeliveryConfig $carDeliveryConfig,
 		ContextResolver $contextResolver,
 		ShippingZoneRepository $shippingZoneRepository,
 		EntityRepository $carrierRepository,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		InstanceSettingsPrimer $instanceSettingsPrimer
 	) {
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->contextResolver        = $contextResolver;
 		$this->shippingZoneRepository = $shippingZoneRepository;
 		$this->carrierRepository      = $carrierRepository;
 		$this->carrierOptionsFactory  = $carrierOptionsFactory;
+		$this->instanceSettingsPrimer = $instanceSettingsPrimer;
 	}
 
 	/**
@@ -242,6 +249,9 @@ class ShippingProvider {
 	}
 
 	/**
+	 * WooCommerce runs this filter in WC_Shipping_Zone::get_shipping_methods() before it creates the zone methods,
+	 * so the instance settings are primed before the method constructors read them.
+	 *
 	 * @param array<string, string|object> $originalMethods
 	 *
 	 * @return array<string, string|object>
@@ -251,6 +261,8 @@ class ShippingProvider {
 		if ( $areClassesLoaded === false ) {
 			return $originalMethods;
 		}
+
+		$this->instanceSettingsPrimer->prime();
 
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		$cacheKey = crc32( serialize( $originalMethods ) );

@@ -475,6 +475,20 @@ class WpdbAdapter {
 		return $this->wpdb->esc_like( $text );
 	}
 
+	/**
+	 * Reads the table name at call time, so it follows switch_to_blog()
+	 */
+	public function getShippingZoneMethodsTable(): string {
+		return "{$this->wpdb->prefix}woocommerce_shipping_zone_methods";
+	}
+
+	/**
+	 * Reads the table name at call time, so it follows switch_to_blog()
+	 */
+	public function getOptionsTable(): string {
+		return $this->wpdb->options;
+	}
+
 	public function dbServerInfo(): string {
 		return $this->wpdb->db_server_info();
 	}

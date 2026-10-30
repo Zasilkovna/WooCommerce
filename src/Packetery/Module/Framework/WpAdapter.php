@@ -26,6 +26,7 @@ class WpAdapter {
 	use EscapingTrait;
 	use HookTrait;
 	use HttpTrait;
+	use ObjectCacheTrait;
 	use OptionTrait;
 	use TransientTrait;
 	use TranslationTrait;
@@ -151,6 +152,10 @@ class WpAdapter {
 
 	public function restoreCurrentBlog(): bool {
 		return restore_current_blog();
+	}
+
+	public function getCurrentBlogId(): int {
+		return get_current_blog_id();
 	}
 
 	/**
