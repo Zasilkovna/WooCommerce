@@ -46,6 +46,9 @@ class EntityRepositoryTest extends TestCase {
 						Carrier::class,
 						[
 							'getId'           => $row['id'],
+							'getCountry'      => $row['country'] ?? '',
+							'isDeleted'       => (bool) ( $row['deleted'] ?? false ),
+							'isAvailable'     => (bool) ( $row['available'] ?? false ),
 							'hasPickupPoints' => (bool) ( $row['is_pickup_points'] ?? false ),
 						]
 					);
@@ -58,7 +61,7 @@ class EntityRepositoryTest extends TestCase {
 			$this->createMock( PacketaPickupPointsConfig::class ),
 			$this->createMock( CarDeliveryConfig::class ),
 			$this->createMock( CarrierOptionsFactory::class ),
-			$this->createMock( CarrierActivityBridge::class )
+			$this->createConfiguredMock( CarrierActivityBridge::class, [ 'isActive' => true ] )
 		);
 	}
 
@@ -239,7 +242,10 @@ class EntityRepositoryTest extends TestCase {
 		self::assertFalse( $entityRepository->hasPickupPoints( (int) self::CARRIER_ID_UNKNOWN ) );
 		self::assertTrue( $entityRepository->isHomeDeliveryCarrier( self::CARRIER_ID_HOME ) );
 		self::assertFalse( $entityRepository->isHomeDeliveryCarrier( self::CARRIER_ID_BOX ) );
-		self::assertFalse( $entityRepository->isValidForCountry( self::CARRIER_ID_HOME, 'cz' ) );
+		self::assertTrue( $entityRepository->isValidForCountry( self::CARRIER_ID_HOME, 'cz' ) );
+		self::assertFalse( $entityRepository->isValidForCountry( self::CARRIER_ID_UNAVAILABLE, 'cz' ) );
+		self::assertFalse( $entityRepository->isValidForCountry( self::CARRIER_ID_DELETED, 'cz' ) );
+		self::assertFalse( $entityRepository->isValidForCountry( self::CARRIER_ID_SLOVAK, 'cz' ) );
 	}
 
 	public function testCacheIsNotUsedWithoutTheFlag(): void {

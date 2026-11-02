@@ -230,7 +230,7 @@ class EntityRepository {
 	}
 
 	/**
-	 * The country check ignores letter case, as the SQL query did.
+	 * ISO codes compare without letter case.
 	 *
 	 * @param array<string, string> $carrierRow         Raw carrier row.
 	 * @param string                $country            ISO code.
