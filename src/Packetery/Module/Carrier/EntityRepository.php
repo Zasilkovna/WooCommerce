@@ -192,16 +192,22 @@ class EntityRepository {
 	}
 
 	/**
-	 * Gets all active carriers.
+	 * Gets all active carriers from the carrier cache, so the request reads the carrier table only once.
 	 *
-	 * @return Entity\Carrier[]
+	 * @return array<int, Entity\Carrier>
 	 */
 	public function getActiveCarriers(): array {
-		$entities       = [];
-		$activeCarriers = $this->repository->getActiveCarriers();
+		$this->loadAllCarriers();
+		$entities = [];
 
-		foreach ( $activeCarriers as $carrierData ) {
-			$entities[ $carrierData['id'] ] = $this->carrierEntityFactory->fromDbResult( $carrierData );
+		foreach ( self::$carrierRowsCache as $carrierId => $carrierRow ) {
+			if ( (bool) $carrierRow['deleted'] || ! (bool) $carrierRow['available'] ) {
+				continue;
+			}
+
+			$carrier                              = self::$carrierDataCache[ $carrierId ] ?? $this->carrierEntityFactory->fromDbResult( $carrierRow );
+			self::$carrierDataCache[ $carrierId ] = $carrier;
+			$entities[ $carrierId ]               = $carrier;
 		}
 
 		return $entities;

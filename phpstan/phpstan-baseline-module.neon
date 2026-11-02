@@ -171,7 +171,7 @@ parameters:
 		-
 			message: '#^Argument of an invalid type array\|null supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
-			count: 2
+			count: 1
 			path: ../src/Packetery/Module/Carrier/EntityRepository.php
 
 		-
@@ -479,12 +479,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../src/Packetery/Module/Carrier/OptionsPage.php
-
-		-
-			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getActiveCarriers\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../src/Packetery/Module/Carrier/Repository.php
 
 		-
 			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getAllRawIndexed\(\) should return array\<int, array\<string, bool\|float\|string\>\> but returns array\|false\.$#'

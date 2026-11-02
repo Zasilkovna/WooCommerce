@@ -135,19 +135,6 @@ class Repository {
 	}
 
 	/**
-	 * Gets all active carriers.
-	 *
-	 * @return array|null
-	 */
-	public function getActiveCarriers(): ?array {
-		return $this->wpdbAdapter->get_results(
-			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
-			FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false AND `available` = true',
-			ARRAY_A
-		);
-	}
-
-	/**
 	 * Gets all carriers.
 	 *
 	 * @return array<int, array<string, string|float|bool>>

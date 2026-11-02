@@ -19,6 +19,7 @@ class EntityRepositoryTest extends TestCase {
 	private const CARRIER_ID_HOME    = '106';
 	private const CARRIER_ID_BOX     = '10618';
 	private const CARRIER_ID_UNKNOWN = '999';
+	private const CARRIER_ID_DELETED = '4993';
 
 	private Repository&MockObject $repositoryMock;
 
@@ -106,6 +107,43 @@ class EntityRepositoryTest extends TestCase {
 		$entityRepository->getAnyById( self::CARRIER_ID_HOME, true );
 		EntityRepository::clearCache();
 		$entityRepository->getAnyById( self::CARRIER_ID_HOME, true );
+	}
+
+	public function testActiveCarriersAreReadFromTheCache(): void {
+		$entityRepository = $this->createEntityRepository();
+		$this->repositoryMock
+			->expects( $this->once() )
+			->method( 'getAllRawIndexed' )
+			->willReturn(
+				[
+					(int) self::CARRIER_ID_HOME    => [
+						'id'        => self::CARRIER_ID_HOME,
+						'deleted'   => '0',
+						'available' => '1',
+					],
+					(int) self::CARRIER_ID_BOX     => [
+						'id'        => self::CARRIER_ID_BOX,
+						'deleted'   => '0',
+						'available' => '0',
+					],
+					(int) self::CARRIER_ID_DELETED => [
+						'id'        => self::CARRIER_ID_DELETED,
+						'deleted'   => '1',
+						'available' => '1',
+					],
+				]
+			);
+		$this->repositoryMock
+			->expects( $this->never() )
+			->method( 'getById' );
+
+		$homeCarrier    = $entityRepository->getAnyById( self::CARRIER_ID_HOME, true );
+		$activeCarriers = $entityRepository->getActiveCarriers();
+
+		self::assertSame( [ (int) self::CARRIER_ID_HOME ], array_keys( $activeCarriers ) );
+		self::assertSame( $homeCarrier, $activeCarriers[ (int) self::CARRIER_ID_HOME ] );
+		self::assertSame( $activeCarriers, $entityRepository->getActiveCarriers() );
+		self::assertNotNull( $entityRepository->getAnyById( self::CARRIER_ID_BOX, true ) );
 	}
 
 	public function testCacheIsNotUsedWithoutTheFlag(): void {
