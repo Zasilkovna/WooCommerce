@@ -63,8 +63,8 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
-= 2.3.4 =
 Fixed: Cart and checkout were slow when a shipping zone contained many Packeta shipping methods.
+Updated: The minimum required WordPress version is now 6.4.
 
 = 2.3.3 =
 Added: Diagnostics screen explaining why a carrier is not offered in the checkout.
