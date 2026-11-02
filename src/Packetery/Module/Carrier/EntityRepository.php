@@ -174,25 +174,30 @@ class EntityRepository {
 	}
 
 	/**
-	 * Gets all active carriers for a country.
+	 * Gets carriers for a country from the carrier cache.
 	 *
-	 * @param string $country ISO code.
+	 * @param string $country            ISO code.
+	 * @param bool   $includeUnavailable Include unavailable carriers.
 	 *
-	 * @return Entity\Carrier[]
+	 * @return list<Entity\Carrier>
 	 */
 	public function getByCountry( string $country, bool $includeUnavailable ): array {
-		$entities        = [];
-		$countryCarriers = $this->repository->getByCountry( $country, $includeUnavailable );
+		$this->loadAllCarriers();
+		$entities = [];
 
-		foreach ( $countryCarriers as $carrierData ) {
-			$entities[] = $this->carrierEntityFactory->fromDbResult( $carrierData );
+		foreach ( self::$carrierRowsCache as $carrierId => $carrierRow ) {
+			if ( ! $this->isCountryCarrierRow( $carrierRow, $country, $includeUnavailable ) ) {
+				continue;
+			}
+
+			$entities[] = $this->getCachedEntity( $carrierId, $carrierRow );
 		}
 
 		return $entities;
 	}
 
 	/**
-	 * Gets all active carriers from the carrier cache, so the request reads the carrier table only once.
+	 * Gets all active carriers from the carrier cache.
 	 *
 	 * @return array<int, Entity\Carrier>
 	 */
@@ -205,12 +210,55 @@ class EntityRepository {
 				continue;
 			}
 
-			$carrier                              = self::$carrierDataCache[ $carrierId ] ?? $this->carrierEntityFactory->fromDbResult( $carrierRow );
-			self::$carrierDataCache[ $carrierId ] = $carrier;
-			$entities[ $carrierId ]               = $carrier;
+			$entities[ $carrierId ] = $this->getCachedEntity( $carrierId, $carrierRow );
 		}
 
 		return $entities;
+	}
+
+	/**
+	 * Checks if a feed carrier has pickup points.
+	 *
+	 * @param int $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function hasPickupPoints( int $carrierId ): bool {
+		$carrier = $this->getByIdCached( $carrierId );
+
+		return $carrier !== null && $carrier->hasPickupPoints();
+	}
+
+	/**
+	 * The country check ignores letter case, as the SQL query did.
+	 *
+	 * @param array<string, string> $carrierRow         Raw carrier row.
+	 * @param string                $country            ISO code.
+	 * @param bool                  $includeUnavailable Include unavailable carriers.
+	 *
+	 * @return bool
+	 */
+	private function isCountryCarrierRow( array $carrierRow, string $country, bool $includeUnavailable ): bool {
+		if ( (bool) $carrierRow['deleted'] || strcasecmp( $carrierRow['country'], $country ) !== 0 ) {
+			return false;
+		}
+
+		return $includeUnavailable || (bool) $carrierRow['available'];
+	}
+
+	/**
+	 * Gets the cached entity for a raw row, and creates it on the first use.
+	 *
+	 * @param int                   $carrierId  Carrier id.
+	 * @param array<string, string> $carrierRow Raw carrier row.
+	 *
+	 * @return Entity\Carrier
+	 */
+	private function getCachedEntity( int $carrierId, array $carrierRow ): Entity\Carrier {
+		$carrier                              = self::$carrierDataCache[ $carrierId ] ?? $this->carrierEntityFactory->fromDbResult( $carrierRow );
+		self::$carrierDataCache[ $carrierId ] = $carrier;
+
+		return $carrier;
 	}
 
 	/**
@@ -297,7 +345,7 @@ class EntityRepository {
 			return ( isset( $compoundCarriers[ $customerCountry ] ) );
 		}
 
-		$carrier = $this->getById( (int) $carrierId );
+		$carrier = $this->getByIdCached( (int) $carrierId );
 		if ( $carrier === null || $carrier->isDeleted() || ! $carrier->isAvailable() || $customerCountry !== $carrier->getCountry() ) {
 			return false;
 		}
@@ -319,6 +367,6 @@ class EntityRepository {
 			return false;
 		}
 
-		return ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) === false;
+		return ( $this->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) === false;
 	}
 }

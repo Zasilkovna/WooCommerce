@@ -84,19 +84,6 @@ class Repository {
 	}
 
 	/**
-	 * Gets is_pickup_point attribute of a carrier.
-	 *
-	 * @param int $carrierId Carrier id.
-	 *
-	 * @return bool
-	 */
-	public function hasPickupPoints( int $carrierId ): bool {
-		return (bool) $this->wpdbAdapter->get_var(
-			$this->wpdbAdapter->prepare( 'SELECT `is_pickup_points` FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `id` = %d', $carrierId )
-		);
-	}
-
-	/**
 	 * Gets Carrier value object by id.
 	 *
 	 * @param int $carrierId Carrier id.
@@ -109,26 +96,6 @@ class Repository {
 				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 				FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `id` = %s',
 				$carrierId
-			),
-			ARRAY_A
-		);
-	}
-
-	/**
-	 * Gets all active carriers for a country.
-	 *
-	 * @param string $country ISO code.
-	 * @param bool   $includeUnavailable Include unavailable carriers.
-	 *
-	 * @return array|null
-	 */
-	public function getByCountry( string $country, bool $includeUnavailable ): ?array {
-		return $this->wpdbAdapter->get_results(
-			$this->wpdbAdapter->prepare(
-				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
-				FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `country` = %s AND `deleted` = false' .
-				( $includeUnavailable ? '' : ' AND `available` = true' ),
-				$country
 			),
 			ARRAY_A
 		);

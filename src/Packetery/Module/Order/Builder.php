@@ -133,7 +133,7 @@ class Builder {
 		}
 
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
-		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
+		$carrier   = $this->carrierRepository->getAnyById( $carrierId, true );
 		if ( $carrier === null ) {
 			throw new InvalidCarrierException(
 				sprintf(

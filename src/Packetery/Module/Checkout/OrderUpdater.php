@@ -169,7 +169,7 @@ class OrderUpdater {
 			$orderHasUnsavedChanges = true;
 		}
 
-		$carrier = $this->carrierEntityRepository->getAnyById( $carrierId );
+		$carrier = $this->carrierEntityRepository->getAnyById( $carrierId, true );
 		if ( $carrier === null ) {
 			$this->diagnosticsLogger->log( 'Action update order - Carrier not found', [] );
 

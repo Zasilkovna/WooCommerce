@@ -32,11 +32,6 @@ class CheckoutService {
 	private $carDeliveryConfig;
 
 	/**
-	 * @var Carrier\Repository
-	 */
-	private $carrierRepository;
-
-	/**
 	 * @var Carrier\EntityRepository
 	 */
 	private $carrierEntityRepository;
@@ -55,7 +50,6 @@ class CheckoutService {
 		WcAdapter $wcAdapter,
 		Request $httpRequest,
 		CarDeliveryConfig $carDeliveryConfig,
-		Carrier\Repository $carrierRepository,
 		Carrier\EntityRepository $carrierEntityRepository,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		OptionsProvider $optionsProvider
@@ -63,7 +57,6 @@ class CheckoutService {
 		$this->wcAdapter               = $wcAdapter;
 		$this->httpRequest             = $httpRequest;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
-		$this->carrierRepository       = $carrierRepository;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->pickupPointsConfig      = $pickupPointsConfig;
 		$this->optionsProvider         = $optionsProvider;
@@ -184,7 +177,7 @@ class CheckoutService {
 			return true;
 		}
 
-		return $this->carrierRepository->hasPickupPoints( (int) $carrierId );
+		return $this->carrierEntityRepository->hasPickupPoints( (int) $carrierId );
 	}
 
 	/**
