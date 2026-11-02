@@ -12,21 +12,13 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ShippingMethodOptionsPrimerTest extends TestCase {
-	private const ZONE_METHODS_TABLE    = 'wp_woocommerce_shipping_zone_methods';
-	private const OPTIONS_TABLE         = 'wp_options';
-	private const ZONE_METHODS_QUERY    = 'prepared zone methods query';
-	private const ESCAPED_PREFIX        = 'packeta\_method\_';
-	private const OPTION_AUTOLOADED     = 'woocommerce_packeta_method_106_1_settings';
-	private const OPTION_SAVED          = 'woocommerce_packeta_method_131_2_settings';
-	private const OPTION_MISSING        = 'woocommerce_packeta_method_4307_3_settings';
-	private const OPTION_CACHED         = 'woocommerce_packeta_method_zpointcz_4_settings';
-	private const OPTION_KNOWN_MISSING  = 'woocommerce_packeta_method_106_5_settings';
-	private const OPTION_CARRIER        = 'packetery_carrier_106';
-	private const OPTION_SAVED_RAW      = 'a:1:{s:5:"title";s:4:"Test";}';
-	private const OPTIONS_IN_CLAUSE     = "'quoted names'";
-	private const FOREIGN_MISSING_NAME  = 'some_other_option';
-	private const OPTIONS_CACHE_GROUP   = 'options';
-	private const NOT_OPTIONS_CACHE_KEY = 'notoptions';
+	private const ZONE_METHODS_TABLE = 'wp_woocommerce_shipping_zone_methods';
+	private const ZONE_METHODS_QUERY = 'prepared zone methods query';
+	private const ESCAPED_PREFIX     = 'packeta\_method\_';
+	private const OPTION_METHOD_106  = 'woocommerce_packeta_method_106_1_settings';
+	private const OPTION_METHOD_131  = 'woocommerce_packeta_method_131_2_settings';
+	private const OPTION_METHOD_4307 = 'woocommerce_packeta_method_4307_3_settings';
+	private const OPTION_CARRIER     = 'packetery_carrier_106';
 
 	private WpdbAdapter&MockObject $wpdbAdapter;
 	private WpAdapter&MockObject $wpAdapter;
@@ -37,19 +29,15 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 	private array $queries = [];
 
 	/**
-	 * @param array<int, array{method_id: string, instance_id: string}>    $zoneMethodRows
-	 * @param array<int, array{option_name: string, option_value: string}> $optionRows
+	 * @param array<int, array{method_id: string, instance_id: string}> $zoneMethodRows
 	 */
-	private function createPrimer( array $zoneMethodRows, array $optionRows = [] ): ShippingMethodOptionsPrimer {
+	private function createPrimer( array $zoneMethodRows ): ShippingMethodOptionsPrimer {
 		$this->wpdbAdapter = $this->createMock( WpdbAdapter::class );
 		$this->wpAdapter   = $this->createMock( WpAdapter::class );
 
 		$this->wpdbAdapter
 			->method( 'getShippingZoneMethodsTable' )
 			->willReturn( self::ZONE_METHODS_TABLE );
-		$this->wpdbAdapter
-			->method( 'getOptionsTable' )
-			->willReturn( self::OPTIONS_TABLE );
 		$this->wpdbAdapter
 			->method( 'escLike' )
 			->with( BaseShippingMethod::PACKETA_METHOD_PREFIX )
@@ -64,15 +52,14 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 		$this->wpdbAdapter
 			->method( 'get_results' )
 			->willReturnCallback(
-				function ( string $query ) use ( $zoneMethodRows, $optionRows ): array {
+				function ( string $query ) use ( $zoneMethodRows ): array {
 					$this->queries[] = $query;
-					$rows            = $query === self::ZONE_METHODS_QUERY ? $zoneMethodRows : $optionRows;
 
 					return array_map(
 						function ( array $row ): object {
 							return (object) $row;
 						},
-						$rows
+						$zoneMethodRows
 					);
 				}
 			);
@@ -112,7 +99,7 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 			'zone methods only'        => [
 				'zoneMethodRows'      => self::getZoneMethodRows(),
 				'givenOptionNames'    => [],
-				'expectedOptionNames' => [ self::OPTION_AUTOLOADED, self::OPTION_SAVED, self::OPTION_MISSING ],
+				'expectedOptionNames' => [ self::OPTION_METHOD_106, self::OPTION_METHOD_131, self::OPTION_METHOD_4307 ],
 			],
 			'given options only'       => [
 				'zoneMethodRows'      => [],
@@ -123,9 +110,9 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 				'zoneMethodRows'      => self::getZoneMethodRows(),
 				'givenOptionNames'    => [ self::OPTION_CARRIER ],
 				'expectedOptionNames' => [
-					self::OPTION_AUTOLOADED,
-					self::OPTION_SAVED,
-					self::OPTION_MISSING,
+					self::OPTION_METHOD_106,
+					self::OPTION_METHOD_131,
+					self::OPTION_METHOD_4307,
 					self::OPTION_CARRIER,
 				],
 			],
@@ -146,15 +133,9 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 	): void {
 		$primer = $this->createPrimer( $zoneMethodRows );
 		$this->wpAdapter
-			->method( 'canPrimeOptionCaches' )
-			->willReturn( true );
-		$this->wpAdapter
 			->expects( $this->once() )
 			->method( 'primeOptionCaches' )
 			->with( $expectedOptionNames );
-		$this->wpAdapter
-			->expects( $this->never() )
-			->method( 'cacheAdd' );
 
 		$primer->prime( $givenOptionNames );
 
@@ -188,9 +169,6 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 			->method( 'getCurrentBlogId' )
 			->willReturnOnConsecutiveCalls( ...$blogIds );
 		$this->wpAdapter
-			->method( 'canPrimeOptionCaches' )
-			->willReturn( true );
-		$this->wpAdapter
 			->expects( $this->exactly( $expectedPrimeCount ) )
 			->method( 'primeOptionCaches' );
 
@@ -207,161 +185,9 @@ class ShippingMethodOptionsPrimerTest extends TestCase {
 		$this->wpAdapter
 			->expects( $this->never() )
 			->method( 'primeOptionCaches' );
-		$this->wpAdapter
-			->expects( $this->never() )
-			->method( 'loadAllOptions' );
 
 		$primer->prime( [] );
 
 		self::assertSame( [ self::ZONE_METHODS_QUERY ], $this->queries );
-	}
-
-	public function testPrimeWithoutWordPressFunctionCachesFoundAndMissingOptions(): void {
-		$zoneMethodRows   = self::getZoneMethodRows();
-		$zoneMethodRows[] = [
-			'method_id'   => 'packeta_method_zpointcz',
-			'instance_id' => '4',
-		];
-		$zoneMethodRows[] = [
-			'method_id'   => 'packeta_method_106',
-			'instance_id' => '5',
-		];
-		$primer           = $this->createPrimer(
-			$zoneMethodRows,
-			[
-				[
-					'option_name'  => self::OPTION_SAVED,
-					'option_value' => self::OPTION_SAVED_RAW,
-				],
-			]
-		);
-		$this->mockCacheWithoutWordPressFunction(
-			[
-				self::OPTION_AUTOLOADED,
-				self::OPTION_SAVED,
-				self::OPTION_MISSING,
-				self::OPTION_CACHED,
-				self::OPTION_KNOWN_MISSING,
-			],
-			[ self::OPTION_AUTOLOADED => [ 'title' => 'Autoloaded' ] ],
-			[
-				self::OPTION_SAVED         => false,
-				self::OPTION_MISSING       => false,
-				self::OPTION_CACHED        => self::OPTION_SAVED_RAW,
-				self::OPTION_KNOWN_MISSING => false,
-			],
-			[
-				self::OPTION_KNOWN_MISSING => true,
-				self::FOREIGN_MISSING_NAME => true,
-			]
-		);
-		$this->wpdbAdapter
-			->expects( $this->once() )
-			->method( 'prepareInClause' )
-			->with( [ self::OPTION_SAVED, self::OPTION_MISSING ] )
-			->willReturn( self::OPTIONS_IN_CLAUSE );
-		$this->wpAdapter
-			->expects( $this->once() )
-			->method( 'cacheAdd' )
-			->with( self::OPTION_SAVED, self::OPTION_SAVED_RAW, self::OPTIONS_CACHE_GROUP );
-		$this->wpAdapter
-			->expects( $this->once() )
-			->method( 'cacheSet' )
-			->with(
-				self::NOT_OPTIONS_CACHE_KEY,
-				[
-					self::OPTION_KNOWN_MISSING => true,
-					self::FOREIGN_MISSING_NAME => true,
-					self::OPTION_MISSING       => true,
-				],
-				self::OPTIONS_CACHE_GROUP
-			);
-
-		$primer->prime( [] );
-
-		self::assertSame(
-			[
-				self::ZONE_METHODS_QUERY,
-				'SELECT `option_name`, `option_value` FROM `' . self::OPTIONS_TABLE . '`' .
-					' WHERE `option_name` IN (' . self::OPTIONS_IN_CLAUSE . ')',
-			],
-			$this->queries
-		);
-	}
-
-	public function testPrimeWithoutWordPressFunctionSkipsQueryWhenAllOptionsAreAutoloaded(): void {
-		$primer = $this->createPrimer( array_slice( self::getZoneMethodRows(), 0, 1 ) );
-		$this->mockCacheWithoutWordPressFunction(
-			[ self::OPTION_AUTOLOADED ],
-			[ self::OPTION_AUTOLOADED => [] ],
-			[],
-			false
-		);
-		$this->wpAdapter
-			->expects( $this->never() )
-			->method( 'cacheSet' );
-
-		$primer->prime( [] );
-
-		self::assertSame( [ self::ZONE_METHODS_QUERY ], $this->queries );
-	}
-
-	public function testPrimeWithoutWordPressFunctionKeepsNotOptionsWhenAllOptionsExist(): void {
-		$primer = $this->createPrimer(
-			array_slice( self::getZoneMethodRows(), 1, 1 ),
-			[
-				[
-					'option_name'  => self::OPTION_SAVED,
-					'option_value' => self::OPTION_SAVED_RAW,
-				],
-			]
-		);
-		$this->mockCacheWithoutWordPressFunction(
-			[ self::OPTION_SAVED ],
-			[],
-			[ self::OPTION_SAVED => false ],
-			false
-		);
-		$this->wpAdapter
-			->expects( $this->once() )
-			->method( 'cacheAdd' );
-		$this->wpAdapter
-			->expects( $this->never() )
-			->method( 'cacheSet' );
-
-		$primer->prime( [] );
-
-		self::assertCount( 2, $this->queries );
-	}
-
-	/**
-	 * @param string[]                  $optionNames Names which the primer looks up in the cache.
-	 * @param array<string, mixed>      $allOptions
-	 * @param array<string, mixed>      $cachedOptions
-	 * @param array<string, bool>|false $notOptions
-	 */
-	private function mockCacheWithoutWordPressFunction(
-		array $optionNames,
-		array $allOptions,
-		array $cachedOptions,
-		$notOptions
-	): void {
-		$this->wpAdapter
-			->method( 'canPrimeOptionCaches' )
-			->willReturn( false );
-		$this->wpAdapter
-			->expects( $this->never() )
-			->method( 'primeOptionCaches' );
-		$this->wpAdapter
-			->method( 'loadAllOptions' )
-			->willReturn( $allOptions );
-		$this->wpAdapter
-			->method( 'cacheGetMultiple' )
-			->with( $optionNames, self::OPTIONS_CACHE_GROUP )
-			->willReturn( $cachedOptions );
-		$this->wpAdapter
-			->method( 'cacheGet' )
-			->with( self::NOT_OPTIONS_CACHE_KEY, self::OPTIONS_CACHE_GROUP )
-			->willReturn( $notOptions );
 	}
 }

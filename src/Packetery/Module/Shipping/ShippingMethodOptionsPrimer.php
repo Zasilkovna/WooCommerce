@@ -13,9 +13,6 @@ use stdClass;
  * WooCommerce and the plugin then do not read them one by one when they create the methods.
  */
 class ShippingMethodOptionsPrimer {
-	private const OPTIONS_CACHE_GROUP   = 'options';
-	private const NOT_OPTIONS_CACHE_KEY = 'notoptions';
-
 	/**
 	 * @var WpdbAdapter
 	 */
@@ -53,13 +50,7 @@ class ShippingMethodOptionsPrimer {
 			return;
 		}
 
-		if ( $this->wpAdapter->canPrimeOptionCaches() ) {
-			$this->wpAdapter->primeOptionCaches( $allOptionNames );
-
-			return;
-		}
-
-		$this->primeWithOwnQuery( $allOptionNames );
+		$this->wpAdapter->primeOptionCaches( $allOptionNames );
 	}
 
 	/**
@@ -87,79 +78,5 @@ class ShippingMethodOptionsPrimer {
 		}
 
 		return $optionNames;
-	}
-
-	/**
-	 * Does the same as wp_prime_option_caches(), which WordPress has since 6.4.
-	 * The cache keeps the raw option value, get_option() unserializes it.
-	 *
-	 * @param string[] $optionNames
-	 */
-	private function primeWithOwnQuery( array $optionNames ): void {
-		$namesToLoad = $this->getNamesNotInCache( $optionNames );
-		if ( $namesToLoad === [] ) {
-			return;
-		}
-
-		$optionsTable = $this->wpdbAdapter->getOptionsTable();
-		$inClause     = $this->wpdbAdapter->prepareInClause( $namesToLoad );
-
-		/**
-		 * @var stdClass[]|null $rows
-		 */
-		$rows = $this->wpdbAdapter->get_results(
-			"SELECT `option_name`, `option_value` FROM `{$optionsTable}` WHERE `option_name` IN ({$inClause})"
-		);
-
-		$foundNames = [];
-		foreach ( $rows ?? [] as $row ) {
-			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$this->wpAdapter->cacheAdd( $row->option_name, $row->option_value, self::OPTIONS_CACHE_GROUP );
-			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$foundNames[] = $row->option_name;
-		}
-
-		$missingNames = array_diff( $namesToLoad, $foundNames );
-		if ( $missingNames === [] ) {
-			return;
-		}
-
-		$notOptions = $this->getNotOptions();
-		foreach ( $missingNames as $missingName ) {
-			$notOptions[ $missingName ] = true;
-		}
-		$this->wpAdapter->cacheSet( self::NOT_OPTIONS_CACHE_KEY, $notOptions, self::OPTIONS_CACHE_GROUP );
-	}
-
-	/**
-	 * @param string[] $optionNames
-	 *
-	 * @return string[]
-	 */
-	private function getNamesNotInCache( array $optionNames ): array {
-		$allOptions    = $this->wpAdapter->loadAllOptions();
-		$cachedOptions = $this->wpAdapter->cacheGetMultiple( $optionNames, self::OPTIONS_CACHE_GROUP );
-		$notOptions    = $this->getNotOptions();
-
-		$namesNotInCache = [];
-		foreach ( $optionNames as $optionName ) {
-			$isCached = isset( $allOptions[ $optionName ] ) ||
-				isset( $notOptions[ $optionName ] ) ||
-				( isset( $cachedOptions[ $optionName ] ) && $cachedOptions[ $optionName ] !== false );
-			if ( ! $isCached ) {
-				$namesNotInCache[] = $optionName;
-			}
-		}
-
-		return $namesNotInCache;
-	}
-
-	/**
-	 * @return array<mixed>
-	 */
-	private function getNotOptions(): array {
-		$notOptions = $this->wpAdapter->cacheGet( self::NOT_OPTIONS_CACHE_KEY, self::OPTIONS_CACHE_GROUP );
-
-		return is_array( $notOptions ) ? $notOptions : [];
 	}
 }

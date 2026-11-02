@@ -13,7 +13,7 @@
  * Author URI: https://www.zasilkovna.cz/
  * Text Domain: packeta
  * Domain Path: /languages
- * Requires at least: 6.3
+ * Requires at least: 6.4
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  *

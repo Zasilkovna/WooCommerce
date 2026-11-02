@@ -44,23 +44,9 @@ trait OptionTrait {
 	}
 
 	/**
-	 * WordPress has wp_prime_option_caches() since 6.4
-	 */
-	public function canPrimeOptionCaches(): bool {
-		return function_exists( 'wp_prime_option_caches' );
-	}
-
-	/**
 	 * @param string[] $optionNames
 	 */
 	public function primeOptionCaches( array $optionNames ): void {
 		wp_prime_option_caches( $optionNames );
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function loadAllOptions(): array {
-		return wp_load_alloptions();
 	}
 }

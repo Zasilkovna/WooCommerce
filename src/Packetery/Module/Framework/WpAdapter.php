@@ -26,7 +26,6 @@ class WpAdapter {
 	use EscapingTrait;
 	use HookTrait;
 	use HttpTrait;
-	use ObjectCacheTrait;
 	use OptionTrait;
 	use TransientTrait;
 	use TranslationTrait;
