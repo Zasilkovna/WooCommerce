@@ -4,9 +4,12 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Shipping;
 
+use Packetery\Core\Entity\Carrier;
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Checkout\ShippingRateFactory;
+use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Shipping\BaseShippingMethod;
@@ -16,6 +19,7 @@ use Packetery\Nette\DI\Container;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionProperty;
 
 class BaseShippingMethodTest extends TestCase {
 	private const METHOD_TITLE     = 'Packeta Home';
@@ -40,6 +44,62 @@ class BaseShippingMethodTest extends TestCase {
 		. "\t\tConfigure selected carrier\n"
 		. "\t</a>\n"
 		. "</p>\n";
+
+	private mixed $originalContainer;
+
+	protected function setUp(): void {
+		$this->originalContainer = self::getContainerProperty()->getValue();
+	}
+
+	protected function tearDown(): void {
+		self::getContainerProperty()->setValue( null, $this->originalContainer );
+	}
+
+	private static function getContainerProperty(): ReflectionProperty {
+		return new ReflectionProperty( CompatibilityBridge::class, 'diContainer' );
+	}
+
+	public function testConstructorTakesMethodTitleFromCarrier(): void {
+		$carrier = $this->createMock( Carrier::class );
+		$carrier
+			->method( 'getName' )
+			->willReturn( self::BOX_METHOD_TITLE );
+
+		// The first call gives the method title. The WordPress stub of __() returns null,
+		// so the second call gives no carrier and the method description does not use sprintf().
+		$carrierRepository = $this->createMock( EntityRepository::class );
+		$carrierRepository
+			->expects( $this->exactly( 2 ) )
+			->method( 'getAnyById' )
+			->with( ShippingMethod_10618::CARRIER_ID, true )
+			->willReturnOnConsecutiveCalls( $carrier, null );
+
+		$contextResolver = $this->createMock( ContextResolver::class );
+		$contextResolver
+			->method( 'isCarrierSettingsLinkContext' )
+			->willReturn( false );
+
+		$services  = [
+			EntityRepository::class    => $carrierRepository,
+			WpAdapter::class           => $this->createMock( WpAdapter::class ),
+			ContextResolver::class     => $contextResolver,
+			ShippingRateFactory::class => $this->createMock( ShippingRateFactory::class ),
+		];
+		$container = $this->createMock( Container::class );
+		$container
+			->method( 'getByType' )
+			->willReturnCallback(
+				function ( string $type ) use ( $services ): object {
+					return $services[ $type ];
+				}
+			);
+		self::getContainerProperty()->setValue( null, $container );
+
+		$shippingMethod = new ShippingMethod_10618();
+
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		self::assertSame( self::BOX_METHOD_TITLE, $shippingMethod->method_title );
+	}
 
 	/**
 	 * @return array<string, array{

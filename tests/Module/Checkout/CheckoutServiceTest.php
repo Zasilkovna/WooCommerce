@@ -156,9 +156,13 @@ class CheckoutServiceTest extends TestCase {
 
 	public function testIsPickupPointOrderWhenItIsNot(): void {
 		$this->createCheckoutServiceMock();
-		$this->httpRequest->method( 'getPost' )->willReturn( [ 'dummy_method' ] );
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_106' ] );
 		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( false );
-		$this->carrierEntityRepository->method( 'hasPickupPoints' )->willReturn( false );
+		$this->carrierEntityRepository
+			->expects( $this->once() )
+			->method( 'hasPickupPoints' )
+			->with( 106 )
+			->willReturn( false );
 
 		$this->assertFalse( $this->checkoutService->isPickupPointOrder() );
 	}
