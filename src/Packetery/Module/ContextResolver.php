@@ -9,7 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\Http\Request;
+use WP_REST_Request;
 
 /**
  * Class ContextResolver.
@@ -26,12 +28,70 @@ class ContextResolver {
 	private $request;
 
 	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
+	 * Routes of the REST requests whose callbacks run now. The last item is the current route.
+	 *
+	 * @var string[]
+	 */
+	private $restRoutes = [];
+
+	/**
 	 * ContextResolver constructor.
 	 *
-	 * @param Request $request Packetery request.
+	 * @param Request   $request   Packetery request.
+	 * @param WpAdapter $wpAdapter WP adapter.
 	 */
-	public function __construct( Request $request ) {
-		$this->request = $request;
+	public function __construct( Request $request, WpAdapter $wpAdapter ) {
+		$this->request   = $request;
+		$this->wpAdapter = $wpAdapter;
+	}
+
+	/**
+	 * Keeps the route of the REST request before its callback runs.
+	 *
+	 * @param mixed                     $response Response that the filter does not change.
+	 * @param array<mixed>              $handler  Route handler.
+	 * @param WP_REST_Request<string[]> $request  REST request.
+	 *
+	 * @return mixed
+	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
+	public function pushRestRoute( $response, array $handler, WP_REST_Request $request ) {
+		$this->restRoutes[] = $request->get_route();
+
+		return $response;
+	}
+
+	/**
+	 * Removes the route of the REST request after its callback runs.
+	 *
+	 * @param mixed $response Response that the filter does not change.
+	 *
+	 * @return mixed
+	 */
+	public function popRestRoute( $response ) {
+		array_pop( $this->restRoutes );
+
+		return $response;
+	}
+
+	/**
+	 * Tells if the shipping method settings show the link to the carrier settings.
+	 * The link is necessary in wp-admin and in the WooCommerce REST API v1 to v3.
+	 * The checkout and the Store API do not show the link.
+	 */
+	public function isCarrierSettingsLinkContext(): bool {
+		if ( $this->wpAdapter->isAdmin() ) {
+			return true;
+		}
+
+		$currentRoute = end( $this->restRoutes );
+
+		return $currentRoute !== false && preg_match( '#^/wc/v[1-3](/|$)#', $currentRoute ) === 1;
 	}
 
 	/**

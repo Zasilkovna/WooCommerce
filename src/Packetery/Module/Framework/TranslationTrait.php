@@ -24,6 +24,10 @@ trait TranslationTrait {
 		return get_user_locale();
 	}
 
+	public function determineLocale(): string {
+		return determine_locale();
+	}
+
 	public function unloadTextDomain( string $domain, bool $reloadable ): void {
 		unload_textdomain( $domain, $reloadable );
 	}

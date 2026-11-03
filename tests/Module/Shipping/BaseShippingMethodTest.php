@@ -5,7 +5,9 @@ declare( strict_types=1 );
 namespace Tests\Module\Shipping;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Checkout\ShippingRateFactory;
+use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\Shipping\Generated\ShippingMethod_106;
@@ -20,7 +22,24 @@ class BaseShippingMethodTest extends TestCase {
 	private const OPTIONS_TITLE    = 'Home delivery';
 	private const BOX_METHOD_TITLE = 'Packeta Box';
 
-	private const SETTINGS_LINK_HTML = '<p><a href="carrier-settings">Configure selected carrier</a></p>';
+	private const ADMIN_URL                = 'http://example.org/wp-admin/admin.php';
+	private const CARRIER_SETTINGS_URL     = 'http://example.org/wp-admin/admin.php?page=packeta-country&carrier_id=106';
+	private const BOX_CARRIER_SETTINGS_URL = 'http://example.org/wp-admin/admin.php?page=packeta-country&carrier_id=10618';
+
+	// Output of the template on the base branch for CARRIER_SETTINGS_URL. Latte escapes "&" in the attribute.
+	private const SETTINGS_LINK_HTML = "<p>\n"
+		. "\t<a href=\"http://example.org/wp-admin/admin.php?page=packeta-country&amp;carrier_id=106\" target=\"_blank\">\n"
+		. "\t\tConfigure selected carrier\n"
+		. "\t</a>\n"
+		. "</p>\n";
+
+	// Output of the template for BOX_CARRIER_SETTINGS_URL.
+	private const BOX_SETTINGS_LINK_HTML = "<p>\n"
+		. "\t<a href=\"http://example.org/wp-admin/admin.php?page=packeta-country&amp;carrier_id=10618\""
+		. " target=\"_blank\">\n"
+		. "\t\tConfigure selected carrier\n"
+		. "\t</a>\n"
+		. "</p>\n";
 
 	/**
 	 * @return array<string, array{
@@ -137,61 +156,254 @@ class BaseShippingMethodTest extends TestCase {
 	}
 
 	/**
-	 * @return array<string, array{isAdmin: bool, renderCount: int, expectedDescription: string}>
+	 * @return array<string, array{
+	 *     contexts: array<int, bool>,
+	 *     expectedDescriptions: array<int, string>,
+	 *     expectedRenderCount: int
+	 * }>
 	 */
-	public static function settingsLinkProvider(): array {
+	public static function settingsLinkContextProvider(): array {
 		return [
-			'admin renders the link'      => [
-				'isAdmin'             => true,
-				'renderCount'         => 1,
-				'expectedDescription' => self::SETTINGS_LINK_HTML,
+			'not allowed'               => [
+				'contexts'             => [ false, false ],
+				'expectedDescriptions' => [ '', '' ],
+				'expectedRenderCount'  => 0,
 			],
-			'storefront skips the render' => [
-				'isAdmin'             => false,
-				'renderCount'         => 0,
-				'expectedDescription' => '',
+			'not allowed, then allowed' => [
+				'contexts'             => [ false, true ],
+				'expectedDescriptions' => [ '', self::SETTINGS_LINK_HTML ],
+				'expectedRenderCount'  => 1,
+			],
+			'allowed, then not allowed' => [
+				'contexts'             => [ true, false ],
+				'expectedDescriptions' => [ self::SETTINGS_LINK_HTML, '' ],
+				'expectedRenderCount'  => 1,
+			],
+			'allowed two times'         => [
+				'contexts'             => [ true, true ],
+				'expectedDescriptions' => [ self::SETTINGS_LINK_HTML, self::SETTINGS_LINK_HTML ],
+				'expectedRenderCount'  => 1,
 			],
 		];
 	}
 
 	/**
-	 * @dataProvider settingsLinkProvider
+	 * @dataProvider settingsLinkContextProvider
 	 *
-	 * @param bool   $isAdmin             Whether the request is in the admin.
-	 * @param int    $renderCount         Expected number of template renders.
-	 * @param string $expectedDescription Expected description of the settings link field.
+	 * @param array<int, bool>   $contexts             Context of each call: true if the link is allowed.
+	 * @param array<int, string> $expectedDescriptions Expected description of the link field for each call.
+	 * @param int                $expectedRenderCount  Expected count of template renders.
 	 */
-	public function testInstanceFormFieldsRenderSettingsLinkOnlyInAdmin(
-		bool $isAdmin,
-		int $renderCount,
-		string $expectedDescription
+	public function testSettingsLinkIsRenderedOnlyInAllowedContext(
+		array $contexts,
+		array $expectedDescriptions,
+		int $expectedRenderCount
 	): void {
-		$latteEngine = $this->createMock( Engine::class );
-		$latteEngine
-			->expects( $this->exactly( $renderCount ) )
-			->method( 'renderToString' )
-			->willReturn( self::SETTINGS_LINK_HTML );
+		$latteEngine     = $this->createCountingLatteEngine();
+		$contextResolver = $this->createMock( ContextResolver::class );
+		$contextResolver
+			->method( 'isCarrierSettingsLinkContext' )
+			->willReturnOnConsecutiveCalls( ...$contexts );
+		$wpAdapter = $this->createSettingsLinkWpAdapter( $expectedRenderCount );
+		$wpAdapter
+			->method( 'determineLocale' )
+			->willReturn( self::createUniqueLocale() );
 
+		$shippingMethod = $this->createSettingsLinkShippingMethod(
+			ShippingMethod_106::class,
+			$latteEngine,
+			$wpAdapter,
+			$contextResolver
+		);
+
+		$descriptions = [];
+		foreach ( $contexts as $context ) {
+			$descriptions[] = $shippingMethod->get_instance_form_fields()['custom_html']['description'];
+		}
+
+		self::assertSame( $expectedDescriptions, $descriptions );
+		self::assertSame( $expectedRenderCount, $latteEngine->renderCount );
+	}
+
+	public function testSettingsLinkIsRenderedOncePerCarrier(): void {
+		$latteEngine = $this->createCountingLatteEngine();
+		$wpAdapter   = $this->createSettingsLinkWpAdapter( 2 );
+		$wpAdapter
+			->method( 'determineLocale' )
+			->willReturn( self::createUniqueLocale() );
+		$contextResolver = $this->createAllowingContextResolver();
+
+		$createShippingMethod = fn( string $className ): BaseShippingMethod => $this->createSettingsLinkShippingMethod(
+			$className,
+			$latteEngine,
+			$wpAdapter,
+			$contextResolver
+		);
+
+		$firstShippingMethod  = $createShippingMethod( ShippingMethod_106::class );
+		$secondShippingMethod = $createShippingMethod( ShippingMethod_106::class );
+		$boxShippingMethod    = $createShippingMethod( ShippingMethod_10618::class );
+
+		$firstFormFields = $firstShippingMethod->get_instance_form_fields();
+		$descriptions    = [
+			$firstFormFields['custom_html']['description'],
+			$firstShippingMethod->get_instance_form_fields()['custom_html']['description'],
+			$secondShippingMethod->get_instance_form_fields()['custom_html']['description'],
+			$boxShippingMethod->get_instance_form_fields()['custom_html']['description'],
+		];
+
+		self::assertSame( self::METHOD_TITLE, $firstFormFields['title']['default'] );
+		self::assertSame(
+			[
+				self::SETTINGS_LINK_HTML,
+				self::SETTINGS_LINK_HTML,
+				self::SETTINGS_LINK_HTML,
+				self::BOX_SETTINGS_LINK_HTML,
+			],
+			$descriptions
+		);
+		self::assertSame( 2, $latteEngine->renderCount );
+	}
+
+	public function testSettingsLinkIsRenderedOncePerLocale(): void {
+		$latteEngine  = $this->createCountingLatteEngine();
+		$wpAdapter    = $this->createSettingsLinkWpAdapter( 2 );
+		$firstLocale  = self::createUniqueLocale();
+		$secondLocale = self::createUniqueLocale();
+		$wpAdapter
+			->method( 'determineLocale' )
+			->willReturnOnConsecutiveCalls( $firstLocale, $firstLocale, $secondLocale );
+
+		$shippingMethod = $this->createSettingsLinkShippingMethod(
+			ShippingMethod_106::class,
+			$latteEngine,
+			$wpAdapter,
+			$this->createAllowingContextResolver()
+		);
+
+		$descriptions = [
+			$shippingMethod->get_instance_form_fields()['custom_html']['description'],
+			$shippingMethod->get_instance_form_fields()['custom_html']['description'],
+			$shippingMethod->get_instance_form_fields()['custom_html']['description'],
+		];
+
+		self::assertSame( array_fill( 0, 3, self::SETTINGS_LINK_HTML ), $descriptions );
+		self::assertSame( 2, $latteEngine->renderCount );
+	}
+
+	/**
+	 * The cache is a static variable of the method, so a test cannot reset it.
+	 * A unique locale gives each test its own cache entry.
+	 */
+	private static function createUniqueLocale(): string {
+		return uniqid( 'en_US_', true );
+	}
+
+	/**
+	 * @return Engine&object{renderCount: int}
+	 */
+	private function createCountingLatteEngine(): Engine {
+		return new class() extends Engine {
+			public int $renderCount = 0;
+
+			/**
+			 * @param string                   $name   Template file.
+			 * @param object|array<mixed>|null $params Template parameters.
+			 * @param string|null              $block  Template block.
+			 */
+			public function renderToString( string $name, $params = [], ?string $block = null ): string {
+				++$this->renderCount;
+
+				return parent::renderToString( $name, $params, $block );
+			}
+		};
+	}
+
+	private function createAllowingContextResolver(): ContextResolver&MockObject {
+		$contextResolver = $this->createMock( ContextResolver::class );
+		$contextResolver
+			->method( 'isCarrierSettingsLinkContext' )
+			->willReturn( true );
+
+		return $contextResolver;
+	}
+
+	/**
+	 * @param int $renderCount Expected count of renders. Each render builds the link one time.
+	 */
+	private function createSettingsLinkWpAdapter( int $renderCount ): WpAdapter&MockObject {
+		$wpAdapter = $this->createMock( WpAdapter::class );
+		$wpAdapter
+			->expects( $this->exactly( $renderCount ) )
+			->method( 'getAdminUrl' )
+			->with( null, 'admin.php' )
+			->willReturn( self::ADMIN_URL );
+		$wpAdapter
+			->expects( $this->exactly( $renderCount ) )
+			->method( 'addQueryArg' )
+			->willReturnMap(
+				[
+					[
+						self::createSettingsLinkQuery( ShippingMethod_106::CARRIER_ID ),
+						self::ADMIN_URL,
+						self::CARRIER_SETTINGS_URL,
+					],
+					[
+						self::createSettingsLinkQuery( ShippingMethod_10618::CARRIER_ID ),
+						self::ADMIN_URL,
+						self::BOX_CARRIER_SETTINGS_URL,
+					],
+				]
+			);
+		$wpAdapter
+			->method( '__' )
+			->willReturnArgument( 0 );
+
+		return $wpAdapter;
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	private static function createSettingsLinkQuery( string $carrierId ): array {
+		return [
+			'page'                            => OptionsPage::SLUG,
+			OptionsPage::PARAMETER_CARRIER_ID => $carrierId,
+		];
+	}
+
+	/**
+	 * @param string          $className       Class name of a BaseShippingMethod subclass.
+	 * @param Engine          $latteEngine     Latte engine.
+	 * @param WpAdapter       $wpAdapter       WP adapter.
+	 * @param ContextResolver $contextResolver Context resolver.
+	 */
+	private function createSettingsLinkShippingMethod(
+		string $className,
+		Engine $latteEngine,
+		WpAdapter $wpAdapter,
+		ContextResolver $contextResolver
+	): BaseShippingMethod {
+		$services  = [
+			Engine::class          => $latteEngine,
+			ContextResolver::class => $contextResolver,
+		];
 		$container = $this->createMock( Container::class );
 		$container
 			->method( 'getByType' )
-			->willReturn( $latteEngine );
+			->willReturnCallback(
+				function ( string $type ) use ( $services ): object {
+					return $services[ $type ];
+				}
+			);
 
-		$wpAdapter = $this->createMock( WpAdapter::class );
-		$wpAdapter
-			->method( 'isAdmin' )
-			->willReturn( $isAdmin );
-
-		$shippingMethod = ( new ReflectionClass( ShippingMethod_106::class ) )->newInstanceWithoutConstructor();
+		$shippingMethod = ( new ReflectionClass( $className ) )->newInstanceWithoutConstructor();
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$shippingMethod->method_title = self::METHOD_TITLE;
 		$this->setBaseShippingMethodProperty( $shippingMethod, 'container', $container );
 		$this->setBaseShippingMethodProperty( $shippingMethod, 'wpAdapter', $wpAdapter );
 
-		$formFields = $shippingMethod->get_instance_form_fields();
-
-		self::assertSame( $expectedDescription, $formFields['custom_html']['description'] );
-		self::assertSame( self::METHOD_TITLE, $formFields['title']['default'] );
+		return $shippingMethod;
 	}
 
 	/**

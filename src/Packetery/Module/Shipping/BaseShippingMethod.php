@@ -8,6 +8,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\CompatibilityBridge;
+use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\DI\Container;
 
@@ -158,9 +159,20 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 * Renders the link to the carrier settings for the method settings form.
 	 */
 	private function renderCarrierSettingsLink(): string {
-		// Only the admin shows the settings form. The storefront needs only the field defaults.
-		if ( ! $this->wpAdapter->isAdmin() ) {
+		// WooCommerce gets the form fields of each method instance more than one time, also on the checkout.
+		// Only wp-admin and the WooCommerce REST API show the link, so other requests do not render it.
+		// The cache keeps one render for each carrier and locale.
+		/** @var array<string, array<string, string>> $carrierSettingsLinks */
+		static $carrierSettingsLinks = [];
+
+		$contextResolver = $this->container->getByType( ContextResolver::class );
+		if ( ! $contextResolver->isCarrierSettingsLinkContext() ) {
 			return '';
+		}
+
+		$locale = $this->wpAdapter->determineLocale();
+		if ( isset( $carrierSettingsLinks[ $locale ][ static::CARRIER_ID ] ) ) {
+			return $carrierSettingsLinks[ $locale ][ static::CARRIER_ID ];
 		}
 
 		$carrierSettingsLink = $this->wpAdapter->addQueryArg(
@@ -173,15 +185,17 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 
 		$latteEngine = $this->container->getByType( Engine::class );
 
-		return $latteEngine->renderToString(
+		$carrierSettingsLinks[ $locale ][ static::CARRIER_ID ] = $latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal-fragment.latte',
 			[
 				'carrierSettingsLink' => $carrierSettingsLink,
 				'translations'        => [
-					'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
+					'carrierSettingsLinkText' => $this->wpAdapter->__( 'Configure selected carrier', 'packeta' ),
 				],
 			]
 		);
+
+		return $carrierSettingsLinks[ $locale ][ static::CARRIER_ID ];
 	}
 
 	/**
