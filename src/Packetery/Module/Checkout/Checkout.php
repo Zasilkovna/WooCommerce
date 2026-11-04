@@ -243,7 +243,8 @@ class Checkout {
 
 		$carrierOptions                      = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethodOptionId );
 		$chosenCarrier                       = $this->carrierEntityRepository->getAnyById(
-			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethodOptionId )
+			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethodOptionId ),
+			true
 		);
 		$maxTaxClass                         = $this->cartService->getTaxClassWithMaxRate();
 		$isTaxable                           = $maxTaxClass !== null;
@@ -422,7 +423,7 @@ class Checkout {
 		}
 
 		$carrierId = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenMethod );
-		$carrier   = $this->carrierEntityRepository->getAnyById( $carrierId );
+		$carrier   = $this->carrierEntityRepository->getAnyById( $carrierId, true );
 		$this->diagnosticsLogger->log(
 			'Carrier for filtering gateways',
 			[

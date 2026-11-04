@@ -1,7 +1,7 @@
 === Packeta ===
 Contributors: packeta
 Tags: WooCommerce, shipping
-Requires at least: 6.3
+Requires at least: 6.4
 Tested up to: 7.1
 Stable tag: 2.3.3
 Requires PHP: 7.4
@@ -52,7 +52,7 @@ Yes. All functions of our plugin are completely free. No need to purchase any pr
 
 = What are the minimum required versions of WordPress and PHP? =
 
-In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 6.3+ and PHP 7.4 - 8.4.
+In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 6.4+ and PHP 7.4 - 8.4.
 
 = I'm missing a feature I would like to see, what should I do? =
 
@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+Fixed: Cart and checkout were slow when a shipping zone contained many Packeta shipping methods.
+Updated: The minimum required WordPress version is now 6.4.
+
 = 2.3.3 =
 Added: Diagnostics screen explaining why a carrier is not offered in the checkout.
 Fixed: The checkout kept a stale shipping price.

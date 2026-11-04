@@ -203,6 +203,8 @@ class Updater {
 			}
 		}
 
+		EntityRepository::clearCache();
+
 		if ( count( $this->logMessages ) > 0 ) {
 			set_transient( Transients::CARRIER_CHANGES, true );
 		} else {

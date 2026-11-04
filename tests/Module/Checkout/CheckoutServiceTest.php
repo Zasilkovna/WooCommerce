@@ -21,7 +21,6 @@ class CheckoutServiceTest extends TestCase {
 	const SHIPPING_RATE_INTERNAL_PICKUP_POINTS = 'packetery_carrier_zpointcz';
 
 	private WcAdapter|MockObject $wcAdapter;
-	private Carrier\Repository|MockObject $carrierRepository;
 	private Carrier\EntityRepository|MockObject $carrierEntityRepository;
 	private CarDeliveryConfig|MockObject $carDeliveryConfig;
 	private OptionsProvider|MockObject $provider;
@@ -31,7 +30,6 @@ class CheckoutServiceTest extends TestCase {
 
 	private function createCheckoutServiceMock(): void {
 		$this->wcAdapter               = $this->createMock( WcAdapter::class );
-		$this->carrierRepository       = $this->createMock( Carrier\Repository::class );
 		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
 		$this->carDeliveryConfig       = $this->createMock( CarDeliveryConfig::class );
 		$this->provider                = $this->createMock( OptionsProvider::class );
@@ -42,7 +40,6 @@ class CheckoutServiceTest extends TestCase {
 			$this->wcAdapter,
 			$this->httpRequest,
 			$this->carDeliveryConfig,
-			$this->carrierRepository,
 			$this->carrierEntityRepository,
 			$this->pickupPointsConfig,
 			$this->provider,
@@ -159,9 +156,13 @@ class CheckoutServiceTest extends TestCase {
 
 	public function testIsPickupPointOrderWhenItIsNot(): void {
 		$this->createCheckoutServiceMock();
-		$this->httpRequest->method( 'getPost' )->willReturn( [ 'dummy_method' ] );
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_106' ] );
 		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( false );
-		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( false );
+		$this->carrierEntityRepository
+			->expects( $this->once() )
+			->method( 'hasPickupPoints' )
+			->with( 106 )
+			->willReturn( false );
 
 		$this->assertFalse( $this->checkoutService->isPickupPointOrder() );
 	}
@@ -170,7 +171,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->createCheckoutServiceMock();
 		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_3060' ] );
 		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( false );
-		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( true );
+		$this->carrierEntityRepository->method( 'hasPickupPoints' )->willReturn( true );
 
 		$this->assertTrue( $this->checkoutService->isPickupPointOrder() );
 	}
@@ -179,7 +180,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->createCheckoutServiceMock();
 		$this->httpRequest->method( 'getPost' )->willReturn( [ self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS ] );
 		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( true );
-		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( false );
+		$this->carrierEntityRepository->method( 'hasPickupPoints' )->willReturn( false );
 
 		$this->assertTrue( $this->checkoutService->isPickupPointOrder() );
 	}

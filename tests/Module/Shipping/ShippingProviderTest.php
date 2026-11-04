@@ -4,33 +4,73 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Shipping;
 
+use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Carrier\Options;
+use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Shipping\BaseShippingMethod;
+use Packetery\Module\Shipping\Generated\ShippingMethod_106;
+use Packetery\Module\Shipping\Generated\ShippingMethod_10618;
+use Packetery\Module\Shipping\Generated\ShippingMethod_10619;
+use Packetery\Module\Shipping\Generated\ShippingMethod_10693;
+use Packetery\Module\Shipping\Generated\ShippingMethod_11251;
+use Packetery\Module\Shipping\Generated\ShippingMethod_1160;
+use Packetery\Module\Shipping\ShippingMethodOptionsPrimer;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
+use Packetery\Nette\DI\Container;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 class ShippingProviderTest extends TestCase {
 
 	private ContextResolver&MockObject $contextResolver;
 	private ShippingZoneRepository&MockObject $shippingZoneRepository;
+	private EntityRepository&MockObject $carrierRepository;
+	private CarrierOptionsFactory&MockObject $carrierOptionsFactory;
+	private ShippingMethodOptionsPrimer&MockObject $optionsPrimer;
+	private ?Container $originalContainer;
+
+	protected function setUp(): void {
+		$this->originalContainer = self::getContainerProperty()->getValue();
+	}
+
+	private static function getContainerProperty(): ReflectionProperty {
+		return new ReflectionProperty( CompatibilityBridge::class, 'diContainer' );
+	}
+
+	/**
+	 * A Packeta method constructor reads its services from the container, so no call means no instance.
+	 */
+	private function forbidPacketaMethodInstances(): void {
+		$container = $this->createMock( Container::class );
+		$container
+			->expects( $this->never() )
+			->method( 'getByType' );
+		self::getContainerProperty()->setValue( null, $container );
+	}
 
 	private function createShippingProvider(): ShippingProvider {
 		$this->contextResolver        = $this->createMock( ContextResolver::class );
 		$this->shippingZoneRepository = $this->createMock( ShippingZoneRepository::class );
+		$this->carrierRepository      = $this->createMock( EntityRepository::class );
+		$this->carrierOptionsFactory  = $this->createMock( CarrierOptionsFactory::class );
+		$this->optionsPrimer          = $this->createMock( ShippingMethodOptionsPrimer::class );
 
 		return new ShippingProvider(
 			$this->createMock( CarDeliveryConfig::class ),
 			$this->contextResolver,
 			$this->shippingZoneRepository,
-			$this->createMock( EntityRepository::class ),
-			$this->createMock( CarrierOptionsFactory::class )
+			$this->carrierRepository,
+			$this->carrierOptionsFactory,
+			$this->optionsPrimer
 		);
 	}
 
@@ -39,6 +79,8 @@ class ShippingProviderTest extends TestCase {
 		$property                   = $shippingProviderReflection->getProperty( 'sortedMethodsCache' );
 		$property->setAccessible( true );
 		$property->setValue( null, [] );
+
+		self::getContainerProperty()->setValue( null, $this->originalContainer );
 	}
 
 	/**
@@ -104,7 +146,166 @@ class ShippingProviderTest extends TestCase {
 
 		$this->contextResolver->expects( $this->never() )->method( 'getShippingZoneId' );
 		$this->shippingZoneRepository->expects( $this->never() )->method( 'getCountryCodesForShippingZone' );
+		$this->optionsPrimer
+			->expects( $this->once() )
+			->method( 'prime' );
 
 		$shippingProvider->getSortedCachedMethods( $originalMethods );
+	}
+
+	/**
+	 * The carrier options are read in addMethods(), so the primer has to load them first.
+	 * WooCommerce reads the method settings later, when it registers the methods.
+	 */
+	public function testGetSortedCachedMethodsPrimesMethodOptionsBeforeReadingThem(): void {
+		$shippingProvider = $this->createShippingProvider();
+		self::assertTrue( class_exists( ShippingMethod_106::class ) );
+		self::assertTrue( class_exists( ShippingMethod_1160::class ) );
+
+		$calls = [];
+		$this->optionsPrimer
+			->expects( $this->once() )
+			->method( 'prime' )
+			->willReturnCallback(
+				function ( array $optionNames ) use ( &$calls ): void {
+					self::assertContains( 'packetery_carrier_106', $optionNames );
+					self::assertContains( 'woocommerce_packeta_method_106_settings', $optionNames );
+					self::assertContains( 'packetery_carrier_1160', $optionNames );
+					self::assertContains( 'woocommerce_packeta_method_1160_settings', $optionNames );
+					$calls[] = 'prime';
+				}
+			);
+		$this->carrierOptionsFactory
+			->method( 'createByCarrierId' )
+			->willReturnCallback(
+				function () use ( &$calls ): Options {
+					$calls[] = 'createByCarrierId';
+
+					return $this->createMock( Options::class );
+				}
+			);
+
+		$shippingProvider->getSortedCachedMethods( [] );
+
+		self::assertSame( 'prime', $calls[0] );
+		self::assertContains( 'createByCarrierId', $calls );
+	}
+
+	public function testSortMethodsSortsByTitleWithoutPacketaInstances(): void {
+		$shippingProvider = $this->createShippingProvider();
+		$this->forbidPacketaMethodInstances();
+
+		$carrierNames = [
+			ShippingMethod_106::CARRIER_ID   => 'Home CZ',
+			ShippingMethod_10618::CARRIER_ID => 'Z-BOX',
+			ShippingMethod_10619::CARRIER_ID => 'Packeta pickup point',
+		];
+		$this->carrierRepository
+			->method( 'getAnyById' )
+			->willReturnCallback(
+				function ( string $carrierId, bool $useCache ) use ( $carrierNames ): Carrier {
+					self::assertTrue( $useCache );
+
+					return $this->createConfiguredMock( Carrier::class, [ 'getName' => $carrierNames[ $carrierId ] ] );
+				}
+			);
+
+		$foreignMethodClass  = get_class(
+			new class() {
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				public $method_title = 'Flat rate';
+			}
+		);
+		$foreignMethodObject = new class() {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			public $method_title = 'Local pickup';
+		};
+
+		$methods = [
+			ShippingMethod_10618::getShippingMethodId() => ShippingMethod_10618::class,
+			'flat_rate'                                 => $foreignMethodClass,
+			ShippingMethod_10619::getShippingMethodId() => ShippingMethod_10619::class,
+			'local_pickup'                              => $foreignMethodObject,
+			ShippingMethod_106::getShippingMethodId()   => ShippingMethod_106::class,
+		];
+
+		$sortMethods   = new ReflectionMethod( ShippingProvider::class, 'sortMethods' );
+		$sortedMethods = $sortMethods->invoke( $shippingProvider, $methods );
+
+		self::assertSame(
+			[
+				'flat_rate',
+				ShippingMethod_106::getShippingMethodId(),
+				'local_pickup',
+				ShippingMethod_10619::getShippingMethodId(),
+				ShippingMethod_10618::getShippingMethodId(),
+			],
+			array_keys( $sortedMethods )
+		);
+		self::assertSame( $foreignMethodObject, $sortedMethods['local_pickup'] );
+	}
+
+	/**
+	 * @return array<string, array{methodClasses: array<int, class-string<BaseShippingMethod>>}>
+	 */
+	public static function packetaMethodClassesProvider(): array {
+		return [
+			'three methods' => [
+				'methodClasses' => [
+					ShippingMethod_10618::class,
+					ShippingMethod_106::class,
+					ShippingMethod_10619::class,
+				],
+			],
+			'six methods'   => [
+				'methodClasses' => [
+					ShippingMethod_1160::class,
+					ShippingMethod_10618::class,
+					ShippingMethod_11251::class,
+					ShippingMethod_106::class,
+					ShippingMethod_10693::class,
+					ShippingMethod_10619::class,
+				],
+			],
+		];
+	}
+
+	/**
+	 * The number of carrier reads grows linearly with the number of methods, not with the number of comparisons.
+	 *
+	 * @dataProvider packetaMethodClassesProvider
+	 *
+	 * @param array<int, class-string<BaseShippingMethod>> $methodClasses Generated method classes.
+	 */
+	public function testSortMethodsReadsEachCarrierOnce( array $methodClasses ): void {
+		$shippingProvider = $this->createShippingProvider();
+		$this->forbidPacketaMethodInstances();
+
+		$methods            = [];
+		$expectedCarrierIds = [];
+		foreach ( $methodClasses as $methodClass ) {
+			$methods[ $methodClass::getShippingMethodId() ] = $methodClass;
+			$expectedCarrierIds[]                           = $methodClass::CARRIER_ID;
+		}
+
+		$requestedCarrierIds = [];
+		$this->carrierRepository
+			->expects( $this->exactly( count( $methodClasses ) ) )
+			->method( 'getAnyById' )
+			->willReturnCallback(
+				function ( string $carrierId ) use ( &$requestedCarrierIds ): Carrier {
+					$requestedCarrierIds[] = $carrierId;
+
+					return $this->createConfiguredMock( Carrier::class, [ 'getName' => "Carrier {$carrierId}" ] );
+				}
+			);
+
+		$sortMethods   = new ReflectionMethod( ShippingProvider::class, 'sortMethods' );
+		$sortedMethods = $sortMethods->invoke( $shippingProvider, $methods );
+
+		sort( $expectedCarrierIds );
+		sort( $requestedCarrierIds );
+		self::assertSame( $expectedCarrierIds, $requestedCarrierIds );
+		self::assertCount( count( $methodClasses ), $sortedMethods );
 	}
 }

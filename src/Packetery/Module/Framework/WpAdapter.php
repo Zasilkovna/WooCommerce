@@ -153,6 +153,10 @@ class WpAdapter {
 		return restore_current_blog();
 	}
 
+	public function getCurrentBlogId(): int {
+		return get_current_blog_id();
+	}
+
 	/**
 	 * @return array<string, array<string, string|bool>>
 	 */

@@ -143,8 +143,17 @@ class CheckoutSettings {
 		$carriersConfigForWidget = [];
 		$carriers                = $this->carrierEntityRepository->getAllCarriersIncludingNonFeed();
 
-		foreach ( $carriers as $carrier ) {
-			$optionId = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
+		$optionIds = array_map(
+			static function ( Entity\Carrier $carrier ): string {
+				return Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
+			},
+			$carriers
+		);
+		// One query loads the options of all carriers, so getCarrierForCheckout() reads them from the cache
+		$this->wpAdapter->primeOptionCaches( array_values( $optionIds ) );
+
+		foreach ( $carriers as $carrierKey => $carrier ) {
+			$optionId = $optionIds[ $carrierKey ];
 
 			$carriersConfigForWidget[ $optionId ] = $this->widgetOptionsBuilder->getCarrierForCheckout(
 				$carrier,
@@ -164,7 +173,7 @@ class CheckoutSettings {
 		 *
 		 * @since 1.4.2
 		 */
-		$language = (string) $this->wpAdapter->applyFilters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) );
+		$language = (string) $this->wpAdapter->applyFilters( 'packeta_widget_language', substr( $this->wpAdapter->getLocale(), 0, 2 ) );
 
 		$settings = [
 			'language'                   => $language,

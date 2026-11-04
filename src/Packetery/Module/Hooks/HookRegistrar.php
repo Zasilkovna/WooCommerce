@@ -11,6 +11,7 @@ use Packetery\Module\Checkout\Checkout;
 use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Checkout\ShippingRateDiagnostics;
+use Packetery\Module\ContextResolver;
 use Packetery\Module\CronService;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
@@ -281,6 +282,11 @@ class HookRegistrar {
 	 */
 	private $diagnosticsLogger;
 
+	/**
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -327,7 +333,8 @@ class HookRegistrar {
 		WizardAssetManager $wizardAssetManager,
 		DashboardPage $dashboardPage,
 		EmailShortcodes $shortcodes,
-		DiagnosticsLogger $diagnosticsLogger
+		DiagnosticsLogger $diagnosticsLogger,
+		ContextResolver $contextResolver
 	) {
 		$this->messageManager              = $messageManager;
 		$this->checkout                    = $checkout;
@@ -375,6 +382,7 @@ class HookRegistrar {
 		$this->dashboardPage               = $dashboardPage;
 		$this->shortcodes                  = $shortcodes;
 		$this->diagnosticsLogger           = $diagnosticsLogger;
+		$this->contextResolver             = $contextResolver;
 	}
 
 	public function register(): void {
@@ -413,6 +421,8 @@ class HookRegistrar {
 		}
 
 		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethods' ] );
+		$this->wpAdapter->addFilter( 'rest_request_before_callbacks', [ $this->contextResolver, 'pushRestRoute' ], 10, 3 );
+		$this->wpAdapter->addFilter( 'rest_request_after_callbacks', [ $this->contextResolver, 'popRestRoute' ] );
 
 		$this->wpAdapter->addAction(
 			'woocommerce_after_calculate_totals',
@@ -630,9 +640,9 @@ class HookRegistrar {
 	/**
 	 * Adds Packeta method to available shipping methods.
 	 *
-	 * @param array<string, string> $methods Previous state.
+	 * @param array<string, string|object> $methods Previous state.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|object>
 	 */
 	public function addShippingMethods( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {

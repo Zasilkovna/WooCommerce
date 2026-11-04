@@ -42,4 +42,11 @@ trait OptionTrait {
 	public function deleteOption( string $optionName ): bool {
 		return delete_option( $optionName );
 	}
+
+	/**
+	 * @param string[] $optionNames
+	 */
+	public function primeOptionCaches( array $optionNames ): void {
+		wp_prime_option_caches( $optionNames );
+	}
 }
